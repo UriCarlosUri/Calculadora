@@ -12,8 +12,9 @@
       --accent-hover: #0ea5e9;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --step-bg: #0f172a;
+      --step-bg: #0b1329;
       --highlight: #f59e0b;
+      --border: #334155;
     }
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -25,7 +26,7 @@
       justify-content: center;
     }
     .container {
-      max-width: 650px;
+      max-width: 680px;
       width: 100%;
       background: var(--card);
       padding: 28px;
@@ -44,34 +45,71 @@
       margin-bottom: 24px;
       font-size: 0.95rem;
     }
-    .tabs {
+    
+    /* NIVEL 1: Selector de Materia */
+    .nav-materia {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 18px;
     }
-    .tab-btn {
+    .btn-materia {
       flex: 1;
-      padding: 10px;
-      border: 1px solid #334155;
+      padding: 12px;
+      border: 2px solid var(--border);
       background: #0f172a;
       color: var(--text-muted);
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
       transition: all 0.2s;
     }
-    .tab-btn.active {
+    .btn-materia.active {
       background: var(--accent);
       color: #0f172a;
       border-color: var(--accent);
     }
+
+    /* NIVEL 2: Selector de Operación */
+    .nav-operacion {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .btn-op {
+      flex: 1;
+      min-width: 130px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: #1e293b;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-op.active {
+      background: #334155;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    /* Formularios */
+    .form-box {
+      display: none;
+    }
+    .form-box.active {
+      display: block;
+    }
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 14px;
     }
     label {
       display: block;
       margin-bottom: 6px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
     }
     input {
@@ -79,7 +117,7 @@
       box-sizing: border-box;
       padding: 10px 14px;
       border-radius: 8px;
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       background: #0f172a;
       color: #fff;
       font-size: 1rem;
@@ -87,6 +125,11 @@
     input:focus {
       outline: none;
       border-color: var(--accent);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
     button.calc-btn {
       width: 100%;
@@ -104,10 +147,12 @@
     button.calc-btn:hover {
       background: var(--accent-hover);
     }
+
+    /* Panel de Procedimiento */
     .procedimiento {
-      margin-top: 25px;
+      margin-top: 24px;
       background: var(--step-bg);
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 18px;
       display: none;
@@ -122,7 +167,14 @@
       padding-left: 12px;
       border-left: 3px solid var(--accent);
       line-height: 1.5;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+    }
+    code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #38bdf8;
     }
     .robotics-tip {
       margin-top: 15px;
@@ -138,147 +190,331 @@
 <body>
 
 <div class="container">
-  <h1>Calculadora Paso a Paso</h1>
-  <p class="sub">Aprende qué hace la fórmula, cómo se despeja y cómo se programa.</p>
+  <h1>Calculadora Didáctica</h1>
+  <p class="sub">Selecciona una materia y la operación que deseas analizar paso a paso.</p>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="cambiarModulo('mrua')">Cinemática (MRUA)</button>
-    <button class="tab-btn" onclick="cambiarModulo('derivada')">Cálculo (Derivada Polinomial)</button>
+  <!-- NIVEL 1: Materia Principal -->
+  <div class="nav-materia">
+    <button class="btn-materia active" onclick="seleccionarMateria('calculo')">📐 Cálculo</button>
+    <button class="btn-materia" onclick="seleccionarMateria('fisica')">⚡ Física & Robótica</button>
   </div>
 
-  <!-- SECCIÓN MRUA -->
-  <div id="modulo-mrua">
-    <div class="form-group">
-      <label>Velocidad Inicial ($v_0$) en m/s:</label>
-      <input type="number" id="v0" value="0" step="any">
-    </div>
-    <div class="form-group">
-      <label>Aceleración ($a$) en m/s²:</label>
-      <input type="number" id="a" value="2.5" step="any">
-    </div>
-    <div class="form-group">
-      <label>Tiempo transcurrido ($t$) en segundos:</label>
-      <input type="number" id="t" value="4" step="any">
-    </div>
-    <button class="calc-btn" onclick="calcularMRUA()">Explicar y Resolver</button>
+  <!-- NIVEL 2: Sub-operaciones de Cálculo -->
+  <div id="sub-calculo" class="nav-operacion">
+    <button class="btn-op active" onclick="seleccionarOp('derivada')">Derivadas</button>
+    <button class="btn-op" onclick="seleccionarOp('integral-indef')">Integral Indefinida</button>
+    <button class="btn-op" onclick="seleccionarOp('integral-def')">Integral Definida (Área)</button>
   </div>
 
-  <!-- SECCIÓN CÁLCULO -->
-  <div id="modulo-derivada" style="display: none;">
-    <div class="form-group">
-      <label>Término polinomial: $a \cdot x^n$</label>
-      <div style="display: flex; gap: 10px;">
-        <input type="number" id="coef" placeholder="Coeficiente (ej. 3)" value="3">
-        <input type="number" id="exp" placeholder="Exponente (ej. 2)" value="2">
+  <!-- NIVEL 2: Sub-operaciones de Física -->
+  <div id="sub-fisica" class="nav-operacion" style="display: none;">
+    <button class="btn-op" onclick="seleccionarOp('cinematica')">Cinemática (MRUA)</button>
+    <button class="btn-op" onclick="seleccionarOp('dinamica')">Dinámica (F = m · a)</button>
+    <button class="btn-op" onclick="seleccionarOp('ohm')">Ley de Ohm / LED</button>
+  </div>
+
+  <!-- ================= FORMULARIOS CÁLCULO ================= -->
+
+  <!-- Formulario: Derivadas -->
+  <div id="form-derivada" class="form-box active">
+    <label>Término polinomial: <b>c · xⁿ</b></label>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Coeficiente (c):</label>
+        <input type="number" id="der-c" value="4" step="any">
       </div>
-      <small style="color: var(--text-muted); display: block; margin-top: 4px;">Ejemplo actual: $3x^2$</small>
+      <div class="form-group">
+        <label>Exponente (n):</label>
+        <input type="number" id="der-n" value="3" step="any">
+      </div>
     </div>
-    <button class="calc-btn" onclick="calcularDerivada()">Ver Regla de la Potencia</button>
+    <button class="calc-btn" onclick="resolverDerivada()">Calcular Derivada Paso a Paso</button>
   </div>
 
-  <!-- CONTENEDOR PROCEDIMIENTO -->
+  <!-- Formulario: Integral Indefinida -->
+  <div id="form-integral-indef" class="form-box">
+    <label>Término a integrar: <b>∫ (c · xⁿ) dx</b></label>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Coeficiente (c):</label>
+        <input type="number" id="int-c" value="6" step="any">
+      </div>
+      <div class="form-group">
+        <label>Exponente (n ≠ -1):</label>
+        <input type="number" id="int-n" value="2" step="any">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="resolverIntegralIndef()">Calcular Integral Paso a Paso</button>
+  </div>
+
+  <!-- Formulario: Integral Definida -->
+  <div id="form-integral-def" class="form-box">
+    <label>Función: <b>c · xⁿ</b> entre dos límites [a, b]</label>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Coeficiente (c):</label>
+        <input type="number" id="intdef-c" value="3" step="any">
+      </div>
+      <div class="form-group">
+        <label>Exponente (n):</label>
+        <input type="number" id="intdef-n" value="2" step="any">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Límite inferior (a):</label>
+        <input type="number" id="intdef-a" value="0" step="any">
+      </div>
+      <div class="form-group">
+        <label>Límite superior (b):</label>
+        <input type="number" id="intdef-b" value="2" step="any">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="resolverIntegralDef()">Calcular Área Bajo la Curva</button>
+  </div>
+
+  <!-- ================= FORMULARIOS FÍSICA ================= -->
+
+  <!-- Formulario: Cinemática (MRUA) -->
+  <div id="form-cinematica" class="form-box">
+    <div class="form-group">
+      <label>Velocidad Inicial (v₀) [m/s]:</label>
+      <input type="number" id="cin-v0" value="0" step="any">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Aceleración (a) [m/s²]:</label>
+        <input type="number" id="cin-a" value="2" step="any">
+      </div>
+      <div class="form-group">
+        <label>Tiempo transcurrido (t) [s]:</label>
+        <input type="number" id="cin-t" value="5" step="any">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="resolverCinematica()">Calcular Cinemática</button>
+  </div>
+
+  <!-- Formulario: Dinámica (Newton) -->
+  <div id="form-dinamica" class="form-box">
+    <label>Segunda Ley de Newton: <b>F = m · a</b></label>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Masa del móvil (m) [kg]:</label>
+        <input type="number" id="din-m" value="1.2" step="any">
+      </div>
+      <div class="form-group">
+        <label>Aceleración deseada (a) [m/s²]:</label>
+        <input type="number" id="din-a" value="3" step="any">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="resolverDinamica()">Calcular Fuerza Necesaria</button>
+  </div>
+
+  <!-- Formulario: Ley de Ohm -->
+  <div id="form-ohm" class="form-box">
+    <label>Resistencia limitadora para un componente en Arduino:</label>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Voltaje de alimentación (Vcc) [V]:</label>
+        <input type="number" id="ohm-v" value="5" step="any">
+      </div>
+      <div class="form-group">
+        <label>Voltaje del LED (V_led) [V]:</label>
+        <input type="number" id="ohm-vled" value="2" step="any">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Corriente deseada (I) en miliamperios [mA]:</label>
+      <input type="number" id="ohm-i" value="20" step="any">
+    </div>
+    <button class="calc-btn" onclick="resolverOhm()">Calcular Resistor Requerido</button>
+  </div>
+
+  <!-- PANEL DE RESULTADOS / EXPLICACIÓN -->
   <div id="salida" class="procedimiento"></div>
 </div>
 
 <script>
-  function cambiarModulo(tipo) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  let materiaActual = 'calculo';
+
+  function seleccionarMateria(materia) {
+    materiaActual = materia;
+    document.querySelectorAll('.btn-materia').forEach(b => b.classList.remove('active'));
     document.getElementById('salida').style.display = 'none';
 
-    if (tipo === 'mrua') {
-      document.querySelectorAll('.tab-btn')[0].classList.add('active');
-      document.getElementById('modulo-mrua').style.display = 'block';
-      document.getElementById('modulo-derivada').style.display = 'none';
+    if (materia === 'calculo') {
+      document.querySelectorAll('.btn-materia')[0].classList.add('active');
+      document.getElementById('sub-calculo').style.display = 'flex';
+      document.getElementById('sub-fisica').style.display = 'none';
+      seleccionarOp('derivada');
     } else {
-      document.querySelectorAll('.tab-btn')[1].classList.add('active');
-      document.getElementById('modulo-mrua').style.display = 'none';
-      document.getElementById('modulo-derivada').style.display = 'block';
+      document.querySelectorAll('.btn-materia')[1].classList.add('active');
+      document.getElementById('sub-calculo').style.display = 'none';
+      document.getElementById('sub-fisica').style.display = 'flex';
+      seleccionarOp('cinematica');
     }
   }
 
-  function calcularMRUA() {
-    const v0 = parseFloat(document.getElementById('v0').value);
-    const a = parseFloat(document.getElementById('a').value);
-    const t = parseFloat(document.getElementById('t').value);
+  function seleccionarOp(op) {
+    document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-box').forEach(f => f.classList.remove('active'));
+    document.getElementById('salida').style.display = 'none';
+
+    // Activar botón seleccionado
+    const botones = document.querySelectorAll('.btn-op');
+    botones.forEach(btn => {
+      if (btn.getAttribute('onclick').includes(op)) {
+        btn.classList.add('active');
+      }
+    });
+
+    const targetForm = document.getElementById('form-' + op);
+    if (targetForm) targetForm.classList.add('active');
+  }
+
+  // --- CÁLCULO: DERIVADA ---
+  function resolverDerivada() {
+    const c = parseFloat(document.getElementById('der-c').value);
+    const n = parseFloat(document.getElementById('der-n').value);
     const salida = document.getElementById('salida');
 
-    if (isNaN(v0) || isNaN(a) || isNaN(t)) {
-      alert("Por favor ingresa todos los valores numéricos.");
-      return;
-    }
+    if (isNaN(c) || isNaN(n)) return alert("Ingresa valores numéricos válidos.");
 
-    const vf = v0 + (a * t);
-    const termino1 = v0 * t;
-    const termino2 = 0.5 * a * Math.pow(t, 2);
-    const d = termino1 + termino2;
+    const nuevoC = c * n;
+    const nuevoN = n - 1;
+    let res = (nuevoN === 0) ? `${nuevoC}` : (nuevoN === 1) ? `${nuevoC}x` : `${nuevoC}x^${nuevoN}`;
 
     salida.innerHTML = `
-      <h3>Desglose Paso a Paso: Movimiento Acelerado</h3>
-      <div class="step">
-        <strong>1. Cálculo de Velocidad Final:</strong><br>
-        Fórmula: <code>v_f = v_0 + (a · t)</code><br>
-        Sustitución: <code>v_f = ${v0} + (${a} · ${t})</code><br>
-        <strong>Resultado: v_f = ${vf.toFixed(2)} m/s</strong>
-      </div>
-      <div class="step">
-        <strong>2. Cálculo de Distancia Recorrida:</strong><br>
-        Fórmula: <code>d = (v_0 · t) + (0.5 · a · t²)</code><br>
-        Sustitución: <code>d = (${v0} · ${t}) + (0.5 · ${a} · ${t}²)</code><br>
-        Operación intermedia: <code>d = ${termino1.toFixed(2)} + ${termino2.toFixed(2)}</code><br>
-        <strong>Resultado: d = ${d.toFixed(2)} metros</strong>
-      </div>
-      <div class="robotics-tip">
-        <strong>🤖 ¿Cómo se usa esto en Robótica?</strong><br>
-        Si tu carrito con Arduino tiene un sensor de distancia y detecta un obstáculo a <code>${d.toFixed(2)} m</code>, este cálculo le dice al microcontrolador exactamente cuántos segundos <code>(${t}s)</code> debe aplicar el PWM de frenado con aceleración <code>${a} m/s²</code> para no chocar.
-      </div>
+      <h3>Regla de la Potencia: Derivada de f(x) = ${c}x^${n}</h3>
+      <div class="step"><b>1. Fórmula general:</b> Para <code>f(x) = c · xⁿ</code>, la derivada es <code>f'(x) = (c · n) · xⁿ⁻¹</code>.</div>
+      <div class="step"><b>2. Multiplicación de coeficiente:</b> <code>${c} · ${n} = ${nuevoC}</code>.</div>
+      <div class="step"><b>3. Resta en el exponente:</b> <code>${n} - 1 = ${nuevoN}</code>.</div>
+      <div class="step"><b>Resultado final:</b> <code>f'(x) = ${res}</code></div>
+      <div class="robotics-tip"><b>🤖 Aplicación en Robótica:</b> Si <code>x</code> representa la posición medida por el sensor ultrasónico respecto al tiempo, la derivada <code>f'(x)</code> te da la velocidad instantánea del robot en cada segundo.</div>
     `;
     salida.style.display = 'block';
   }
 
-  function calcularDerivada() {
-    const c = parseFloat(document.getElementById('coef').value);
-    const n = parseFloat(document.getElementById('exp').value);
+  // --- CÁLCULO: INTEGRAL INDEFINIDA ---
+  function resolverIntegralIndef() {
+    const c = parseFloat(document.getElementById('int-c').value);
+    const n = parseFloat(document.getElementById('int-n').value);
     const salida = document.getElementById('salida');
 
-    if (isNaN(c) || isNaN(n)) {
-      alert("Por favor ingresa coeficiente y exponente válidos.");
+    if (isNaN(c) || isNaN(n)) return alert("Ingresa valores numéricos válidos.");
+    if (n === -1) {
+      salida.innerHTML = `<h3>Integral con n = -1</h3><div class="step">Para <code>∫ (1/x) dx</code> la solución es <code>${c} · ln|x| + C</code>.</div>`;
+      salida.style.display = 'block';
       return;
     }
 
-    const nuevoCoef = c * n;
-    const nuevoExp = n - 1;
-
-    let resultadoStr = "";
-    if (nuevoExp === 0) {
-      resultadoStr = `${nuevoCoef}`;
-    } else if (nuevoExp === 1) {
-      resultadoStr = `${nuevoCoef}x`;
-    } else {
-      resultadoStr = `${nuevoCoef}x^${nuevoExp}`;
-    }
+    const nuevoN = n + 1;
+    const div = c / nuevoN;
 
     salida.innerHTML = `
-      <h3>Desglose Paso a Paso: Regla de la Potencia</h3>
-      <div class="step">
-        <strong>1. Identificar la regla matemática:</strong><br>
-        Para cualquier función <code>f(x) = c · xⁿ</code>, la derivada es:<br>
-        <code>f'(x) = (c · n) · xⁿ⁻¹</code>
-      </div>
-      <div class="step">
-        <strong>2. Multiplicar coeficiente por exponente:</strong><br>
-        <code>Nuevo coeficiente = ${c} · ${n} = ${nuevoCoef}</code>
-      </div>
-      <div class="step">
-        <strong>3. Restar 1 al exponente:</strong><br>
-        <code>Nuevo exponente = ${n} - 1 = ${nuevoExp}</code>
-      </div>
-      <div class="step">
-        <strong>Resultado: f'(x) = ${resultadoStr}</strong>
-      </div>
-      <div class="robotics-tip">
-        <strong>🤖 ¿Qué significa derivar en Robótica?</strong><br>
-        La derivada es la <em>tasa de cambio</em>. Si <code>x</code> es la posición leída por un encoder en la llanta del robot, su primera derivada es la <strong>velocidad</strong>, y la segunda derivada es la <strong>aceleración</strong>.
-      </div>
+      <h3>Integral Indefinida de ∫ ${c}x^${n} dx</h3>
+      <div class="step"><b>1. Fórmula inversa:</b> Para <code>∫ c · xⁿ dx</code>, se suma 1 al exponente: <code>(c / (n + 1)) · xⁿ⁺¹ + C</code>.</div>
+      <div class="step"><b>2. Nuevo exponente:</b> <code>${n} + 1 = ${nuevoN}</code>.</div>
+      <div class="step"><b>3. Nuevo coeficiente:</b> <code>${c} / ${nuevoN} = ${div.toFixed(2)}</code>.</div>
+      <div class="step"><b>Resultado:</b> <code>∫ ${c}x^${n} dx = (${c}/${nuevoN})x^${nuevoN} + C ≈ ${div.toFixed(2)}x^${nuevoN} + C</code></div>
+      <div class="robotics-tip"><b>🤖 Aplicación en Robótica:</b> La integración es acumulación. Si integras las lecturas del acelerómetro (aceleración), obtienes la velocidad a la que se va desplazando el móvil.</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  // --- CÁLCULO: INTEGRAL DEFINIDA ---
+  function resolverIntegralDef() {
+    const c = parseFloat(document.getElementById('intdef-c').value);
+    const n = parseFloat(document.getElementById('intdef-n').value);
+    const a = parseFloat(document.getElementById('intdef-a').value);
+    const b = parseFloat(document.getElementById('intdef-b').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(c) || isNaN(n) || isNaN(a) || isNaN(b)) return alert("Completa todos los campos numéricos.");
+
+    const nuevoN = n + 1;
+    const F_b = (c / nuevoN) * Math.pow(b, nuevoN);
+    const F_a = (c / nuevoN) * Math.pow(a, nuevoN);
+    const area = F_b - F_a;
+
+    salida.innerHTML = `
+      <h3>Integral Definida (Teorema Fundamental del Cálculo)</h3>
+      <div class="step"><b>1. Antiderivada F(x):</b> <code>F(x) = (${c}/${nuevoN}) · x^${nuevoN}</code></div>
+      <div class="step"><b>2. Evaluar límite superior F(${b}):</b> <code>(${c}/${nuevoN}) · (${b})^${nuevoN} = ${F_b.toFixed(3)}</code></div>
+      <div class="step"><b>3. Evaluar límite inferior F(${a}):</b> <code>(${c}/${nuevoN}) · (${a})^${nuevoN} = ${F_a.toFixed(3)}</code></div>
+      <div class="step"><b>4. Regla de Barrow [F(b) - F(a)]:</b> <code>${F_b.toFixed(3)} - (${F_a.toFixed(3)}) = ${area.toFixed(3)}</code></div>
+      <div class="step"><b>Área bajo la curva = ${area.toFixed(3)} u²</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  // --- FÍSICA: CINEMÁTICA ---
+  function resolverCinematica() {
+    const v0 = parseFloat(document.getElementById('cin-v0').value);
+    const a = parseFloat(document.getElementById('cin-a').value);
+    const t = parseFloat(document.getElementById('cin-t').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(v0) || isNaN(a) || isNaN(t)) return alert("Ingresa datos válidos.");
+
+    const vf = v0 + (a * t);
+    const term1 = v0 * t;
+    const term2 = 0.5 * a * Math.pow(t, 2);
+    const d = term1 + term2;
+
+    salida.innerHTML = `
+      <h3>Cinemática: Movimiento Rectilíneo Uniformemente Acelerado (MRUA)</h3>
+      <div class="step"><b>1. Velocidad Final:</b> <code>v_f = v_0 + a · t</code><br>
+      Sustitución: <code>${v0} + (${a} · ${t})</code> = <b>${vf.toFixed(2)} m/s</b></div>
+      <div class="step"><b>2. Distancia Recorrida:</b> <code>d = v_0 · t + ½ · a · t²</code><br>
+      Sustitución: <code>(${v0} · ${t}) + 0.5 · ${a} · (${t})² = ${term1.toFixed(2)} + ${term2.toFixed(2)}</code> = <b>${d.toFixed(2)} m</b></div>
+      <div class="robotics-tip"><b>🤖 Conexión con Arduino:</b> Si tu carrito viaja a velocidad <code>${v0} m/s</code> y activa los motores para acelerar a <code>${a} m/s²</code> durante <code>${t} s</code>, avanzará exactamente <code>${d.toFixed(2)} m</code>.</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  // --- FÍSICA: DINÁMICA ---
+  function resolverDinamica() {
+    const m = parseFloat(document.getElementById('din-m').value);
+    const a = parseFloat(document.getElementById('din-a').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(m) || isNaN(a)) return alert("Ingresa valores numéricos válidos.");
+
+    const f = m * a;
+
+    salida.innerHTML = `
+      <h3>Dinámica: Segunda Ley de Newton</h3>
+      <div class="step"><b>1. Ecuación fundamental:</b> <code>Fuerza (F) = Masa (m) · Aceleración (a)</code></div>
+      <div class="step"><b>2. Sustitución de valores:</b> <code>F = ${m} kg · ${a} m/s²</code></div>
+      <div class="step"><b>Resultado:</b> <code>F = ${f.toFixed(2)} Newtons (N)</code></div>
+      <div class="robotics-tip"><b>🤖 Aplicación en Motores:</b> Esta fuerza <code>${f.toFixed(2)} N</code> multiplicada por el radio de la llanta del robot determina el <b>torque mínimo</b> que deben entregar tus motorreductores para mover el chasis.</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  // --- FÍSICA: LEY DE OHM ---
+  function resolverOhm() {
+    const vcc = parseFloat(document.getElementById('ohm-v').value);
+    const vled = parseFloat(document.getElementById('ohm-vled').value);
+    const ima = parseFloat(document.getElementById('ohm-i').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(vcc) || isNaN(vled) || isNaN(ima) || ima <= 0) return alert("Ingresa valores válidos.");
+
+    const iAmperes = ima / 1000;
+    const vResistencia = vcc - vled;
+    const r = vResistencia / iAmperes;
+
+    salida.innerHTML = `
+      <h3>Cálculo de Resistor limitador (Ley de Ohm: V = I · R)</h3>
+      <div class="step"><b>1. Caída de tensión en la resistencia:</b> El pin de Arduino entrega <code>${vcc}V</code> y el LED consume <code>${vled}V</code>.<br>
+      <code>V_R = Vcc - V_led = ${vcc} - ${vled} = ${vResistencia.toFixed(2)} V</code></div>
+      <div class="step"><b>2. Conversión de corriente a Amperes:</b><br>
+      <code>${ima} mA / 1000 = ${iAmperes.toFixed(4)} A</code></div>
+      <div class="step"><b>3. Despeje de Resistencia (R = V / I):</b><br>
+      <code>R = ${vResistencia.toFixed(2)} V / ${iAmperes.toFixed(4)} A = ${r.toFixed(1)} Ω</code></div>
+      <div class="step"><b>Valor comercial recomendado:</b> El valor comercial estándar más cercano por encima es de <b>${Math.ceil(r / 10) * 10} Ω</b> (o 220 Ω / 330 Ω comúnmente usados en Arduino).</div>
     `;
     salida.style.display = 'block';
   }
