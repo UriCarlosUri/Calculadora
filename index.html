@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Didáctica - Ciencia & Robótica</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --step-bg: #0f172a;
+      --highlight: #f59e0b;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+      color: var(--accent);
+      text-align: center;
+    }
+    p.sub {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #fff;
+      font-size: 1rem;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    button.calc-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+    button.calc-btn:hover {
+      background: var(--accent-hover);
+    }
+    .procedimiento {
+      margin-top: 25px;
+      background: var(--step-bg);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 18px;
+      display: none;
+    }
+    .procedimiento h3 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .step {
+      margin: 10px 0;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent);
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    .robotics-tip {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid var(--highlight);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #fde68a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Calculadora Paso a Paso</h1>
+  <p class="sub">Aprende qué hace la fórmula, cómo se despeja y cómo se programa.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="cambiarModulo('mrua')">Cinemática (MRUA)</button>
+    <button class="tab-btn" onclick="cambiarModulo('derivada')">Cálculo (Derivada Polinomial)</button>
+  </div>
+
+  <!-- SECCIÓN MRUA -->
+  <div id="modulo-mrua">
+    <div class="form-group">
+      <label>Velocidad Inicial ($v_0$) en m/s:</label>
+      <input type="number" id="v0" value="0" step="any">
+    </div>
+    <div class="form-group">
+      <label>Aceleración ($a$) en m/s²:</label>
+      <input type="number" id="a" value="2.5" step="any">
+    </div>
+    <div class="form-group">
+      <label>Tiempo transcurrido ($t$) en segundos:</label>
+      <input type="number" id="t" value="4" step="any">
+    </div>
+    <button class="calc-btn" onclick="calcularMRUA()">Explicar y Resolver</button>
+  </div>
+
+  <!-- SECCIÓN CÁLCULO -->
+  <div id="modulo-derivada" style="display: none;">
+    <div class="form-group">
+      <label>Término polinomial: $a \cdot x^n$</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="number" id="coef" placeholder="Coeficiente (ej. 3)" value="3">
+        <input type="number" id="exp" placeholder="Exponente (ej. 2)" value="2">
+      </div>
+      <small style="color: var(--text-muted); display: block; margin-top: 4px;">Ejemplo actual: $3x^2$</small>
+    </div>
+    <button class="calc-btn" onclick="calcularDerivada()">Ver Regla de la Potencia</button>
+  </div>
+
+  <!-- CONTENEDOR PROCEDIMIENTO -->
+  <div id="salida" class="procedimiento"></div>
+</div>
+
+<script>
+  function cambiarModulo(tipo) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('salida').style.display = 'none';
+
+    if (tipo === 'mrua') {
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('modulo-mrua').style.display = 'block';
+      document.getElementById('modulo-derivada').style.display = 'none';
+    } else {
+      document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      document.getElementById('modulo-mrua').style.display = 'none';
+      document.getElementById('modulo-derivada').style.display = 'block';
+    }
+  }
+
+  function calcularMRUA() {
+    const v0 = parseFloat(document.getElementById('v0').value);
+    const a = parseFloat(document.getElementById('a').value);
+    const t = parseFloat(document.getElementById('t').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(v0) || isNaN(a) || isNaN(t)) {
+      alert("Por favor ingresa todos los valores numéricos.");
+      return;
+    }
+
+    const vf = v0 + (a * t);
+    const termino1 = v0 * t;
+    const termino2 = 0.5 * a * Math.pow(t, 2);
+    const d = termino1 + termino2;
+
+    salida.innerHTML = `
+      <h3>Desglose Paso a Paso: Movimiento Acelerado</h3>
+      <div class="step">
+        <strong>1. Cálculo de Velocidad Final:</strong><br>
+        Fórmula: <code>v_f = v_0 + (a · t)</code><br>
+        Sustitución: <code>v_f = ${v0} + (${a} · ${t})</code><br>
+        <strong>Resultado: v_f = ${vf.toFixed(2)} m/s</strong>
+      </div>
+      <div class="step">
+        <strong>2. Cálculo de Distancia Recorrida:</strong><br>
+        Fórmula: <code>d = (v_0 · t) + (0.5 · a · t²)</code><br>
+        Sustitución: <code>d = (${v0} · ${t}) + (0.5 · ${a} · ${t}²)</code><br>
+        Operación intermedia: <code>d = ${termino1.toFixed(2)} + ${termino2.toFixed(2)}</code><br>
+        <strong>Resultado: d = ${d.toFixed(2)} metros</strong>
+      </div>
+      <div class="robotics-tip">
+        <strong>🤖 ¿Cómo se usa esto en Robótica?</strong><br>
+        Si tu carrito con Arduino tiene un sensor de distancia y detecta un obstáculo a <code>${d.toFixed(2)} m</code>, este cálculo le dice al microcontrolador exactamente cuántos segundos <code>(${t}s)</code> debe aplicar el PWM de frenado con aceleración <code>${a} m/s²</code> para no chocar.
+      </div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularDerivada() {
+    const c = parseFloat(document.getElementById('coef').value);
+    const n = parseFloat(document.getElementById('exp').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(c) || isNaN(n)) {
+      alert("Por favor ingresa coeficiente y exponente válidos.");
+      return;
+    }
+
+    const nuevoCoef = c * n;
+    const nuevoExp = n - 1;
+
+    let resultadoStr = "";
+    if (nuevoExp === 0) {
+      resultadoStr = `${nuevoCoef}`;
+    } else if (nuevoExp === 1) {
+      resultadoStr = `${nuevoCoef}x`;
+    } else {
+      resultadoStr = `${nuevoCoef}x^${nuevoExp}`;
+    }
+
+    salida.innerHTML = `
+      <h3>Desglose Paso a Paso: Regla de la Potencia</h3>
+      <div class="step">
+        <strong>1. Identificar la regla matemática:</strong><br>
+        Para cualquier función <code>f(x) = c · xⁿ</code>, la derivada es:<br>
+        <code>f'(x) = (c · n) · xⁿ⁻¹</code>
+      </div>
+      <div class="step">
+        <strong>2. Multiplicar coeficiente por exponente:</strong><br>
+        <code>Nuevo coeficiente = ${c} · ${n} = ${nuevoCoef}</code>
+      </div>
+      <div class="step">
+        <strong>3. Restar 1 al exponente:</strong><br>
+        <code>Nuevo exponente = ${n} - 1 = ${nuevoExp}</code>
+      </div>
+      <div class="step">
+        <strong>Resultado: f'(x) = ${resultadoStr}</strong>
+      </div>
+      <div class="robotics-tip">
+        <strong>🤖 ¿Qué significa derivar en Robótica?</strong><br>
+        La derivada es la <em>tasa de cambio</em>. Si <code>x</code> es la posición leída por un encoder en la llanta del robot, su primera derivada es la <strong>velocidad</strong>, y la segunda derivada es la <strong>aceleración</strong>.
+      </div>
+    `;
+    salida.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
