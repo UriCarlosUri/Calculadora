@@ -3,452 +3,516 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suite Científica: Robótica, Física, Cálculo & Química</title>
+  <title>Suite Científica y Robótica</title>
   <style>
     :root {
       --bg: #0b1120;
       --card: #1e293b;
       --accent: #38bdf8;
-      --accent-hover: #0ea5e9;
       --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --step-bg: #070d19;
-      --highlight: #f59e0b;
-      --chem: #34d399;
-      --code-bg: #111827;
+      --muted: #94a3b8;
       --border: #334155;
     }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 16px;
       display: flex;
       justify-content: center;
     }
-    .container {
-      max-width: 760px;
+    .box {
+      max-width: 680px;
       width: 100%;
       background: var(--card);
-      padding: 30px;
-      border-radius: 18px;
-      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-    h1 {
-      margin-top: 0;
-      font-size: 1.65rem;
-      color: var(--accent);
-      text-align: center;
-    }
-    p.sub {
-      text-align: center;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-    }
+    h1 { color: var(--accent); text-align: center; margin-top: 0; font-size: 1.5rem; }
+    p.sub { text-align: center; color: var(--muted); margin-bottom: 20px; font-size: 0.9rem; }
     
-    /* NIVEL 1: Selector de Materia */
-    .nav-materia {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+    .nav-tabs, .sub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    button.tab {
+      flex: 1; min-width: 110px; padding: 10px; background: #0f172a;
+      border: 1px solid var(--border); color: var(--muted);
+      border-radius: 8px; font-weight: bold; cursor: pointer;
     }
-    .btn-materia {
-      flex: 1;
-      min-width: 140px;
-      padding: 12px 8px;
-      border: 2px solid var(--border);
-      background: #0f172a;
-      color: var(--text-muted);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 700;
-      transition: all 0.2s;
-    }
-    .btn-materia.active {
-      background: var(--accent);
-      color: #0b1120;
-      border-color: var(--accent);
-    }
+    button.tab.active { background: var(--accent); color: #0b1120; border-color: var(--accent); }
 
-    /* NIVEL 2: Módulos por materia */
-    .nav-operacion {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-    .btn-op {
-      flex: 1;
-      min-width: 120px;
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      background: #1e293b;
-      color: var(--text-muted);
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn-op.active {
-      background: #334155;
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-
-    /* Formularios */
-    .form-box { display: none; }
-    .form-box.active { display: block; }
-    .form-group { margin-bottom: 14px; }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
+    .modulo { display: none; }
+    .modulo.active { display: block; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: var(--muted); }
     input, select {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #0f172a;
-      color: #fff;
-      font-size: 1rem;
+      width: 100%; box-sizing: border-box; padding: 10px;
+      border-radius: 6px; border: 1px solid var(--border);
+      background: #0f172a; color: #fff; font-size: 0.95rem;
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
 
-    button.calc-btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      color: #0b1120;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.2s;
+    button.btn-calc {
+      width: 100%; padding: 12px; background: var(--accent);
+      color: #0b1120; border: none; border-radius: 8px;
+      font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px;
     }
-    button.calc-btn:hover { background: var(--accent-hover); }
 
-    /* Visualizador gráfico de Resistencia */
-    .resistor-preview {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #334155;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 15px 0;
+    .resistor-display {
+      background: #334155; padding: 16px; border-radius: 10px;
+      display: flex; justify-content: center; margin: 12px 0;
     }
     .resistor-body {
-      width: 220px;
-      height: 48px;
-      background: #d4a373;
-      border-radius: 24px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 16px;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+      width: 220px; height: 42px; background: #d4a373;
+      border-radius: 20px; display: flex; justify-content: space-around;
+      align-items: center; padding: 0 16px;
     }
-    .banda {
-      width: 14px;
-      height: 100%;
-      box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    }
+    .banda { width: 14px; height: 100%; }
 
-    /* Salidas de procedimiento */
-    .procedimiento {
-      margin-top: 24px;
-      background: var(--step-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      display: none;
-    }
-    .procedimiento h3 {
-      margin-top: 0;
-      color: var(--accent);
-      font-size: 1.15rem;
+    #salida {
+      margin-top: 20px; background: #070d19; padding: 16px;
+      border-radius: 10px; border: 1px solid var(--border); display: none;
     }
     .step {
-      margin: 10px 0;
-      padding-left: 12px;
-      border-left: 3px solid var(--accent);
-      line-height: 1.5;
-      font-size: 0.92rem;
+      margin: 8px 0; padding-left: 10px; border-left: 3px solid var(--accent);
+      font-size: 0.9rem; line-height: 1.4;
     }
-    code {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-      color: #38bdf8;
-    }
-    .chem-tip {
-      margin-top: 15px;
-      padding: 12px;
-      background: rgba(52, 211, 153, 0.1);
-      border-left: 3px solid var(--chem);
-      border-radius: 4px;
-      font-size: 0.88rem;
-      color: #a7f3d0;
-    }
-    .robotics-tip {
-      margin-top: 15px;
-      padding: 12px;
-      background: rgba(245, 158, 11, 0.1);
-      border-left: 3px solid var(--highlight);
-      border-radius: 4px;
-      font-size: 0.88rem;
-      color: #fde68a;
+    .tip {
+      margin-top: 12px; padding: 10px; background: rgba(245,158,11,0.1);
+      border-left: 3px solid #f59e0b; color: #fde68a; font-size: 0.85rem;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Calculadora Didáctica Multidisciplinaria</h1>
-  <p class="sub">Aprende qué significa cada fórmula, cómo se calcula a mano y cómo se aplica en robótica y ciencias.</p>
+<div class="box">
+  <h1>Suite Didáctica de Ciencias & Robótica</h1>
+  <p class="sub">Selecciona una materia para analizar los procedimientos paso a paso.</p>
 
-  <!-- NIVEL 1: Materia Principal -->
-  <div class="nav-materia">
-    <button class="btn-materia active" onclick="seleccionarMateria('robotica')">🤖 Robótica & Circuitos</button>
-    <button class="btn-materia" onclick="seleccionarMateria('quimica')">🧪 Química</button>
-    <button class="btn-materia" onclick="seleccionarMateria('fisica')">🚀 Física Mecánica</button>
-    <button class="btn-materia" onclick="seleccionarMateria('calculo')">📐 Cálculo</button>
+  <!-- Materias Principales -->
+  <div class="nav-tabs">
+    <button class="tab active" onclick="cambiarMateria('robotica')">🤖 Robótica</button>
+    <button class="tab" onclick="cambiarMateria('quimica')">🧪 Química</button>
+    <button class="tab" onclick="cambiarMateria('fisica')">🚀 Física</button>
+    <button class="tab" onclick="cambiarMateria('calculo')">📐 Cálculo</button>
   </div>
 
-  <!-- NIVEL 2: Módulos Robótica -->
-  <div id="sub-robotica" class="nav-operacion">
-    <button class="btn-op active" onclick="seleccionarOp('res-color')">Código de Colores (Resistencias)</button>
-    <button class="btn-op" onclick="seleccionarOp('led-ohm')">Resistor para LED</button>
-    <button class="btn-op" onclick="seleccionarOp('divisor')">Divisor de Tensión (Sensores)</button>
+  <!-- Submenús Robótica -->
+  <div id="sub-robotica" class="sub-tabs">
+    <button class="tab active" onclick="cambiarModulo('colores')">Colores Resistencia</button>
+    <button class="tab" onclick="cambiarModulo('ohm')">Ley de Ohm</button>
+    <button class="tab" onclick="cambiarModulo('led')">Resistor para LED</button>
   </div>
 
-  <!-- NIVEL 2: Módulos Química -->
-  <div id="sub-quimica" class="nav-operacion" style="display: none;">
-    <button class="btn-op" onclick="seleccionarOp('quim-molar')">Masa Molar (Compuestos)</button>
-    <button class="btn-op" onclick="seleccionarOp('quim-gases')">Gases Ideales (P·V = n·R·T)</button>
-    <button class="btn-op" onclick="seleccionarOp('quim-molaridad')">Molaridad (Soluciones)</button>
+  <!-- Submenús Química -->
+  <div id="sub-quimica" class="sub-tabs" style="display: none;">
+    <button class="tab" onclick="cambiarModulo('molar')">Masa Molar</button>
+    <button class="tab" onclick="cambiarModulo('gases')">Gases (PV=nRT)</button>
   </div>
 
-  <!-- NIVEL 2: Módulos Física -->
-  <div id="sub-fisica" class="nav-operacion" style="display: none;">
-    <button class="btn-op" onclick="seleccionarOp('cinematica')">Cinemática (MRUA)</button>
-    <button class="btn-op" onclick="seleccionarOp('dinamica')">Leyes de Newton (F=m·a)</button>
+  <!-- Submenús Física -->
+  <div id="sub-fisica" class="sub-tabs" style="display: none;">
+    <button class="tab" onclick="cambiarModulo('mrua')">Cinemática (MRUA)</button>
+    <button class="tab" onclick="cambiarModulo('newton')">Segunda Ley Newton</button>
   </div>
 
-  <!-- NIVEL 2: Módulos Cálculo -->
-  <div id="sub-calculo" class="nav-operacion" style="display: none;">
-    <button class="btn-op" onclick="seleccionarOp('derivada')">Derivadas</button>
-    <button class="btn-op" onclick="seleccionarOp('int-def')">Integral Definida (Área)</button>
+  <!-- Submenús Cálculo -->
+  <div id="sub-calculo" class="sub-tabs" style="display: none;">
+    <button class="tab" onclick="cambiarModulo('derivada')">Derivada</button>
+    <button class="tab" onclick="cambiarModulo('integral')">Integral Definida</button>
   </div>
 
-  <!-- ================= FORMULARIO: CÓDIGO DE COLORES ================= -->
-  <div id="form-res-color" class="form-box active">
-    <label>Identificador de Resistencias (4 Bandas):</label>
-    
-    <div class="resistor-preview">
+  <!-- FORM: COLORES RESISTENCIA -->
+  <div id="mod-colores" class="modulo active">
+    <div class="resistor-display">
       <div class="resistor-body">
-        <div id="banda1" class="banda" style="background: #a52a2a;"></div>
-        <div id="banda2" class="banda" style="background: #000000;"></div>
-        <div id="banda3" class="banda" style="background: #a52a2a;"></div>
-        <div id="banda4" class="banda" style="background: #ffd700;"></div>
+        <div id="b1" class="banda" style="background: #ef4444;"></div>
+        <div id="b2" class="banda" style="background: #ef4444;"></div>
+        <div id="b3" class="banda" style="background: #a52a2a;"></div>
+        <div id="b4" class="banda" style="background: #ffd700;"></div>
       </div>
     </div>
-
     <div class="grid-4">
       <div class="form-group">
-        <label>1ª Banda (Dígito):</label>
-        <select id="c-b1" onchange="actualizarColores()">
-          <option value="0" data-hex="#000000">Negro (0)</option>
-          <option value="1" data-hex="#a52a2a" selected>Marrón (1)</option>
-          <option value="2" data-hex="#ef4444">Rojo (2)</option>
-          <option value="3" data-hex="#f97316">Naranja (3)</option>
-          <option value="4" data-hex="#eab308">Amarillo (4)</option>
-          <option value="5" data-hex="#22c55e">Verde (5)</option>
-          <option value="6" data-hex="#3b82f6">Azul (6)</option>
-          <option value="7" data-hex="#a855f7">Violeta (7)</option>
-          <option value="8" data-hex="#6b7280">Gris (8)</option>
-          <option value="9" data-hex="#ffffff">Blanco (9)</option>
+        <label>1ª Banda:</label>
+        <select id="sel-b1" onchange="dibujarBandas()">
+          <option value="1" data-c="#a52a2a">Marrón (1)</option>
+          <option value="2" data-c="#ef4444" selected>Rojo (2)</option>
+          <option value="3" data-c="#f97316">Naranja (3)</option>
+          <option value="4" data-c="#eab308">Amarillo (4)</option>
+          <option value="5" data-c="#22c55e">Verde (5)</option>
+          <option value="6" data-c="#3b82f6">Azul (6)</option>
         </select>
       </div>
-
       <div class="form-group">
-        <label>2ª Banda (Dígito):</label>
-        <select id="c-b2" onchange="actualizarColores()">
-          <option value="0" data-hex="#000000" selected>Negro (0)</option>
-          <option value="1" data-hex="#a52a2a">Marrón (1)</option>
-          <option value="2" data-hex="#ef4444">Rojo (2)</option>
-          <option value="3" data-hex="#f97316">Naranja (3)</option>
-          <option value="4" data-hex="#eab308">Amarillo (4)</option>
-          <option value="5" data-hex="#22c55e">Verde (5)</option>
-          <option value="6" data-hex="#3b82f6">Azul (6)</option>
-          <option value="7" data-hex="#a855f7">Violeta (7)</option>
-          <option value="8" data-hex="#6b7280">Gris (8)</option>
-          <option value="9" data-hex="#ffffff">Blanco (9)</option>
+        <label>2ª Banda:</label>
+        <select id="sel-b2" onchange="dibujarBandas()">
+          <option value="0" data-c="#000000">Negro (0)</option>
+          <option value="1" data-c="#a52a2a">Marrón (1)</option>
+          <option value="2" data-c="#ef4444" selected>Rojo (2)</option>
+          <option value="3" data-c="#f97316">Naranja (3)</option>
+          <option value="4" data-c="#eab308">Amarillo (4)</option>
+          <option value="5" data-c="#22c55e">Verde (5)</option>
         </select>
       </div>
-
       <div class="form-group">
-        <label>Multiplicador (10ⁿ):</label>
-        <select id="c-b3" onchange="actualizarColores()">
-          <option value="1" data-hex="#000000">x1 (Negro)</option>
-          <option value="10" data-hex="#a52a2a">x10 (Marrón)</option>
-          <option value="100" data-hex="#ef4444" selected>x100 (Rojo)</option>
-          <option value="1000" data-hex="#f97316">x1k (Naranja)</option>
-          <option value="10000" data-hex="#eab308">x10k (Amarillo)</option>
-          <option value="100000" data-hex="#22c55e">x100k (Verde)</option>
-          <option value="1000000" data-hex="#3b82f6">x1M (Azul)</option>
-          <option value="0.1" data-hex="#ffd700">x0.1 (Oro)</option>
-          <option value="0.01" data-hex="#c0c0c0">x0.01 (Plata)</option>
+        <label>Multiplicador:</label>
+        <select id="sel-b3" onchange="dibujarBandas()">
+          <option value="1" data-c="#000000">x1 (Negro)</option>
+          <option value="10" data-c="#a52a2a" selected>x10 (Marrón)</option>
+          <option value="100" data-c="#ef4444">x100 (Rojo)</option>
+          <option value="1000" data-c="#f97316">x1k (Naranja)</option>
+          <option value="10000" data-c="#eab308">x10k (Amarillo)</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Tolerancia:</label>
-        <select id="c-b4" onchange="actualizarColores()">
-          <option value="5" data-hex="#ffd700" selected>±5% (Oro)</option>
-          <option value="10" data-hex="#c0c0c0">±10% (Plata)</option>
-          <option value="1" data-hex="#a52a2a">±1% (Marrón)</option>
-          <option value="2" data-hex="#ef4444">±2% (Rojo)</option>
+        <select id="sel-b4" onchange="dibujarBandas()">
+          <option value="5" data-c="#ffd700" selected>±5% (Oro)</option>
+          <option value="10" data-c="#c0c0c0">±10% (Plata)</option>
         </select>
       </div>
     </div>
-    <button class="calc-btn" onclick="resolverCodigoColores()">Calcular Valor en Ohms y Tolerancia</button>
+    <button class="btn-calc" onclick="calcularResistencia()">Calcular Resistencia</button>
   </div>
 
-  <!-- ================= FORMULARIOS QUÍMICA ================= -->
-  <div id="form-quim-molar" class="form-box">
-    <label>Calculadora de Masa Molar (Compuestos comunes):</label>
+  <!-- FORM: LEY DE OHM -->
+  <div id="mod-ohm" class="modulo">
     <div class="form-group">
-      <label>Selecciona una molécula para analizar:</label>
-      <select id="qm-formula">
-        <option value="H2O">Agua (H₂O)</option>
-        <option value="CO2">Dióxido de Carbono (CO₂)</option>
-        <option value="NaCl">Sal común / Cloruro de Sodio (NaCl)</option>
-        <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
-        <option value="CH4">Metano (CH₄)</option>
-        <option value="HCl">Ácido Clorhídrico (HCl)</option>
-        <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
+      <label>Variable a despejar:</label>
+      <select id="ohm-tipo" onchange="cambiarInputsOhm()">
+        <option value="V">Voltaje (V = I · R)</option>
+        <option value="I">Corriente (I = V / R)</option>
+        <option value="R">Resistencia (R = V / I)</option>
       </select>
     </div>
-    <button class="calc-btn" onclick="resolverMasaMolar()">Desglosar Masa Molar y % de Elementos</button>
-  </div>
-
-  <div id="form-quim-gases" class="form-box">
-    <label>Ley de Gases Ideales: <b>P · V = n · R · T</b></label>
-    <div class="grid-3">
-      <div class="form-group"><label>Presión (P) [atm]:</label><input type="number" id="gas-p" value="1" step="any"></div>
-      <div class="form-group"><label>Volumen (V) [Litros]:</label><input type="number" id="gas-v" value="22.4" step="any"></div>
-      <div class="form-group"><label>Temperatura [°C]:</label><input type="number" id="gas-t" value="0" step="any"></div>
-    </div>
-    <button class="calc-btn" onclick="resolverGases()">Calcular Moles (n)</button>
-  </div>
-
-  <div id="form-quim-molaridad" class="form-box">
-    <label>Concentración de Soluciones: <b>Molaridad (M = mol / L)</b></label>
     <div class="grid-2">
-      <div class="form-group"><label>Moles de soluto (n):</label><input type="number" id="mol-n" value="0.5" step="any"></div>
-      <div class="form-group"><label>Volumen de disolución [Litros]:</label><input type="number" id="mol-v" value="2" step="any"></div>
+      <div class="form-group">
+        <label id="lbl-ohm1">Corriente (I) [A]:</label>
+        <input type="number" id="ohm-in1" value="0.02" step="any">
+      </div>
+      <div class="form-group">
+        <label id="lbl-ohm2">Resistencia (R) [Ω]:</label>
+        <input type="number" id="ohm-in2" value="220" step="any">
+      </div>
     </div>
-    <button class="calc-btn" onclick="resolverMolaridad()">Calcular Molaridad Paso a Paso</button>
+    <button class="btn-calc" onclick="calcularOhm()">Calcular Ley de Ohm</button>
   </div>
 
-  <!-- ================= FORMULARIOS ROBÓTICA ADICIONALES ================= -->
-  <div id="form-led-ohm" class="form-box">
-    <label>Cálculo de resistor para LED en Arduino:</label>
-    <div class="grid-3">
-      <div class="form-group"><label>Pin Arduino (Vcc) [V]:</label><input type="number" id="ohm-vcc" value="5" step="any"></div>
-      <div class="form-group"><label>Caída de LED (Vled) [V]:</label><input type="number" id="ohm-vled" value="2" step="any"></div>
-      <div class="form-group"><label>Corriente (I) [mA]:</label><input type="number" id="ohm-i" value="20" step="any"></div>
-    </div>
-    <button class="calc-btn" onclick="resolverLedOhm()">Calcular Resistor Requerido</button>
-  </div>
-
-  <div id="form-divisor" class="form-box">
-    <label>Divisor de voltaje (Sensores analógicos con Arduino):</label>
-    <div class="grid-3">
-      <div class="form-group"><label>Voltaje Vin [V]:</label><input type="number" id="div-vin" value="5" step="any"></div>
-      <div class="form-group"><label>Resistencia fija (R1) [Ω]:</label><input type="number" id="div-r1" value="10000" step="any"></div>
-      <div class="form-group"><label>Resistencia sensor (R2) [Ω]:</label><input type="number" id="div-r2" value="5000" step="any"></div>
-    </div>
-    <button class="calc-btn" onclick="resolverDivisor()">Calcular Voltaje y Lectura ADC</button>
-  </div>
-
-  <!-- ================= FORMULARIOS FÍSICA Y CÁLCULO ================= -->
-  <div id="form-cinematica" class="form-box">
-    <label>Cinemática (MRUA):</label>
-    <div class="grid-3">
-      <div class="form-group"><label>v₀ [m/s]:</label><input type="number" id="cin-v0" value="0" step="any"></div>
-      <div class="form-group"><label>a [m/s²]:</label><input type="number" id="cin-a" value="2.5" step="any"></div>
-      <div class="form-group"><label>t [s]:</label><input type="number" id="cin-t" value="4" step="any"></div>
-    </div>
-    <button class="calc-btn" onclick="resolverCinematica()">Calcular Cinemática</button>
-  </div>
-
-  <div id="form-dinamica" class="form-box">
-    <label>Segunda Ley de Newton (F = m · a):</label>
+  <!-- FORM: RESISTOR LED -->
+  <div id="mod-led" class="modulo">
     <div class="grid-2">
-      <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="din-m" value="1.5" step="any"></div>
-      <div class="form-group"><label>Aceleración (a) [m/s²]:</label><input type="number" id="din-a" value="3" step="any"></div>
+      <div class="form-group"><label>Voltaje Arduino (Vcc) [V]:</label><input type="number" id="led-vcc" value="5"></div>
+      <div class="form-group"><label>Caída de LED [V]:</label><input type="number" id="led-v" value="2"></div>
     </div>
-    <button class="calc-btn" onclick="resolverDinamica()">Calcular Fuerza Requerida</button>
+    <div class="form-group"><label>Corriente deseada [mA]:</label><input type="number" id="led-ma" value="20"></div>
+    <button class="btn-calc" onclick="calcularLed()">Calcular Resistor para LED</button>
   </div>
 
-  <div id="form-derivada" class="form-box">
-    <label>Derivada polinomial: <b>c · xⁿ</b></label>
-    <div class="grid-2">
-      <div class="form-group"><label>Coeficiente (c):</label><input type="number" id="der-c" value="6" step="any"></div>
-      <div class="form-group"><label>Exponente (n):</label><input type="number" id="der-n" value="3" step="any"></div>
+  <!-- FORM: MASA MOLAR -->
+  <div id="mod-molar" class="modulo">
+    <div class="form-group">
+      <label>Compuesto Químico:</label>
+      <select id="mol-compuesto">
+        <option value="H2O">Agua (H₂O)</option>
+        <option value="CO2">Dióxido de Carbono (CO₂)</option>
+        <option value="NaCl">Sal Común (NaCl)</option>
+        <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
+      </select>
     </div>
-    <button class="calc-btn" onclick="resolverDerivada()">Calcular Derivada</button>
+    <button class="btn-calc" onclick="calcularMolar()">Calcular Masa Molar</button>
   </div>
 
-  <div id="form-int-def" class="form-box">
-    <label>Integral Definida: <b>∫ₐᵇ (c · xⁿ) dx</b></label>
+  <!-- FORM: GASES -->
+  <div id="mod-gases" class="modulo">
     <div class="grid-2">
-      <div class="form-group"><label>Coeficiente (c):</label><input type="number" id="intdef-c" value="3" step="any"></div>
-      <div class="form-group"><label>Exponente (n):</label><input type="number" id="intdef-n" value="2" step="any"></div>
+      <div class="form-group"><label>Presión (P) [atm]:</label><input type="number" id="gas-p" value="1"></div>
+      <div class="form-group"><label>Volumen (V) [L]:</label><input type="number" id="gas-v" value="22.4"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Límite inf (a):</label><input type="number" id="intdef-a" value="0" step="any"></div>
-      <div class="form-group"><label>Límite sup (b):</label><input type="number" id="intdef-b" value="2" step="any"></div>
-    </div>
-    <button class="calc-btn" onclick="resolverIntegralDef()">Calcular Área</button>
+    <div class="form-group"><label>Temperatura (°C):</label><input type="number" id="gas-t" value="0"></div>
+    <button class="btn-calc" onclick="calcularGases()">Calcular Moles (n)</button>
   </div>
 
-  <!-- PANEL DE SALIDA -->
-  <div id="salida" class="procedimiento"></div>
+  <!-- FORM: CINEMATICA -->
+  <div id="mod-mrua" class="modulo">
+    <div class="grid-2">
+      <div class="form-group"><label>Velocidad inicial (v₀) [m/s]:</label><input type="number" id="cin-v0" value="0"></div>
+      <div class="form-group"><label>Aceleración (a) [m/s²]:</label><input type="number" id="cin-a" value="2"></div>
+    </div>
+    <div class="form-group"><label>Tiempo (t) [s]:</label><input type="number" id="cin-t" value="3"></div>
+    <button class="btn-calc" onclick="calcularMRUA()">Calcular MRUA</button>
+  </div>
+
+  <!-- FORM: DINAMICA -->
+  <div id="mod-newton" class="modulo">
+    <div class="grid-2">
+      <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="din-m" value="1.5"></div>
+      <div class="form-group"><label>Aceleración (a) [m/s²]:</label><input type="number" id="din-a" value="3"></div>
+    </div>
+    <button class="btn-calc" onclick="calcularNewton()">Calcular Fuerza</button>
+  </div>
+
+  <!-- FORM: DERIVADA -->
+  <div id="mod-derivada" class="modulo">
+    <div class="grid-2">
+      <div class="form-group"><label>Coeficiente (c):</label><input type="number" id="der-c" value="4"></div>
+      <div class="form-group"><label>Exponente (n):</label><input type="number" id="der-n" value="3"></div>
+    </div>
+    <button class="btn-calc" onclick="calcularDerivada()">Calcular Derivada</button>
+  </div>
+
+  <!-- FORM: INTEGRAL -->
+  <div id="mod-integral" class="modulo">
+    <div class="grid-2">
+      <div class="form-group"><label>Coeficiente (c):</label><input type="number" id="int-c" value="3"></div>
+      <div class="form-group"><label>Exponente (n):</label><input type="number" id="int-n" value="2"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Límite a:</label><input type="number" id="int-a" value="0"></div>
+      <div class="form-group"><label>Límite b:</label><input type="number" id="int-b" value="2"></div>
+    </div>
+    <button class="btn-calc" onclick="calcularIntegral()">Calcular Área</button>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="salida"></div>
 </div>
 
 <script>
-  function seleccionarMateria(materia) {
-    document.querySelectorAll('.btn-materia').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.nav-operacion').forEach(n => n.style.display = 'none');
+  function cambiarMateria(materia) {
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sub-tabs').forEach(s => s.style.display = 'none');
     document.getElementById('salida').style.display = 'none';
 
     if (materia === 'robotica') {
-      document.querySelectorAll('.btn-materia')[0].classList.add('active');
+      document.querySelectorAll('.nav-tabs button')[0].classList.add('active');
       document.getElementById('sub-robotica').style.display = 'flex';
-      seleccionarOp('res-color');
+      cambiarModulo('colores');
     } else if (materia === 'quimica') {
-      document.querySelectorAll('.btn-materia')[1].classList.add('active');
+      document.querySelectorAll('.nav-tabs button')[1].classList.add('active');
       document.getElementById('sub-quimica').style.display = 'flex';
-      seleccionarOp('quim-molar');
+      cambiarModulo('molar');
     } else if (materia === 'fisica') {
-      document.querySelectorAll('.btn
+      document.querySelectorAll('.nav-tabs button')[2].classList.add('active');
+      document.getElementById('sub-fisica').style.display = 'flex';
+      cambiarModulo('mrua');
+    } else {
+      document.querySelectorAll('.nav-tabs button')[3].classList.add('active');
+      document.getElementById('sub-calculo').style.display = 'flex';
+      cambiarModulo('derivada');
+    }
+  }
+
+  function cambiarModulo(mod) {
+    document.querySelectorAll('.sub-tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.modulo').forEach(m => m.classList.remove('active'));
+    document.getElementById('salida').style.display = 'none';
+
+    const botones = document.querySelectorAll('.sub-tabs button');
+    botones.forEach(btn => {
+      if (btn.getAttribute('onclick').includes("'" + mod + "'")) {
+        btn.classList.add('active');
+      }
+    });
+
+    const target = document.getElementById('mod-' + mod);
+    if (target) {
+      target.classList.add('active');
+      if (mod === 'colores') dibujarBandas();
+    }
+  }
+
+  function dibujarBandas() {
+    const s1 = document.getElementById('sel-b1');
+    const s2 = document.getElementById('sel-b2');
+    const s3 = document.getElementById('sel-b3');
+    const s4 = document.getElementById('sel-b4');
+
+    document.getElementById('b1').style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
+    document.getElementById('b2').style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
+    document.getElementById('b3').style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
+    document.getElementById('b4').style.background = s4.options[s4.selectedIndex].getAttribute('data-c');
+  }
+
+  function calcularResistencia() {
+    const d1 = parseInt(document.getElementById('sel-b1').value);
+    const d2 = parseInt(document.getElementById('sel-b2').value);
+    const mult = parseFloat(document.getElementById('sel-b3').value);
+    const tol = parseFloat(document.getElementById('sel-b4').value);
+    const salida = document.getElementById('salida');
+
+    const base = (d1 * 10) + d2;
+    const ohms = base * mult;
+    let texto = ohms + " Ω";
+    if (ohms >= 1000) texto = (ohms / 1000) + " kΩ";
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Resistencia Decodificada</h3>
+      <div class="step"><b>1. Unir primeros 2 colores:</b> Dígito ${d1} y Dígito ${d2} = <b>${base}</b></div>
+      <div class="step"><b>2. Multiplicador:</b> ${base} × ${mult} = <b>${ohms} Ω (${texto})</b></div>
+      <div class="step"><b>3. Tolerancia:</b> ±${tol}%</div>
+      <div class="tip">🤖 <b>Uso en Arduino:</b> La resistencia de 220 Ω común para proteger LEDs tiene colores <b>Rojo - Rojo - Marrón - Oro</b>.</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function cambiarInputsOhm() {
+    const tipo = document.getElementById('ohm-tipo').value;
+    const l1 = document.getElementById('lbl-ohm1');
+    const l2 = document.getElementById('lbl-ohm2');
+    const in1 = document.getElementById('ohm-in1');
+    const in2 = document.getElementById('ohm-in2');
+
+    if (tipo === 'V') {
+      l1.innerText = "Corriente (I) [A]:"; in1.value = "0.02";
+      l2.innerText = "Resistencia (R) [Ω]:"; in2.value = "220";
+    } else if (tipo === 'I') {
+      l1.innerText = "Voltaje (V) [V]:"; in1.value = "5";
+      l2.innerText = "Resistencia (R) [Ω]:"; in2.value = "220";
+    } else {
+      l1.innerText = "Voltaje (V) [V]:"; in1.value = "5";
+      l2.innerText = "Corriente (I) [A]:"; in2.value = "0.02";
+    }
+  }
+
+  function calcularOhm() {
+    const tipo = document.getElementById('ohm-tipo').value;
+    const v1 = parseFloat(document.getElementById('ohm-in1').value);
+    const v2 = parseFloat(document.getElementById('ohm-in2').value);
+    const salida = document.getElementById('salida');
+
+    if (tipo === 'V') {
+      const v = v1 * v2;
+      salida.innerHTML = `
+        <h3 style="color:#38bdf8;margin-top:0;">Voltaje (V = I · R)</h3>
+        <div class="step">Cálculo: ${v1} A × ${v2} Ω = <b>${v.toFixed(2)} Volts</b></div>
+      `;
+    } else if (tipo === 'I') {
+      const i = v1 / v2;
+      salida.innerHTML = `
+        <h3 style="color:#38bdf8;margin-top:0;">Corriente (I = V / R)</h3>
+        <div class="step">Cálculo: ${v1} V / ${v2} Ω = <b>${i.toFixed(4)} A (${(i*1000).toFixed(1)} mA)</b></div>
+        <div class="tip">🤖 <b>En Arduino:</b> Un pin soporta hasta 40 mA máx. Consumo actual: ${(i*1000).toFixed(1)} mA.</div>
+      `;
+    } else {
+      const r = v1 / v2;
+      salida.innerHTML = `
+        <h3 style="color:#38bdf8;margin-top:0;">Resistencia (R = V / I)</h3>
+        <div class="step">Cálculo: ${v1} V / ${v2} A = <b>${r.toFixed(1)} Ω</b></div>
+      `;
+    }
+    salida.style.display = 'block';
+  }
+
+  function calcularLed() {
+    const vcc = parseFloat(document.getElementById('led-vcc').value);
+    const vled = parseFloat(document.getElementById('led-v').value);
+    const ma = parseFloat(document.getElementById('led-ma').value);
+    const salida = document.getElementById('salida');
+
+    const iA = ma / 1000;
+    const vR = vcc - vled;
+    const r = vR / iA;
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Resistor para Proteger LED</h3>
+      <div class="step">1. Tensión en resistor: ${vcc}V - ${vled}V = ${vR.toFixed(1)}V</div>
+      <div class="step">2. R = V / I = ${vR.toFixed(1)}V / ${iA}A = <b>${r.toFixed(1)} Ω</b></div>
+      <div class="step">Comercial recomendada: <b>${Math.ceil(r/10)*10} Ω</b> (habitualmente 220 Ω).</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularMolar() {
+    const f = document.getElementById('mol-compuesto').value;
+    const masas = { "H2O": 18.015, "CO2": 44.01, "NaCl": 58.44, "C6H12O6": 180.16 };
+    const salida = document.getElementById('salida');
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Masa Molar de ${f}</h3>
+      <div class="step">Peso molecular total: <b>${masas[f]} g/mol</b></div>
+      <div class="step">Significa que 1 mol de este compuesto contiene exactamente 6.022 × 10²³ moléculas.</div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularGases() {
+    const p = parseFloat(document.getElementById('gas-p').value);
+    const v = parseFloat(document.getElementById('gas-v').value);
+    const c = parseFloat(document.getElementById('gas-t').value);
+    const salida = document.getElementById('salida');
+    const k = c + 273.15;
+    const n = (p * v) / (0.0821 * k);
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Gases Ideales (P · V = n · R · T)</h3>
+      <div class="step">1. Temperatura en Kelvin: ${c}°C + 273.15 = ${k.toFixed(1)} K</div>
+      <div class="step">2. n = (P · V) / (R · T) = <b>${n.toFixed(3)} moles</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularMRUA() {
+    const v0 = parseFloat(document.getElementById('cin-v0').value);
+    const a = parseFloat(document.getElementById('cin-a').value);
+    const t = parseFloat(document.getElementById('cin-t').value);
+    const salida = document.getElementById('salida');
+
+    const vf = v0 + (a * t);
+    const d = (v0 * t) + (0.5 * a * t * t);
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Resultados Cinemática</h3>
+      <div class="step">Velocidad final: <b>${vf.toFixed(2)} m/s</b></div>
+      <div class="step">Distancia recorrida: <b>${d.toFixed(2)} metros</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularNewton() {
+    const m = parseFloat(document.getElementById('din-m').value);
+    const a = parseFloat(document.getElementById('din-a').value);
+    const salida = document.getElementById('salida');
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Segunda Ley de Newton</h3>
+      <div class="step">F = m · a = ${m} kg × ${a} m/s² = <b>${(m*a).toFixed(2)} Newtons</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularDerivada() {
+    const c = parseFloat(document.getElementById('der-c').value);
+    const n = parseFloat(document.getElementById('der-n').value);
+    const salida = document.getElementById('salida');
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Derivada Polinomial</h3>
+      <div class="step">d/dx [${c}x^${n}] = (${c}·${n})x^(${n}-1) = <b>${c*n}x^${n-1}</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  function calcularIntegral() {
+    const c = parseFloat(document.getElementById('int-c').value);
+    const n = parseFloat(document.getElementById('int-n').value);
+    const a = parseFloat(document.getElementById('int-a').value);
+    const b = parseFloat(document.getElementById('int-b').value);
+    const salida = document.getElementById('salida');
+    const exp = n + 1;
+    const area = ((c / exp) * Math.pow(b, exp)) - ((c / exp) * Math.pow(a, exp));
+
+    salida.innerHTML = `
+      <h3 style="color:#38bdf8;margin-top:0;">Integral Definida</h3>
+      <div class="step">Área bajo la curva entre [${a}, ${b}] = <b>${area.toFixed(3)} u²</b></div>
+    `;
+    salida.style.display = 'block';
+  }
+
+  // Inicializar al cargar
+  document.addEventListener("DOMContentLoaded", () => {
+    dibujarBandas();
+  });
+</script>
+
+</body>
+</html>
