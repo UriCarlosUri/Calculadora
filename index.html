@@ -35,6 +35,7 @@
       flex: 1; min-width: 105px; padding: 10px 6px; background: #0f172a;
       border: 1px solid #334155; color: #94a3b8;
       border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
+      user-select: none;
     }
     .btn-tab.active { background: #38bdf8; color: #0b1120; border-color: #38bdf8; }
     .btn-tab.challenge { border-color: #f59e0b; color: #fde68a; }
@@ -69,7 +70,7 @@
       font-weight: 600; font-size: 0.82rem; cursor: pointer;
     }
 
-    /* Gráficos */
+    /* Gráfico Resistencia */
     .resistor-display {
       background: #334155; padding: 14px; border-radius: 10px;
       display: flex; justify-content: center; margin: 10px 0;
@@ -81,6 +82,7 @@
     }
     .banda { width: 14px; height: 100%; }
 
+    /* Simulador LED */
     .led-box {
       background: #070d19; border: 1px solid #334155;
       border-radius: 10px; padding: 16px; margin-top: 14px; text-align: center;
@@ -134,52 +136,50 @@
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
-    <button class="btn-tab active" onclick="verMateria('fisica')">🚀 Física</button>
-    <button class="btn-tab" onclick="verMateria('robotica')">🤖 Robótica</button>
-    <button class="btn-tab" onclick="verMateria('calculo')">📐 Cálculo</button>
-    <button class="btn-tab" onclick="verMateria('quimica')">🧪 Química</button>
-    <button class="btn-tab challenge" onclick="verMateria('juego')">🏆 Desafíos</button>
+    <button class="btn-tab active" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física</button>
+    <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica</button>
+    <button class="btn-tab" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo</button>
+    <button class="btn-tab" id="btn-tab-quimica" onclick="verMateria('quimica')">🧪 Química</button>
+    <button class="btn-tab challenge" id="btn-tab-juego" onclick="verMateria('juego')">🏆 Desafíos</button>
   </div>
 
-  <!-- Sub-pestañas Física Ampliada -->
+  <!-- Sub-pestañas Física -->
   <div class="tabs-row" id="sub-fisica">
-    <button class="btn-tab active" onclick="verModulo('mrua')">MRUA</button>
-    <button class="btn-tab" onclick="verModulo('parabolico')">Tiro Parabólico</button>
-    <button class="btn-tab" onclick="verModulo('newton')">Fuerza & Fricción</button>
-    <button class="btn-tab" onclick="verModulo('torque')">Torque / Palanca</button>
-    <button class="btn-tab" onclick="verModulo('energia')">Energía & Potencia</button>
+    <button class="btn-tab active" onclick="verModulo('fisica', 'mrua')">MRUA</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'parabolico')">Tiro Parabólico</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'newton')">Fuerza & Fricción</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'torque')">Torque / Palanca</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'energia')">Energía & Potencia</button>
   </div>
 
   <!-- Sub-pestañas Robótica -->
   <div class="tabs-row" id="sub-robotica" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('colores')">Colores Resistencia</button>
-    <button class="btn-tab" onclick="verModulo('led')">Simulador LED</button>
-    <button class="btn-tab" onclick="verModulo('servo')">Servo & PWM</button>
-    <button class="btn-tab" onclick="verModulo('bateria')">Batería Robot</button>
-    <button class="btn-tab" onclick="verModulo('ohm')">Ley de Ohm</button>
+    <button class="btn-tab active" onclick="verModulo('robotica', 'colores')">Colores Resistencia</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'led')">Simulador LED</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'servo')">Servo & PWM</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'bateria')">Batería Robot</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'ohm')">Ley de Ohm</button>
   </div>
 
   <!-- Sub-pestañas Cálculo -->
   <div class="tabs-row" id="sub-calculo" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('derivada-trig')">Derivadas (Trig & Exp)</button>
-    <button class="btn-tab" onclick="verModulo('integral-trig')">Integrales (Trig & Exp)</button>
-    <button class="btn-tab" onclick="verModulo('cuadritos')">Área con Cuadritos</button>
+    <button class="btn-tab active" onclick="verModulo('calculo', 'derivada-trig')">Derivadas (Trig & Exp)</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'integral-trig')">Integrales (Trig & Exp)</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'cuadritos')">Área con Cuadritos</button>
   </div>
 
   <!-- Sub-pestañas Química -->
   <div class="tabs-row" id="sub-quimica" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('molar')">Masa Molar</button>
-    <button class="btn-tab" onclick="verModulo('gases')">Gases (PV=nRT)</button>
+    <button class="btn-tab active" onclick="verModulo('quimica', 'molar')">Masa Molar</button>
+    <button class="btn-tab" onclick="verModulo('quimica', 'gases')">Gases (PV=nRT)</button>
   </div>
 
   <!-- Sub-pestañas Juego -->
   <div class="tabs-row" id="sub-juego" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('trivia')">Cofre de Desafíos</button>
+    <button class="btn-tab active" onclick="verModulo('juego', 'trivia')">Cofre de Desafíos</button>
   </div>
 
   <!-- ================= FORMULARIOS DE FÍSICA ================= -->
-
-  <!-- 1. Cinemática MRUA -->
   <div id="mod-mrua" class="mod-content visible">
     <div class="grid-3">
       <div class="form-group"><label>Velocidad Inicial (v₀) [m/s]:</label><input type="number" id="cin-v0" value="0"></div>
@@ -192,7 +192,6 @@
     </div>
   </div>
 
-  <!-- 2. Tiro Parabólico -->
   <div id="mod-parabolico" class="mod-content">
     <div class="grid-2">
       <div class="form-group"><label>Velocidad de Disparo (v₀) [m/s]:</label><input type="number" id="tp-v0" value="25" step="any"></div>
@@ -204,7 +203,6 @@
     </div>
   </div>
 
-  <!-- 3. Dinámica & Fricción -->
   <div id="mod-newton" class="mod-content">
     <div class="grid-3">
       <div class="form-group"><label>Masa del móvil (m) [kg]:</label><input type="number" id="din-m" value="2" step="any"></div>
@@ -217,7 +215,6 @@
     </div>
   </div>
 
-  <!-- 4. Torque / Palanca (Brazo Robótico) -->
   <div id="mod-torque" class="mod-content">
     <div class="grid-3">
       <div class="form-group"><label>Fuerza o Carga (F) [N]:</label><input type="number" id="tq-f" value="15" step="any"></div>
@@ -230,7 +227,6 @@
     </div>
   </div>
 
-  <!-- 5. Trabajo, Energía & Potencia -->
   <div id="mod-energia" class="mod-content">
     <div class="grid-4">
       <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="en-m" value="3" step="any"></div>
@@ -450,165 +446,162 @@
 </div>
 
 <script>
+  // Control seguro de pestañas principales
   function verMateria(mat) {
-    document.querySelectorAll('#tabs-nivel-1 .btn-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('[id^="sub-"]').forEach(s => s.style.display = 'none');
-    document.getElementById('salida').style.display = 'none';
+    try {
+      document.querySelectorAll('#tabs-nivel-1 .btn-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('[id^="sub-"]').forEach(s => s.style.display = 'none');
+      const salida = document.getElementById('salida');
+      if (salida) salida.style.display = 'none';
 
-    const orden = ['fisica', 'robotica', 'calculo', 'quimica', 'juego'];
-    const idx = orden.indexOf(mat);
-    if (idx !== -1) document.querySelectorAll('#tabs-nivel-1 .btn-tab')[idx].classList.add('active');
+      const btnActivo = document.getElementById('btn-tab-' + mat);
+      if (btnActivo) btnActivo.classList.add('active');
 
-    const sub = document.getElementById('sub-' + mat);
-    if (sub) sub.style.display = 'flex';
+      const sub = document.getElementById('sub-' + mat);
+      if (sub) sub.style.display = 'flex';
 
-    const porDefecto = {
-      fisica: 'mrua',
-      robotica: 'colores',
-      calculo: 'derivada-trig',
-      quimica: 'molar',
-      juego: 'trivia'
-    };
-    verModulo(porDefecto[mat]);
-  }
-
-  function verModulo(mod) {
-    document.querySelectorAll('[id^="sub-"] .btn-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.mod-content').forEach(m => m.classList.remove('visible'));
-    document.getElementById('salida').style.display = 'none';
-
-    const botones = document.querySelectorAll('[id^="sub-"] .btn-tab');
-    botones.forEach(btn => {
-      const fn = btn.getAttribute('onclick');
-      if (fn && fn.includes("'" + mod + "'")) btn.classList.add('active');
-    });
-
-    const target = document.getElementById('mod-' + mod);
-    if (target) {
-      target.classList.add('visible');
-      if (mod === 'colores') actualizarBandas();
-      if (mod === 'cuadritos') dibujarRiemann(document.querySelector('#mod-cuadritos input').value);
+      const porDefecto = {
+        fisica: 'mrua',
+        robotica: 'colores',
+        calculo: 'derivada-trig',
+        quimica: 'molar',
+        juego: 'trivia'
+      };
+      verModulo(mat, porDefecto[mat]);
+    } catch (e) {
+      console.error("Error al cambiar materia:", e);
     }
   }
 
-  // ================= FÍSICA AVANZADA =================
+  // Control seguro de submódulos
+  function verModulo(materia, mod) {
+    try {
+      const sub = document.getElementById('sub-' + materia);
+      if (sub) {
+        sub.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+        sub.querySelectorAll('.btn-tab').forEach(btn => {
+          const fn = btn.getAttribute('onclick');
+          if (fn && fn.includes("'" + mod + "'")) btn.classList.add('active');
+        });
+      }
 
+      document.querySelectorAll('.mod-content').forEach(m => m.classList.remove('visible'));
+      const salida = document.getElementById('salida');
+      if (salida) salida.style.display = 'none';
+
+      const target = document.getElementById('mod-' + mod);
+      if (target) {
+        target.classList.add('visible');
+        if (mod === 'colores') actualizarBandas();
+        if (mod === 'cuadritos') {
+          const inp = document.querySelector('#mod-cuadritos input');
+          if (inp) dibujarRiemann(inp.value);
+        }
+      }
+    } catch (e) {
+      console.error("Error al cambiar modulo:", e);
+    }
+  }
+
+  // --- FÍSICA ---
   function calcMRUA() {
-    const v0 = parseFloat(document.getElementById('cin-v0').value);
-    const a = parseFloat(document.getElementById('cin-a').value);
-    const t = parseFloat(document.getElementById('cin-t').value);
+    const v0 = parseFloat(document.getElementById('cin-v0').value) || 0;
+    const a = parseFloat(document.getElementById('cin-a').value) || 0;
+    const t = parseFloat(document.getElementById('cin-t').value) || 0;
     const s = document.getElementById('salida');
-
     const vf = v0 + (a * t);
     const d = (v0 * t) + (0.5 * a * t * t);
 
     s.innerHTML = `
       <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática (MRUA)</h3>
-      <div class="step"><b>1. Velocidad Final:</b> <code>v_f = v_0 + a·t = ${v0} + (${a}·${t}) = <b>${vf.toFixed(2)} m/s</b></code></div>
-      <div class="step"><b>2. Distancia Recorrida:</b> <code>d = (v_0·t) + ½·a·t² = <b>${d.toFixed(2)} metros</b></code></div>
-      <div class="step" style="border-left-color:#f59e0b;color:#fde68a;">🤖 <b>Para el Robot:</b> Si el sensor detecta un obstáculo a menos de ${d.toFixed(2)} m, se debe frenar antes de${t} s.</div>
+      <div class="step"><b>1. Velocidad Final:</b> <code>v_f = ${v0} + (${a}·${t}) = <b>${vf.toFixed(2)} m/s</b></code></div>
+      <div class="step"><b>2. Distancia:</b> <code>d = (${v0}·${t}) + ½·${a}·(${t})² = <b>${d.toFixed(2)} m</b></code></div>
     `;
     s.style.display = 'block';
   }
 
   function calcParabolico() {
-    const v0 = parseFloat(document.getElementById('tp-v0').value);
-    const ang = parseFloat(document.getElementById('tp-ang').value);
+    const v0 = parseFloat(document.getElementById('tp-v0').value) || 0;
+    const ang = parseFloat(document.getElementById('tp-ang').value) || 0;
     const s = document.getElementById('salida');
     const g = 9.81;
-
     const rad = (ang * Math.PI) / 180;
     const vox = v0 * Math.cos(rad);
     const voy = v0 * Math.sin(rad);
-
     const tVuelo = (2 * voy) / g;
     const hMax = (voy * voy) / (2 * g);
     const alcance = vox * tVuelo;
 
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Tiro Parabólico (v₀ = ${v0} m/s, θ =${ang}°)</h3>
-      <div class="step"><b>1. Componentes Vectoriales:</b><br>
-      • Horizontal: <code>v_0x = ${v0}·cos(${ang}°) =${vox.toFixed(2)} m/s</code><br>
-      • Vertical: <code>v_0y = ${v0}·sen(${ang}°) =${voy.toFixed(2)} m/s</code></div>
-      <div class="step"><b>2. Altura Máxima (H_max):</b> <code>(v_0y)² / (2·g) = <b>${hMax.toFixed(2)} m</b></code></div>
-      <div class="step"><b>3. Tiempo en el Aire:</b> <code>(2 · v_0y) / g = <b>${tVuelo.toFixed(2)} segundos</b></code></div>
-      <div class="step"><b>4. Alcance Horizontal Total (X_max):</b> <code>v_0x · t_vuelo = <b>${alcance.toFixed(2)} metros</b></code></div>
-      <div class="step" style="border-left-color:#f59e0b;color:#fde68a;">🎯 <b>Catapulta robótica:</b> El ángulo óptimo para máximo alcance horizontal en terreno plano siempre es <b>45°</b>.</div>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Tiro Parabólico (${v0} m/s a ${ang}°)</h3>
+      <div class="step"><b>Vox:</b> ${vox.toFixed(2)} m/s | <b>Voy:</b> ${voy.toFixed(2)} m/s</div>
+      <div class="step"><b>Altura Máxima:</b> <b>${hMax.toFixed(2)} m</b></div>
+      <div class="step"><b>Tiempo en el Aire:</b> <b>${tVuelo.toFixed(2)} s</b></div>
+      <div class="step"><b>Alcance Horizontal:</b> <b>${alcance.toFixed(2)} m</b></div>
     `;
     s.style.display = 'block';
   }
 
   function calcNewtonFriccion() {
-    const m = parseFloat(document.getElementById('din-m').value);
-    const a = parseFloat(document.getElementById('din-a').value);
-    const mu = parseFloat(document.getElementById('din-mu').value);
+    const m = parseFloat(document.getElementById('din-m').value) || 0;
+    const a = parseFloat(document.getElementById('din-a').value) || 0;
+    const mu = parseFloat(document.getElementById('din-mu').value) || 0;
     const s = document.getElementById('salida');
-    const g = 9.81;
-
-    const fInercial = m * a; // F = m*a
-    const peso = m * g;      // Normal = Peso en plano horizontal
-    const fRozamiento = mu * peso;
-    const fTotal = fInercial + fRozamiento;
+    const fInercial = m * a;
+    const fRoz = mu * (m * 9.81);
+    const fTot = fInercial + fRoz;
 
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Dinámica con Rozamiento</h3>
-      <div class="step"><b>1. Fuerza para Acelerar:</b> <code>F_a = m · a = ${m} kg · ${a} m/s² =${fInercial.toFixed(2)} N</code></div>
-      <div class="step"><b>2. Fuerza Normal (Peso):</b> <code>N = m · g = ${m} · 9.81 =${peso.toFixed(2)} N</code></div>
-      <div class="step"><b>3. Fuerza de Fricción Opuesta:</b> <code>f_r = μ · N = ${mu} · ${peso.toFixed(2)} N = <b>${fRozamiento.toFixed(2)} N</b></code></div>
-      <div class="step"><b>4. Fuerza Total del Motor Necesaria:</b> <code>F_total = F_a + f_r = <b>${fTotal.toFixed(2)} Newtons</b></code></div>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Fuerzas & Fricción</h3>
+      <div class="step">Fuerza aceleración: ${fInercial.toFixed(2)} N</div>
+      <div class="step">Fricción opuesta: ${fRoz.toFixed(2)} N</div>
+      <div class="step"><b>Fuerza total que debe entregar el motor: ${fTot.toFixed(2)} N</b></div>
     `;
     s.style.display = 'block';
   }
 
   function calcTorque() {
-    const f = parseFloat(document.getElementById('tq-f').value);
-    const d = parseFloat(document.getElementById('tq-d').value);
-    const ang = parseFloat(document.getElementById('tq-ang').value);
+    const f = parseFloat(document.getElementById('tq-f').value) || 0;
+    const d = parseFloat(document.getElementById('tq-d').value) || 0;
+    const ang = parseFloat(document.getElementById('tq-ang').value) || 0;
     const s = document.getElementById('salida');
-
     const rad = (ang * Math.PI) / 180;
     const torque = f * d * Math.sin(rad);
-    const torqueKgCm = (torque * 10.197); // conversión a kg·cm habitual en servos
 
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Torque / Momento de Fuerza (τ)</h3>
-      <div class="step"><b>1. Fórmula:</b> <code>τ = F · d · sen(θ)</code></div>
-      <div class="step"><b>2. Sustitución:</b> <code>${f} N · ${d} m · sen(${ang}°) = <b>${torque.toFixed(2)} N·m</b></code></div>
-      <div class="step"><b>3. Equivalencia para Servomotores:</b> <b>${torqueKgCm.toFixed(1)} kg·cm</b></div>
-      <div class="step" style="border-left-color:#f59e0b;color:#fde68a;">🤖 <b>Regla de Oro en Robótica:</b> Entre más largo sea el eslabón del brazo (d), mayor torque necesitará el servomotor para no colapsar.</div>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Torque del Motor</h3>
+      <div class="step">Torque en Newtons-metro: <b>${torque.toFixed(2)} N·m</b></div>
+      <div class="step">Equivalente comercial: <b>${(torque * 10.197).toFixed(1)} kg·cm</b></div>
     `;
     s.style.display = 'block';
   }
 
   function calcEnergiaPotencia() {
-    const m = parseFloat(document.getElementById('en-m').value);
-    const v = parseFloat(document.getElementById('en-v').value);
-    const h = parseFloat(document.getElementById('en-h').value);
-    const t = parseFloat(document.getElementById('en-t').value);
+    const m = parseFloat(document.getElementById('en-m').value) || 0;
+    const v = parseFloat(document.getElementById('en-v').value) || 0;
+    const h = parseFloat(document.getElementById('en-h').value) || 0;
+    const t = parseFloat(document.getElementById('en-t').value) || 1;
     const s = document.getElementById('salida');
-    const g = 9.81;
-
-    const ec = 0.5 * m * Math.pow(v, 2);
-    const ep = m * g * h;
-    const em = ec + ep;
-    const potencia = em / (t > 0 ? t : 1);
+    const ec = 0.5 * m * (v * v);
+    const ep = m * 9.81 * h;
+    const pot = (ec + ep) / (t > 0 ? t : 1);
 
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Trabajo, Energía y Potencia</h3>
-      <div class="step"><b>1. Energía Cinética (Movimiento):</b> <code>E_c = ½ · m · v² = <b>${ec.toFixed(2)} Joules (J)</b></code></div>
-      <div class="step"><b>2. Energía Potencial (Altura):</b> <code>E_p = m · g · h = <b>${ep.toFixed(2)} Joules (J)</b></code></div>
-      <div class="step"><b>3. Energía Mecánica Total:</b> <code>E_m = E_c + E_p = <b>${em.toFixed(2)} Joules (J)</b></code></div>
-      <div class="step"><b>4. Potencia Mecánica Desarrollada en ${t} s:</b> <code>P = Trabajo / tiempo = <b>${potencia.toFixed(2)} Watts (W)</b></code></div>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Energía y Potencia</h3>
+      <div class="step">Cinética: ${ec.toFixed(2)} J | Potencial: ${ep.toFixed(2)} J</div>
+      <div class="step">Mecánica Total: ${(ec+ep).toFixed(2)} Joules (J)</div>
+      <div class="step"><b>Potencia en ${t} s: ${pot.toFixed(2)} Watts (W)</b></div>
     `;
     s.style.display = 'block';
   }
 
-  // ================= CÁLCULO TRASCENDENTE =================
+  // --- CÁLCULO ---
   function ajustarInputsDerivada() {
     const tipo = document.getElementById('der-tipo').value;
     const l1 = document.getElementById('lbl-der1');
     const l2 = document.getElementById('lbl-der2');
     const grp2 = document.getElementById('grp-der2');
+    if (!l1 || !l2 || !grp2) return;
     if (tipo === 'poly') { l1.innerText = "Coeficiente (c):"; l2.innerText = "Exponente (n):"; grp2.style.display = "block"; }
     else if (tipo === 'ln') { l1.innerText = "Constante (A):"; grp2.style.display = "none"; }
     else { l1.innerText = "Amplitud (A):"; l2.innerText = "Frecuencia (k):"; grp2.style.display = "block"; }
@@ -616,7 +609,7 @@
 
   function calcDerivadaCompleta() {
     const tipo = document.getElementById('der-tipo').value;
-    const a = parseFloat(document.getElementById('der-in1').value);
+    const a = parseFloat(document.getElementById('der-in1').value) || 0;
     const k = parseFloat(document.getElementById('der-in2').value) || 1;
     const s = document.getElementById('salida');
 
@@ -628,7 +621,35 @@
     else if (tipo === 'ln') res = `d/dx [${a}·ln(x)] = <b>${a} / x</b>`;
     else res = `d/dx [${a}·x^${k}] = <b>${a*k}x^${k-1}</b>`;
 
-    s.innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Derivada Resuelta</h3><div class="step">${res}</div>`; s.style.display = 'block'; }  function ajustarInputsIntegral() { const tipo = document.getElementById('int-tipo').value; const l1 = document.getElementById('lbl-int1'); const l2 = document.getElementById('lbl-int2'); const grp2 = document.getElementById('grp-int2'); if (tipo === 'poly') { l1.innerText = "Coeficiente (c):"; l2.innerText = "Exponente (n ≠ -1):"; grp2.style.display = "block"; } else if (tipo === 'inv') { l1.innerText = "Constante (A):"; grp2.style.display = "none"; } else { l1.innerText = "Amplitud (A):"; l2.innerText = "Frecuencia (k):"; grp2.style.display = "block"; } }  function calcIntegralCompleta() { const tipo = document.getElementById('int-tipo').value; const a = parseFloat(document.getElementById('int-in1').value); const k = parseFloat(document.getElementById('int-in2').value) \vert{}\vert{} 1; const limA = document.getElementById('int-lim-a').value; const limB = document.getElementById('int-lim-b').value; const s = document.getElementById('salida');  let indef = "", funcF = null; if (tipo === 'sin') { indef = `${(-a/k).toFixed(2)} · cos(${k}x) + C`; funcF = x => (-a/k)*Math.cos(k*x); } else if (tipo === 'cos') { indef = `${(a/k).toFixed(2)} · sen(${k}x) + C`; funcF = x => (a/k)*Math.sin(k*x); } else if (tipo === 'sec2') { indef = `${(a/k).toFixed(2)} · tan(${k}x) + C`; funcF = x => (a/k)*Math.tan(k*x); } else if (tipo === 'exp') { indef = `${(a/k).toFixed(2)} · e^(${k}x) + C`; funcF = x => (a/k)*Math.exp(k*x); } else if (tipo === 'inv') { indef = `${a} · ln|x| + C`; funcF = x => a*Math.log(Math.abs(x)); }
+    s.innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Derivada Resuelta</h3><div class="step">${res}</div>`;
+    s.style.display = 'block';
+  }
+
+  function ajustarInputsIntegral() {
+    const tipo = document.getElementById('int-tipo').value;
+    const l1 = document.getElementById('lbl-int1');
+    const l2 = document.getElementById('lbl-int2');
+    const grp2 = document.getElementById('grp-int2');
+    if (!l1 || !l2 || !grp2) return;
+    if (tipo === 'poly') { l1.innerText = "Coeficiente (c):"; l2.innerText = "Exponente (n ≠ -1):"; grp2.style.display = "block"; }
+    else if (tipo === 'inv') { l1.innerText = "Constante (A):"; grp2.style.display = "none"; }
+    else { l1.innerText = "Amplitud (A):"; l2.innerText = "Frecuencia (k):"; grp2.style.display = "block"; }
+  }
+
+  function calcIntegralCompleta() {
+    const tipo = document.getElementById('int-tipo').value;
+    const a = parseFloat(document.getElementById('int-in1').value) || 0;
+    const k = parseFloat(document.getElementById('int-in2').value) || 1;
+    const limA = document.getElementById('int-lim-a').value;
+    const limB = document.getElementById('int-lim-b').value;
+    const s = document.getElementById('salida');
+
+    let indef = "", funcF = null;
+    if (tipo === 'sin') { indef = `${(-a/k).toFixed(2)} · cos(${k}x) + C`; funcF = x => (-a/k)*Math.cos(k*x); }
+    else if (tipo === 'cos') { indef = `${(a/k).toFixed(2)} · sen(${k}x) + C`; funcF = x => (a/k)*Math.sin(k*x); }
+    else if (tipo === 'sec2') { indef = `${(a/k).toFixed(2)} · tan(${k}x) + C`; funcF = x => (a/k)*Math.tan(k*x); }
+    else if (tipo === 'exp') { indef = `${(a/k).toFixed(2)} · e^(${k}x) + C`; funcF = x => (a/k)*Math.exp(k*x); }
+    else if (tipo === 'inv') { indef = `${a} · ln|x| + C`; funcF = x => a*Math.log(Math.abs(x)); }
     else { const exp = k + 1; indef = `${(a/exp).toFixed(2)} · x^${exp} + C`; funcF = x => (a/exp)*Math.pow(x, exp); }
 
     let html = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Integral Resuelta</h3><div class="step">Indefinida: <b>∫ f(x) dx = ${indef}</b></div>`;
@@ -642,14 +663,33 @@
     s.style.display = 'block';
   }
 
-  // ================= DEMÁS MÓDULOS =================
+  function dibujarRiemann(n) {
+    const lbl = document.getElementById('nCuadritos');
+    if (lbl) lbl.innerText = n;
+    const cvs = document.getElementById('cvsRiemann');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+    ctx.clearRect(0,0,w,h);
+    const dx = 2 / n; let suma = 0;
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+    for (let i = 0; i < n; i++) {
+      let x = i * dx, y = (x + dx) * (x + dx);
+      suma += y * dx;
+      ctx.fillRect(20 + (x * 140), (h - 20) - (y * 28), dx * 140, y * 28);
+    }
+    const txtArea = document.getElementById('areaRiemannText');
+    if (txtArea) txtArea.innerText = `Área aproximada: ${suma.toFixed(3)} u²`;
+  }
+
+  // --- ROBÓTICA ---
   function actualizarBandas() {
     const s1 = document.getElementById('c1'), s2 = document.getElementById('c2'), s3 = document.getElementById('c3'), s4 = document.getElementById('c4');
-    if (!s1 || !s2 || !s3 || !s4) return;
-    document.getElementById('b1').style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
-    document.getElementById('b2').style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
-    document.getElementById('b3').style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
-    document.getElementById('b4').style.background = s4.options[s4.selectedIndex].getAttribute('data-c');
+    const b1 = document.getElementById('b1'), b2 = document.getElementById('b2'), b3 = document.getElementById('b3'), b4 = document.getElementById('b4');
+    if (!s1 || !s2 || !s3 || !s4 || !b1 || !b2 || !b3 || !b4) return;
+    b1.style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
+    b2.style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
+    b3.style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
+    b4.style.background = s4.options[s4.selectedIndex].getAttribute('data-c');
   }
 
   function calcResistencia() {
@@ -663,9 +703,9 @@
   }
 
   function simularLED() {
-    const vcc = parseFloat(document.getElementById('vcc').value);
-    const vled = parseFloat(document.getElementById('vled').value);
-    const r = parseFloat(document.getElementById('rled').value);
+    const vcc = parseFloat(document.getElementById('vcc').value) || 0;
+    const vled = parseFloat(document.getElementById('vled').value) || 0;
+    const r = parseFloat(document.getElementById('rled').value) || 1;
     const bulb = document.getElementById('ledGraphic'), txt = document.getElementById('ledText');
     const ma = ((vcc - vled) / r) * 1000;
     if (ma > 30) { bulb.style.background = "#18181b"; txt.innerHTML = `💥 <span style='color:#ef4444;'>LED Quemado (${ma.toFixed(1)} mA).</span>`; }
@@ -674,40 +714,44 @@
   }
 
   function moverServo(val) {
-    document.getElementById('servoDegText').innerText = val + "°";
-    document.getElementById('servoUsText').innerText = Math.round(1000 + (val/180)*1000) + " µs";
+    const d = document.getElementById('servoDegText');
+    const u = document.getElementById('servoUsText');
+    if (d) d.innerText = val + "°";
+    if (u) u.innerText = Math.round(1000 + (val/180)*1000) + " µs";
   }
 
   function explicarServo() {
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Arduino:</h3><pre>#include &lt;Servo.h&gt;\nServo s;\nvoid setup(){ s.attach(9); }\nvoid loop(){ s.write(${document.getElementById('servoR').value}); }</pre>`;
+    const val = document.getElementById('servoR') ? document.getElementById('servoR').value : 90;
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Arduino:</h3><pre>#include &lt;Servo.h&gt;\nServo s;\nvoid setup(){ s.attach(9); }\nvoid loop(){ s.write(${val}); }</pre>`;
     document.getElementById('salida').style.display = 'block';
   }
 
   function calcBateria() {
-    const cap = parseFloat(document.getElementById('b-cap').value);
-    const tot = parseFloat(document.getElementById('b-ard').value) + parseFloat(document.getElementById('b-sen').value) + parseFloat(document.getElementById('b-mot').value);
-    const h = (cap * 0.70) / tot;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Duración: ${h.toFixed(1)} horas (~${Math.round(h*60)} min)</h3>`; document.getElementById('salida').style.display = 'block'; }  function ajustarOhm() { const m = document.getElementById('ohm-mode').value; document.getElementById('ohm-lbl1').innerText = m === 'V' ? "Corriente [A]:" : "Voltaje [V]:"; document.getElementById('ohm-lbl2').innerText = m === 'R' ? "Corriente [A]:" : "Resistencia [Ω]:"; }  function calcOhm() { const m = document.getElementById('ohm-mode').value; const v1 = parseFloat(document.getElementById('ohm-v1').value), v2 = parseFloat(document.getElementById('ohm-v2').value); let r = m === 'V' ? `${(v1*v2).toFixed(2)} V` : m === 'I' ? `${(v1/v2).toFixed(4)} A` : `${(v1/v2).toFixed(1)} Ω`;
+    const cap = parseFloat(document.getElementById('b-cap').value) || 0;
+    const tot = (parseFloat(document.getElementById('b-ard').value) || 0) + 
+                (parseFloat(document.getElementById('b-sen').value) || 0) + 
+                (parseFloat(document.getElementById('b-mot').value) || 0);
+    const h = tot > 0 ? (cap * 0.70) / tot : 0;
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0 0 6px 0;">Duración: ${h.toFixed(1)} horas (~${Math.round(h*60)} min)</h3>`;
+    document.getElementById('salida').style.display = 'block';
+  }
+
+  function ajustarOhm() {
+    const m = document.getElementById('ohm-mode').value;
+    document.getElementById('ohm-lbl1').innerText = m === 'V' ? "Corriente [A]:" : "Voltaje [V]:";
+    document.getElementById('ohm-lbl2').innerText = m === 'R' ? "Corriente [A]:" : "Resistencia [Ω]:";
+  }
+
+  function calcOhm() {
+    const m = document.getElementById('ohm-mode').value;
+    const v1 = parseFloat(document.getElementById('ohm-v1').value) || 0;
+    const v2 = parseFloat(document.getElementById('ohm-v2').value) || 1;
+    let r = m === 'V' ? `${(v1*v2).toFixed(2)} V` : m === 'I' ? `${(v1/v2).toFixed(4)} A` : `${(v1/v2).toFixed(1)} Ω`;
     document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0;">Resultado: ${r}</h3>`;
     document.getElementById('salida').style.display = 'block';
   }
 
-  function dibujarRiemann(n) {
-    document.getElementById('nCuadritos').innerText = n;
-    const cvs = document.getElementById('cvsRiemann');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0,0,w,h);
-    const dx = 2 / n; let suma = 0;
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
-    for (let i = 0; i < n; i++) {
-      let x = i * dx, y = (x + dx) * (x + dx);
-      suma += y * dx;
-      ctx.fillRect(20 + (x * 140), (h - 20) - (y * 28), dx * 140, y * 28);
-    }
-    document.getElementById('areaRiemannText').innerText = `Área aproximada: ${suma.toFixed(3)} u²`;
-  }
-
+  // --- QUÍMICA & JUEGO ---
   function calcMolar() {
     const f = document.getElementById('chem-comp').value;
     const p = { "H2O": 18.01, "CO2": 44.01, "NaCl": 58.44, "C6H12O6": 180.16 };
@@ -716,7 +760,9 @@
   }
 
   function calcGases() {
-    const p = parseFloat(document.getElementById('g-p').value), v = parseFloat(document.getElementById('g-v').value), t = parseFloat(document.getElementById('g-t').value);
+    const p = parseFloat(document.getElementById('g-p').value) || 0;
+    const v = parseFloat(document.getElementById('g-v').value) || 0;
+    const t = parseFloat(document.getElementById('g-t').value) || 0;
     document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;margin:0;">Moles: ${((p*v)/(0.0821*(t+273.15))).toFixed(3)} mol</h3>`;
     document.getElementById('salida').style.display = 'block';
   }
@@ -737,5 +783,41 @@
     }
   }
 
+  // --- MODAL ---
   const snippets = {
-    parabolico: `function tiroParabolico(v0, angGrados) {\n  let rad = angGrados * Math.PI / 180;\n  let voy = v0 * Math.sin(rad);\n  let vox = v0 * Math.cos(rad);\n  let tVuelo = (2 * voy) / 9.81;\n  let hMax = (voy * voy) / (2 * 9.81);\n  let xMax = vox * tVuelo;\n  return {
+    parabolico: `function tiroParabolico(v0, angGrados) {\n  let rad = angGrados * Math.PI / 180;\n  let voy = v0 * Math.sin(rad);\n  let vox = v0 * Math.cos(rad);\n  let tVuelo = (2 * voy) / 9.81;\n  let hMax = (voy * voy) / (2 * 9.81);\n  let xMax = vox * tVuelo;\n  return { hMax, xMax, tVuelo };\n}`,
+    torque: `function calcularTorque(fuerzaN, distanciaM, anguloDeg) {\n  let rad = anguloDeg * Math.PI / 180;\n  return fuerzaN * distanciaM * Math.sin(rad);\n}`,
+    energia: `function energias(m, v, h) {\n  let Ec = 0.5 * m * Math.pow(v, 2);\n  let Ep = m * 9.81 * h;\n  return { Ec, Ep, Em: Ec + Ep };\n}`,
+    newton: `function fuerzaConFriccion(m, a, mu) {\n  let normal = m * 9.81;\n  let fRozamiento = mu * normal;\n  let fTotal = (m * a) + fRozamiento;\n  return fTotal;\n}`,
+    mrua: `function mrua(v0, a, t) { return (v0 * t) + (0.5 * a * t * t); }`,
+    resistencia: `function calcR(d1, d2, m) { return ((d1 * 10) + d2) * m; }`,
+    led: `function calcLed(vcc, vled, i) { return (vcc - vled) / i; }`,
+    servo: `function servoPwm(deg) { return (deg / 180) * 255; }`,
+    bateria: `function bat(cap, cTot) { return (cap * 0.70) / cTot; }`,
+    ohm: `function ohm(v, i, r) { return v ? (i ? v/i : v/r) : i*r; }`,
+    derivada: `function dSin(A, k) { return (A * k) + " · cos(" + k + "x)"; }`,
+    integral: `function iSin(A, k) { return (-A / k) + " · cos(" + k + "x) + C"; }`,
+    molar: `function molH2O() { return 18.01; }`,
+    gases: `function nGas(p, v, t) { return (p * v) / (0.0821 * (t + 273.15)); }`
+  };
+
+  function verCodigo(id) {
+    const pre = document.getElementById('codeSnippet');
+    if (pre) pre.innerText = snippets[id] || "// Código disponible";
+    const mod = document.getElementById('codeModal');
+    if (mod) mod.style.display = 'flex';
+  }
+  function cerrarModal(e) { if (e.target.id === 'codeModal') cerrarModalDirecto(); }
+  function cerrarModalDirecto() {
+    const mod = document.getElementById('codeModal');
+    if (mod) mod.style.display = 'none';
+  }
+
+  // Arranque seguro cuando el navegador termine de parsear el documento
+  document.addEventListener('DOMContentLoaded', () => {
+    actualizarBandas();
+  });
+</script>
+
+</body>
+</html>
