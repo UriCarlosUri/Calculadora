@@ -27,6 +27,7 @@
   <!-- Sub-pestañas Cálculo -->
   <div class="tabs-row" id="sub-calculo">
     <button class="btn-tab active" onclick="verModulo('calculo', 'calc-libre')">✍️ Cálculo Libre (Escribe tu función)</button>
+    <button class="btn-tab" onclick="verSubCalculo('calc-integrales')">∫ Integrales (Paso a Paso)</button>
     <button class="btn-tab" onclick="verModulo('calculo', 'calc-cuadri')">Cuadriláteros (Áreas 2D)</button>
     <button class="btn-tab" onclick="verModulo('calculo', 'calc-3d')">Volúmenes 3D & Peso</button>
     <button class="btn-tab" onclick="verModulo('calculo', 'calc-trig')">Razones Trigonométricas</button>
@@ -66,7 +67,7 @@
 
   <!-- ================= CÁLCULO ================= -->
   <div id="mod-calc-libre" class="mod-content visible">
-    <label><b>Calculadora Simbólica: Escribe cualquier función para resolver</b></label>
+    <label><b>Calculadora Simbólica: Escribe la función a resolver</b></label>
     <div class="form-group">
       <input type="text" id="cas-input" value="3*x^2 + sin(x) - 4*x" placeholder="Ej: 4*x^3 - cos(2*x) + exp(x)">
       <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-top:4px;">
@@ -84,6 +85,31 @@
     </div>
   </div>
 
+  <div id="submod-calc-integrales" class="calc-subseccion" style="display:none;">
+  <div class="form-group">
+    <label><b>Función a Integrar en términos de x:</b></label>
+    <input type="text" id="int-expr-input" value="3*x^2 + 2*x + cos(x)" placeholder="Ej: 4*x^3, sin(2*x), exp(x), 1/x">
+    <small style="color:#94a3b8; display:block; margin-top:4px;">
+      Usa <code>*</code> para multiplicar y <code>^</code> para potencias. Admite: <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>exp(x)</code>, <code>log(x)</code>.
+    </small>
+  </div>
+
+  <div class="grid-2">
+  <div class="form-group">
+    <label>Límite inferior [a] (opcional):</label>
+    <input type="number" id="int-lim-a" placeholder="Ej: 0" step="any">
+    </div>
+    <div class="form-group">
+      <label>Límite superior [b] (opcional):</label>
+      <input type="number" id="int-lim-b" placeholder="Ej: 2" step="any">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-main" style="background:#10b981;" onclick="calcularIntegralDedicada()">∫ Calcular Integral</button>
+  </div>
+</div>
+  
   <div id="mod-calc-cuadri" class="mod-content">
     <label>Guía Didáctica: Áreas de Cuadriláteros</label>
     <div class="form-group">
