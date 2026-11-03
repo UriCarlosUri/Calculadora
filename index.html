@@ -11,7 +11,7 @@
 
 <div class="main-card">
   <h1>Suite Científica, Cálculo & Robótica</h1>
-  <p class="sub">Plataforma didáctica con esquemáticos, diagramas vectoriales, análisis analítico y geometría visual.</p>
+  <p class="sub">Plataforma didáctica con esquemáticos, diagramas vectoriales, análisis analítico y química estructural.</p>
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <!-- 1.2 Integrales -->
+    <!-- 1.2 Integrales con Diagrama -->
     <div id="submod-calc-integrales" class="calc-subseccion" style="display:none;">
       <div class="form-group">
         <label><b>Función a Integrar f(x):</b></label>
@@ -95,7 +95,7 @@
       <div class="grid-3" id="inputs-dinamicos-2d"></div>
       <div class="canvas-container">
         <canvas id="cvsGeometria2D" width="460" height="230"></canvas>
-        <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Representación a escala con cotas y cotas dimensionales</span>
+        <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Representación a escala con cotas dimensionales</span>
       </div>
       <div class="btn-row">
         <button class="btn-main" onclick="calcularGeometria2D()">Calcular Área y Dibujar Figura</button>
@@ -543,44 +543,131 @@
   </div>
 
   <!-- ========================================================
-       5. DESAFÍOS ANTI-ESTRÉS
+       5. DESAFÍOS & MODO ESTUDIO (10 / 20 PREGUNTAS)
        ======================================================== -->
   <div id="mod-juego" class="mod-content">
     <div style="background:#0f172a; border:2px dashed #f59e0b; border-radius:12px; padding:20px; text-align:center;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+      
+      <!-- Controles de Configuración del Repaso -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; background:#070d19; padding:12px; border-radius:8px; border:1px solid #334155;">
+        <div>
+          <label style="display:inline; margin-right:6px; font-weight:bold; color:#38bdf8;">Materia a Repasar:</label>
+          <select id="trivia-materia" style="width:auto; display:inline-block; padding:4px 8px;" onchange="iniciarSesionEstudio()">
+            <option value="todas" selected>🌐 Todas (Examen Mixto)</option>
+            <option value="calculo">📐 Cálculo & Geometría</option>
+            <option value="fisica">🚀 Física & Mecánica</option>
+            <option value="robotica">🤖 Robótica & Circuitos</option>
+            <option value="quimica">🧪 Química & Elementos</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:inline; margin-right:6px; font-weight:bold; color:#f59e0b;">Total Reactivos:</label>
+          <select id="trivia-total-preguntas" style="width:auto; display:inline-block; padding:4px 8px;" onchange="iniciarSesionEstudio()">
+            <option value="10" selected>10 Preguntas</option>
+            <option value="20">20 Preguntas</option>
+          </select>
+        </div>
+
         <div>
           <label style="display:inline; margin-right:6px; font-weight:bold; color:#94a3b8;">Dificultad:</label>
-          <select id="trivia-dificultad" style="width:auto; display:inline-block; padding:4px 8px;" onchange="cambiarDificultadTrivia()">
+          <select id="trivia-dificultad" style="width:auto; display:inline-block; padding:4px 8px;" onchange="iniciarSesionEstudio()">
             <option value="facil">Fácil</option>
             <option value="medio" selected>Medio</option>
             <option value="dificil">Difícil</option>
           </select>
         </div>
-        <div style="color:#f59e0b; font-weight:bold;">
+      </div>
+
+      <!-- Barra de Progreso y Marcador -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-weight:bold;">
+        <span id="j-progreso" style="color:#38bdf8; font-family:monospace; font-size:1rem;">Reactivo 1 de 10</span>
+        <div style="color:#f59e0b;">
           <span id="j-vidas">❤️❤️❤️</span>
-          <span id="j-xp" style="margin-left:10px;">0 XP</span>
+          <span id="j-xp" style="margin-left:12px;">0 XP</span>
+          <span id="j-aciertos" style="margin-left:12px; color:#10b981;">Aciertos: 0</span>
         </div>
       </div>
 
-      <h3 id="j-titulo" style="margin:0 0 6px 0; color:#38bdf8;">Misión</h3>
-      <p id="j-desc" style="font-size:0.95rem; margin-bottom:14px; line-height:1.4;"></p>
+      <!-- Tarjeta de la Pregunta Activa -->
+      <div id="j-panel-pregunta">
+        <h3 id="j-titulo" style="margin:0 0 8px 0; color:#38bdf8;">Misión</h3>
+        <p id="j-desc" style="font-size:1rem; margin-bottom:14px; line-height:1.5; color:#f8fafc;"></p>
 
-      <div style="display:flex; justify-content:center; gap:8px; max-width:320px; margin:0 auto 10px auto;">
-        <input type="number" id="j-input" placeholder="Tu respuesta numérica" step="any">
-        <button class="btn-main" style="flex:1;" onclick="verificarJuego()">Comprobar</button>
+        <div style="display:flex; justify-content:center; gap:8px; max-width:340px; margin:0 auto 12px auto;">
+          <input type="number" id="j-input" placeholder="Tu respuesta numérica" step="any" onkeydown="if(event.key==='Enter') verificarJuego()">
+          <button class="btn-main" style="flex:1;" onclick="verificarJuego()">Comprobar</button>
+        </div>
+
+        <button class="btn-hint" onclick="mostrarPistaTrivia()">💡 ¿Necesitas una pista?</button>
+        <div id="j-pista" style="margin-top:10px; font-size:0.88rem; color:#fde68a; display:none; background:rgba(245,158,11,0.12); padding:10px; border-radius:6px; border:1px solid rgba(245,158,11,0.3);"></div>
+        <p id="j-msg" style="margin:14px 0 0 0; font-weight:bold; font-size:1.05rem;"></p>
       </div>
 
-      <button class="btn-hint" onclick="mostrarPistaTrivia()">💡 ¿Necesitas una pista?</button>
-      <div id="j-pista" style="margin-top:10px; font-size:0.88rem; color:#fde68a; display:none; background:rgba(245,158,11,0.1); padding:8px; border-radius:6px;"></div>
-      <p id="j-msg" style="margin:12px 0 0 0; font-weight:bold;"></p>
+      <!-- Panel de Resultados al Concluir el Repaso -->
+      <div id="j-panel-final" style="display:none; padding:15px; background:#070d19; border-radius:10px; border:1px solid #10b981;">
+        <h2 style="color:#10b981; margin:0 0 10px 0;">🎉 ¡Sesión de Repaso Completada!</h2>
+        <p id="j-resumen-final" style="font-size:1.1rem; line-height:1.6;"></p>
+        <button class="btn-main" style="max-width:250px; margin:10px auto 0 auto;" onclick="iniciarSesionEstudio()">🔄 Iniciar Nuevo Repaso</button>
+      </div>
+
     </div>
   </div>
 
   <!-- RESULTADOS CON PROCEDIMIENTO -->
   <div id="salida"></div>
-</div>
+
+  <!-- ========================================================
+       MODAL SECRETO / EASTER EGG (CÓDIGO: 201961331)
+       ======================================================== -->
+  <div style="text-align: right; margin-top: 15px;">
+    <button onclick="abrirModalSecreto()" style="background: transparent; border: 1px solid #334155; color: #475569; font-size: 0.75rem; border-radius: 6px; padding: 4px 8px; cursor: pointer;">
+      🔒 Acceso de Clase
+    </button>
+  </div>
+
+  <div id="modal-secreto-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div style="background: #0f172a; border: 2px solid #38bdf8; border-radius: 14px; max-width: 650px; width: 100%; padding: 24px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.3); text-align: center; position: relative;">
+      
+      <button onclick="cerrarModalSecreto()" style="position: absolute; top: 12px; right: 14px; background: transparent; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; font-weight: bold;">✕</button>
+
+      <!-- Pantalla de ingreso de clave -->
+      <div id="pantalla-clave-secreta">
+        <h3 style="color: #38bdf8; margin: 0 0 8px 0;">🔐 Registro de Clase</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Ingresa el código de acceso exclusivo de la sesión:</p>
+        <div style="display: flex; gap: 8px; justify-content: center; max-width: 280px; margin: 0 auto;">
+          <input type="password" id="input-clave-secreta" placeholder="Código..." style="text-align: center; font-size: 1.1rem; letter-spacing: 2px;" onkeydown="if(event.key==='Enter') validarClaveSecreta()">
+          <button class="btn-main" style="flex: 1;" onclick="validarClaveSecreta()">Entrar</button>
+        </div>
+        <p id="msg-clave-error" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none;">Código incorrecto. Inténtalo de nuevo.</p>
+      </div>
+
+      <!-- Pantalla con el Mensaje Conmemorativo -->
+      <div id="pantalla-mensaje-alumnos" style="display: none; text-align: left;">
+        <h2 style="color: #f59e0b; text-align: center; margin: 0 0 6px 0;">✨ Mención de Honor</h2>
+        <h4 style="color: #38bdf8; text-align: center; margin: 0 0 16px 0; font-weight: normal;">
+          Levi · Ian · Abraham · Camil · Ximena · Abigail · Ana Luisa · Ana Isabella
+        </h4>
+        
+        <div style="background: #070d19; border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; font-size: 0.95rem; line-height: 1.6; color: #e2e8f0;">
+          <p style="margin: 0 0 12px 0;">
+            Ver cómo exploran el cálculo, los vectores, los circuitos y los enlaces de la materia demuestra la capacidad y el potencial enorme que tienen para construir cosas increíbles. La ciencia y la tecnología no son solo fórmulas o pantallas: son herramientas para entender el mundo y atreverse a resolver los problemas que nadie más ha descifrado.
+          </p>
+          <p style="margin: 0;">
+            Sigan aprendiendo con esa misma curiosidad, sin miedo a equivocarse, porque en el error es donde realmente se aprende a ingeniar. Que cada reto que enfrenten sea un escalón para crecer como estudiantes y, sobre todo, como personas. Sigan adelante, crean firmemente en lo que hacen y luchen por sus metas; con la disciplina, la chispa y el entusiasmo que demostraron aquí, tengan por seguro que todo lo que se propongan les va a salir excelente.
+          </p>
+        </div>
+
+        <p style="text-align: center; color: #10b981; font-weight: bold; margin: 16px 0 0 0;">
+          🚀 ¡El futuro es de quienes se atreven a crear!
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</div> <!-- main-card -->
 
 <script src="script.js"></script>
-
 </body>
 </html>
