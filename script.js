@@ -1249,13 +1249,331 @@ const composiciones = {
   "NaCl": { Na: 1, Cl: 1 }, "CaCO3": { Ca: 1, C: 1, O: 3 }, "KMnO4": { K: 1, Mn: 1, O: 4 }, "C6H12O6": { C: 6, H: 12, O: 6 }, "H2O": { H: 2, O: 1 }
 };
 
+// ==========================================
+// QUÍMICA: MODELOS 3D Y NOMENCLATURAS COMPLETAS
+// ==========================================
+const datosCompuestosQuim = {
+  "H2O": {
+    nom: { iupac: "Monóxido de dihidrógeno", stock: "Óxido de hidrógeno", trad: "Agua" },
+    tipoEnlace: "Covalente polar (Ángulo 104.5°)",
+    geom: "Angular",
+    comps: { H: 2, O: 1 },
+    molData: `
+  3Dmol.js
+  3  2  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.1173 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.7572   -0.4692 H   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -0.7572   -0.4692 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  1  3  1  0
+M  END`
+  },
+  "CO2": {
+    nom: { iupac: "Dióxido de carbono", stock: "Óxido de carbono(IV)", trad: "Anhídrido carbónico" },
+    tipoEnlace: "Covalente no polar (Doble enlace O=C=O)",
+    geom: "Lineal (180°)",
+    comps: { C: 1, O: 2 },
+    molData: `
+  3Dmol.js
+  3  2  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    1.1600 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000   -1.1600 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  1  3  2  0
+M  END`
+  },
+  "CH4": {
+    nom: { iupac: "Tetrahidruro de carbono", stock: "Hidruro de carbono(IV)", trad: "Metano" },
+    tipoEnlace: "Covalente no polar",
+    geom: "Tetraédrica (109.5°)",
+    comps: { C: 1, H: 4 },
+    molData: `
+  3Dmol.js
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.6291    0.6291    0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6291   -0.6291    0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6291    0.6291   -0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
+    0.6291   -0.6291   -0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  1  3  1  0
+  1  4  1  0
+  1  5  1  0
+M  END`
+  },
+  "NH3": {
+    nom: { iupac: "Trihidruro de nitrógeno", stock: "Hidruro de nitrógeno(III)", trad: "Amoníaco" },
+    tipoEnlace: "Covalente polar",
+    geom: "Piramidal trigonal (107°)",
+    comps: { N: 1, H: 3 },
+    molData: `
+  3Dmol.js
+  4  3  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.1140 N   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.9377   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8121   -0.4689   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.8121   -0.4689   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  1  3  1  0
+  1  4  1  0
+M  END`
+  },
+  "C2H5OH": {
+    nom: { iupac: "Etanol", stock: "Etanol", trad: "Alcohol etílico" },
+    tipoEnlace: "Covalente polar (Grupo funcional hidroxilo -OH)",
+    geom: "Cadena tetraédrica plegada",
+    comps: { C: 2, H: 6, O: 1 },
+    molData: `
+  3Dmol.js
+  9  8  0  0  0  0  0  0  0  0999 V2000
+   -1.2173    0.2078    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0886   -0.5694    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.1969    0.3292    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000   -0.1900    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+    0.1500   -1.2100    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
+    0.1500   -1.2100   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2800    0.8400    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2800    0.8400   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.0500   -0.5000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  2  3  1  0
+  3  4  1  0
+  2  5  1  0
+  2  6  1  0
+  1  7  1  0
+  1  8  1  0
+  1  9  1  0
+M  END`
+  },
+  "HCl": {
+    nom: { iupac: "Cloruro de hidrógeno", stock: "Cloruro de hidrógeno", trad: "Ácido clorhídrico (en disolución)" },
+    tipoEnlace: "Covalente muy polar",
+    geom: "Lineal",
+    comps: { H: 1, Cl: 1 },
+    molData: `
+  3Dmol.js
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    1.2700 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+M  END`
+  },
+  "H2SO4": {
+    nom: { iupac: "Tetraoxosulfato(VI) de hidrógeno", stock: "Sulfato(VI) de hidrógeno", trad: "Ácido sulfúrico" },
+    tipoEnlace: "Covalente polar coordinado / dador",
+    geom: "Tetraédrica alrededor del Azufre",
+    comps: { H: 2, S: 1, O: 4 },
+    molData: `
+  3Dmol.js
+  7  6  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.4300    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.4300    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.2500    0.0000    0.8000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2500    0.0000    0.8000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.9000    0.0000    0.1000 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.9000    0.0000    0.1000 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  1  3  2  0
+  1  4  1  0
+  1  5  1  0
+  4  6  1  0
+  5  7  1  0
+M  END`
+  },
+  "HNO3": {
+    nom: { iupac: "Trioxonitrato(V) de hidrógeno", stock: "Nitrato(V) de hidrógeno", trad: "Ácido nítrico" },
+    tipoEnlace: "Covalente polar con resonancia",
+    geom: "Trigonal plana en Nitrógeno",
+    comps: { H: 1, N: 1, O: 3 },
+    molData: `
+  3Dmol.js
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2100    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0800   -0.6500    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1500   -0.6800    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.8500   -0.0500    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  1  3  2  0
+  1  4  1  0
+  4  5  1  0
+M  END`
+  },
+  "NaOH": {
+    nom: { iupac: "Hidróxido de sodio", stock: "Hidróxido de sodio", trad: "Sosa cáustica / Hidróxido sódico" },
+    tipoEnlace: "Iónico (Na⁺ y OH⁻)",
+    geom: "Red cristalina iónica",
+    comps: { Na: 1, O: 1, H: 1 },
+    molData: `
+  3Dmol.js
+  3  2  0  0  0  0  0  0  0  0999 V2000
+   -1.5000    0.0000    0.0000 Na  0  0  0  0  0  0  0  0  0  0  0  0
+    0.8000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.7500    0.0000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  2  3  1  0
+M  END`
+  },
+  "NaCl": {
+    nom: { iupac: "Monocloruro de sodio", stock: "Cloruro de sodio", trad: "Sal común / Sal gema" },
+    tipoEnlace: "Iónico (Atracción electrostática Na⁺ Cl⁻)",
+    geom: "Red cúbica centrada en las caras",
+    comps: { Na: 1, Cl: 1 },
+    molData: `
+  3Dmol.js
+  2  1  0  0  0  0  0  0  0  0999 V2000
+   -1.1800    0.0000    0.0000 Na  0  0  0  0  0  0  0  0  0  0  0  0
+    1.1800    0.0000    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+M  END`
+  },
+  "CaCO3": {
+    nom: { iupac: "Trioxocarbonato de calcio", stock: "Carbonato de calcio", trad: "Carbonato cálcico / Caliza" },
+    tipoEnlace: "Iónico entre Ca²⁺ y (CO₃)²⁻ (covalente en anión)",
+    geom: "Trigonal plana en el ión carbonato",
+    comps: { Ca: 1, C: 1, O: 3 },
+    molData: `
+  3Dmol.js
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2800    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.1100   -0.6400    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1100   -0.6400    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    2.3000 Ca  0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  1  3  1  0
+  1  4  1  0
+  1  5  1  0
+M  END`
+  },
+  "KMnO4": {
+    nom: { iupac: "Tetraoxomanganato(VII) de potasio", stock: "Permanganato de potasio", trad: "Permanganato potásico" },
+    tipoEnlace: "Iónico K⁺ y anión tetraédrico (MnO₄)⁻",
+    geom: "Tetraédrica en Mn",
+    comps: { K: 1, Mn: 1, O: 4 },
+    molData: `
+  3Dmol.js
+  6  5  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Mn  0  0  0  0  0  0  0  0  0  0  0  0
+    0.9500    0.9500    0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.9500   -0.9500    0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.9500    0.9500   -0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.9500   -0.9500   -0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    2.5000 K   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  1  3  2  0
+  1  4  1  0
+  1  5  1  0
+  1  6  1  0
+M  END`
+  },
+  "C6H12O6": {
+    nom: { iupac: "(2R,3S,4R,5R)-2,3,4,5,6-pentahidroxihexanal", stock: "D-Glucosa", trad: "Glucosa / Dextrosa" },
+    tipoEnlace: "Covalente polar (Glúcido monosacárido)",
+    geom: "Cadena/Anillo piranósico tetraédrico",
+    comps: { C: 6, H: 12, O: 6 },
+    molData: `
+  3Dmol.js
+ 12 11  0  0  0  0  0  0  0  0999 V2000
+   -1.3000   -0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3000    0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000    0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000   -0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.5000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4000   -1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4000    1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    2.7000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000    1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000   -1.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.4000   -0.6000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  2  3  1  0
+  3  4  1  0
+  4  5  1  0
+  5  6  1  0
+  6  1  1  0
+  1  7  1  0
+  2  8  1  0
+  3  9  1  0
+  4 10  1  0
+  5 11  1  0
+ 11 12  1  0
+M  END`
+  }
+};
+
+let visor3DQuimica = null;
+
+function renderizarMolecula3D(compKey) {
+  const cont = document.getElementById('mol-3d-viewer');
+  if (!cont || typeof $3Dmol === 'undefined') return;
+
+  cont.innerHTML = "";
+  visor3DQuimica = $3Dmol.createViewer(cont, { defaultcolors: $3Dmol.rasmolElementColors });
+
+  const compData = datosCompuestosQuim[compKey];
+  if (!compData || !compData.molData) return;
+
+  visor3DQuimica.addModel(compData.molData, "sdf");
+  // Estilo químico: Esferas y Varillas (Ball & Stick) con colores estándar CPK
+  visor3DQuimica.setStyle({}, {
+    stick: { radius: 0.15, colorscheme: "Jmol" },
+    sphere: { scale: 0.32, colorscheme: "Jmol" }
+  });
+  visor3DQuimica.zoomTo();
+  visor3DQuimica.render();
+  visor3DQuimica.spin("y", 1.2); // Rotación suave automática mientras no se toque
+}
+
 function calcMasaMolarExtendida() {
   const f = document.getElementById('chem-comp').value;
-  const comps = composiciones[f];
-  let total = 0;
+  const compInfo = datosCompuestosQuim[f];
+  const s = document.getElementById('salida');
+  if (!compInfo) return;
+
+  const comps = compInfo.comps;
+  let total = 0, desglose = "";
+
   for (let el in comps) total += comps[el] * masasAtom[el];
-  document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Masa Molar de ${f}: <b>${total.toFixed(2)} g/mol</b></h3>`;
-  document.getElementById('salida').style.display = 'block';
+
+  for (let el in comps) {
+    let sub = comps[el] * masasAtom[el];
+    let pct = (sub / total) * 100;
+    desglose += `<li><b>${el}:</b> ${comps[el]} átomo(s) × ${masasAtom[el]} g/mol = <code>${sub.toFixed(2)} g/mol</code> (<b>${pct.toFixed(1)}%</b>)</li>`;
+  }
+
+  // Renderizar modelo 3D
+  renderizarMolecula3D(f);
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estructura y Masa Molar: ${f}</h3>
+    
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Nomenclaturas Químicas:</b>
+      <table class="didact-table" style="margin-top:6px;">
+        <tr><th>Sistemática (IUPAC)</th><th>Stock</th><th>Tradicional</th></tr>
+        <tr>
+          <td><b style="color:#38bdf8;">${compInfo.nom.iupac}</b></td>
+          <td><b>${compInfo.nom.stock}</b></td>
+          <td><span style="color:#fde68a;">${compInfo.nom.trad}</span></td>
+        </tr>
+      </table>
+      <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
+        • <b>Tipo de Enlace:</b> ${compInfo.tipoEnlace}<br>
+        • <b>Geometría Molecular:</b> ${compInfo.geom}
+      </div>
+    </div>
+
+    <div class="step">
+      <b>Composición Porcentual en Masa:</b>
+      <ul style="margin:4px 0; padding-left:18px;">${desglose}</ul>
+      <b>Masa Molar Total:</b> <b style="color:#10b981; font-size:1.15rem;">${total.toFixed(2)} g/mol</b>
+    </div>
+  `;
+  s.style.display = 'block';
 }
 
 function calcGases() {
