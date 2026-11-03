@@ -18,7 +18,7 @@ function verMateria(mat) {
     if (mat === 'fisica') verSubFisica('fis-torque');
     if (mat === 'robotica') verSubRobotica('rob-componentes');
     if (mat === 'quimica') verSubQuimica('quim-tabla');
-    if (mat === 'juego') cargarPreguntaTrivia();
+    if (mat === 'juego') iniciarSesionEstudio();
   } catch (e) { console.error("Error en verMateria:", e); }
 }
 
@@ -114,7 +114,7 @@ function derivarPolinomioNativo(expr) {
       pasos.push(`d/dx [${t}] = ${coef} · 1 = <b>${coef}</b>`);
       resTerminos.push(`${coef}`);
     } else {
-      pasos.push(`d/dx [${t}] = <b>0</b> (derivada de una constante)`);
+      pasos.push(`d/dx [${t}] = <b>0</b> (derivada de constante)`);
     }
   });
 
@@ -428,7 +428,6 @@ function calcularVolumenDespeje() {
 
   const masa = vol * dens;
 
-  // Dibujo Isométrico en Canvas
   const cvs = document.getElementById('cvsVolumen3D');
   if (cvs) {
     const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
@@ -458,8 +457,8 @@ function calcularVolumenDespeje() {
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cuerpo 3D: Volumen y Masa</h3>
-    <div class="step">Volumen total calculado: <b>${vol.toFixed(2)} cm³</b></div>
-    <div class="step" style="border-left-color:#10b981;">Masa con densidad ${dens} g/cm³: <b style="color:#10b981; font-size:1.15rem;">${masa.toFixed(1)} g</b> (${(masa/1000).toFixed(3)} kg)</div>
+    <div class="step">Volumen total: <b>${vol.toFixed(2)} cm³</b></div>
+    <div class="step" style="border-left-color:#10b981;">Masa (${dens} g/cm³): <b style="color:#10b981; font-size:1.15rem;">${masa.toFixed(1)} g</b> (${(masa/1000).toFixed(3)} kg)</div>
   `;
   s.style.display = 'block';
 }
@@ -495,8 +494,8 @@ function calcularTrigonometriaCompleta() {
     ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace';
-    ctx.fillText(`Cateto Adyacente = ${Math.cos(rad).toFixed(2)}`, cx + 15, cy + 20);
-    ctx.fillText(`Cateto Opuesto = ${Math.sin(rad).toFixed(2)}`, cx + ca + 8, cy - co / 2);
+    ctx.fillText(`Adyacente = ${Math.cos(rad).toFixed(2)}`, cx + 15, cy + 20);
+    ctx.fillText(`Opuesto = ${Math.sin(rad).toFixed(2)}`, cx + ca + 8, cy - co / 2);
     ctx.fillText(`Hipotenusa = 1.0`, cx + ca/3, cy - co/1.5);
   }
 
@@ -518,7 +517,6 @@ function actualizarListaIdentidades() {
 
 function demostrarIdentidadCompleta() {
   const ang = parseFloat(document.getElementById('ident-ang1').value) || 30;
-  const rad = ang * Math.PI / 180;
   const cvs = document.getElementById('cvsIdentidadOnda');
   if (cvs) {
     const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
@@ -835,10 +833,10 @@ function calcDCL_Friccion() {
       ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
       ctx.fillRect(cx - 30, cy - 30, 60, 60); ctx.strokeRect(cx - 30, cy - 30, 60, 60);
 
-      dibujarFlecha(ctx, cx + 30, cy, cx + 90, cy, '#38bdf8', 2.5); // F
-      dibujarFlecha(ctx, cx - 30, cy, cx - 80, cy, '#ef4444', 2.5); // fr
-      dibujarFlecha(ctx, cx, cy - 30, cx, cy - 80, '#10b981', 2.5); // Normal
-      dibujarFlecha(ctx, cx, cy + 30, cx, cy + 80, '#f59e0b', 2.5); // Peso
+      dibujarFlecha(ctx, cx + 30, cy, cx + 90, cy, '#38bdf8', 2.5);
+      dibujarFlecha(ctx, cx - 30, cy, cx - 80, cy, '#ef4444', 2.5);
+      dibujarFlecha(ctx, cx, cy - 30, cx, cy - 80, '#10b981', 2.5);
+      dibujarFlecha(ctx, cx, cy + 30, cx, cy + 80, '#f59e0b', 2.5);
 
       ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
       ctx.fillText(`N=${norm.toFixed(1)}N`, cx + 6, cy - 65);
@@ -856,8 +854,8 @@ function calcDCL_Friccion() {
       ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2;
       ctx.fillRect(cx - 25, cy - 25, 50, 50); ctx.strokeRect(cx - 25, cy - 25, 50, 50);
 
-      dibujarFlecha(ctx, cx, cy - 25, cx, cy - 75, '#10b981', 2.5); // Tensión
-      dibujarFlecha(ctx, cx, cy + 25, cx, cy + 75, '#ef4444', 2.5); // Peso
+      dibujarFlecha(ctx, cx, cy - 25, cx, cy - 75, '#10b981', 2.5);
+      dibujarFlecha(ctx, cx, cy + 25, cx, cy + 75, '#ef4444', 2.5);
 
       ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
       ctx.fillText(`T = ${tension.toFixed(1)} N`, cx + 8, cy - 50);
@@ -923,12 +921,9 @@ function calcularComponenteHardware() {
     ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
 
     if (comp === 'diodo') {
-      // Dibujar diodo y resistor
       ctx.beginPath(); ctx.moveTo(50, cy); ctx.lineTo(160, cy); ctx.stroke();
-      // Resistor
       ctx.strokeRect(160, cy - 12, 60, 24);
       ctx.beginPath(); ctx.moveTo(220, cy); ctx.lineTo(290, cy); ctx.stroke();
-      // Triángulo diodo
       ctx.fillStyle = '#10b981';
       ctx.beginPath(); ctx.moveTo(290, cy - 18); ctx.lineTo(290, cy + 18); ctx.lineTo(325, cy); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(325, cy - 18); ctx.lineTo(325, cy + 18); ctx.stroke();
@@ -1044,8 +1039,6 @@ function calcBateria() {
 // ==========================================
 // 6. QUÍMICA INTEGRAL: TABLA COMPLETA, PARSER Y DIBUJO ESTRUCTURAL
 // ==========================================
-
-// Base de datos de la Tabla Periódica
 const tablaPeriodicaCompleta = [
   { z: 1, s: "H", n: "Hidrógeno", m: 1.008, g: "No metal", val: "1, -1" },
   { z: 2, s: "He", n: "Helio", m: 4.003, g: "Gas noble", val: "0" },
@@ -1077,7 +1070,7 @@ const tablaPeriodicaCompleta = [
   { z: 28, s: "Ni", n: "Níquel", m: 58.693, g: "Transición", val: "2, 3" },
   { z: 29, s: "Cu", n: "Cobre", m: 63.546, g: "Transición", val: "1, 2" },
   { z: 30, s: "Zn", n: "Zinc", m: 65.38, g: "Transición", val: "2" },
-  { z: 31, s: "Ga", n: "Galio", m: 69.723, g: "Metal del bloque p", val: "3" },
+  { z: 31, s: "Ga", n: "Galio", m: 69.723, g: "Metal bloque p", val: "3" },
   { z: 32, s: "Ge", n: "Germanio", m: 72.630, g: "Metaloide", val: "4" },
   { z: 33, s: "As", n: "Arsénico", m: 74.922, g: "Metaloide", val: "3, 5, -3" },
   { z: 34, s: "Se", n: "Selenio", m: 78.971, g: "No metal", val: "2, 4, 6, -2" },
@@ -1086,22 +1079,20 @@ const tablaPeriodicaCompleta = [
   { z: 37, s: "Rb", n: "Rubidio", m: 85.468, g: "Metal alcalino", val: "1" },
   { z: 38, s: "Sr", n: "Estroncio", m: 87.62, g: "Alcalinotérreo", val: "2" },
   { z: 47, s: "Ag", n: "Plata", m: 107.87, g: "Transición", val: "1" },
-  { z: 50, s: "Sn", n: "Estaño", m: 118.71, g: "Metal del bloque p", val: "2, 4" },
+  { z: 50, s: "Sn", n: "Estaño", m: 118.71, g: "Metal bloque p", val: "2, 4" },
   { z: 53, s: "I", n: "Yodo", m: 126.90, g: "Halógeno", val: "1, 3, 5, 7, -1" },
   { z: 56, s: "Ba", n: "Bario", m: 137.33, g: "Alcalinotérreo", val: "2" },
   { z: 74, s: "W", n: "Wolframio / Tungsteno", m: 183.84, g: "Transición", val: "2, 4, 6" },
   { z: 78, s: "Pt", n: "Platino", m: 195.08, g: "Transición", val: "2, 4" },
   { z: 79, s: "Au", n: "Oro", m: 196.97, g: "Transición", val: "1, 3" },
   { z: 80, s: "Hg", n: "Mercurio", m: 200.59, g: "Transición", val: "1, 2" },
-  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal del bloque p", val: "2, 4" },
+  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal bloque p", val: "2, 4" },
   { z: 92, s: "U", n: "Uranio", m: 238.03, g: "Actínido", val: "3, 4, 5, 6" }
 ];
 
-// Diccionario de pesos atómicos indexado por símbolo
 const tablaPesosCompletos = {};
 tablaPeriodicaCompleta.forEach(el => { tablaPesosCompletos[el.s] = el.m; });
 
-// Paleta CPK
 const coloresCPK = {
   H: "#f8fafc", C: "#334155", O: "#ef4444", N: "#3b82f6", S: "#eab308",
   Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea",
@@ -1109,7 +1100,6 @@ const coloresCPK = {
   I: "#6b21a8", P: "#f59e0b", Ba: "#059669", Ti: "#64748b", Ag: "#cbd5e1", Au: "#eab308"
 };
 
-// Geometrías exactas para compuestos frecuentes
 const datosCompuestosQuim = {
   "H2O": {
     nom: { iupac: "Monóxido de dihidrógeno", stock: "Óxido de hidrógeno", trad: "Agua" },
@@ -1273,7 +1263,6 @@ function dibujarEstructura2DMolecula(compKey) {
   const mol = datosCompuestosQuim[compKey];
   if (!mol || !mol.atomos) return;
 
-  // Enlaces
   mol.enlaces.forEach(enl => {
     const a1 = mol.atomos[enl[0]], a2 = mol.atomos[enl[1]], orden = enl[2] || 1;
     const x1 = cx + a1.x, y1 = cy + a1.y, x2 = cx + a2.x, y2 = cy + a2.y;
@@ -1291,7 +1280,6 @@ function dibujarEstructura2DMolecula(compKey) {
     }
   });
 
-  // Esferas atómicas
   mol.atomos.forEach(at => {
     const px = cx + at.x, py = cy + at.y, col = coloresCPK[at.el] || "#cbd5e1";
     let grad = ctx.createRadialGradient(px - at.r * 0.3, py - at.r * 0.3, at.r * 0.1, px, py, at.r);
@@ -1329,7 +1317,6 @@ function dibujarEstructuraQuimicaGenerica(formula, conteo) {
   const totalPerifericos = Math.min(listaPerifericos.length, 10);
   const radioOrbita = totalPerifericos > 5 ? 85 : 70;
 
-  // Enlaces radiales
   ctx.strokeStyle = '#64748b'; ctx.lineWidth = 4;
   for (let i = 0; i < totalPerifericos; i++) {
     const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
@@ -1350,7 +1337,6 @@ function dibujarEstructuraQuimicaGenerica(formula, conteo) {
     ctx.fillText(el, x, y);
   };
 
-  // Átomos periféricos
   for (let i = 0; i < totalPerifericos; i++) {
     const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
     const px = cx + radioOrbita * Math.cos(ang);
@@ -1359,7 +1345,6 @@ function dibujarEstructuraQuimicaGenerica(formula, conteo) {
     dibujarEsfera(el, px, py, el === "H" ? 16 : 22);
   }
 
-  // Átomo central
   dibujarEsfera(atomoCentral, cx, cy, 26);
 }
 
@@ -1382,7 +1367,6 @@ function calcMasaMolarExtendida() {
     desglose += `<li><b>${el}:</b> ${conteo[el]} átomo(s) × ${p} g/mol = <code>${sub.toFixed(2)} g/mol</code></li>`;
   }
 
-  // Dibuja la estructura y los enlaces
   dibujarEstructuraQuimicaGenerica(f, conteo);
 
   const predef = datosCompuestosQuim[f];
@@ -1503,66 +1487,209 @@ function calcularPH() {
 }
 
 // ==========================================
-// 7. DESAFÍOS ANTI-ESTRÉS
+// 7. DESAFÍOS & MODO ESTUDIO (10 / 20 REACTIVOS)
 // ==========================================
-const bancoTrivia = {
-  facil: [
-    { q: "Identidad Pitagórica Fundamental", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta sen²(θ) + cos²(θ)?", ans: 1, tol: 0.05, pista: "sen²(θ) + cos²(θ) siempre es igual a 1." },
-    { q: "Exponente Cero", desc: "¿Cuánto es 999⁰?", ans: 1, tol: 0.01, pista: "Cualquier número distinto de cero elevado a cero es 1." },
-    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono?", ans: 6, tol: 0.1, pista: "El Carbono tiene 6 protones: Z = 6." }
+const bancoGeneralEstudio = {
+  calculo: [
+    { q: "Identidad Pitagórica Fundamental", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta exactamente sen²(θ) + cos²(θ)?", ans: 1, tol: 0.01, pista: "sen²(θ) + cos²(θ) siempre es igual a 1." },
+    { q: "Exponente Cero", desc: "¿Cuánto es 999⁰?", ans: 1, tol: 0.01, pista: "Cualquier base no nula elevada a la 0 es 1." },
+    { q: "Derivada Directa", desc: "Si f(x) = 5·x^4, su derivada es k·x^3. ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica exponente por coeficiente: 5 · 4." },
+    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "A = (D · d) / 2." },
+    { q: "Integral Definida de Constante", desc: "¿Cuánto vale la integral ∫[0 a 4] 3 dx?", ans: 12, tol: 0.1, pista: "3 · (4 - 0) = 12." }
   ],
-  medio: [
-    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "A = (D · d) / 2 = (8 · 5) / 2." },
-    { q: "Fuerzas Opuestas", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Fuerza resultante?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
-    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar aproximada del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "Dos hidrógenos (2) + un oxígeno (16)." }
+  fisica: [
+    { q: "Fuerzas Concurrentes Opuestas", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Magnitud resultante neta?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
+    { q: "Equilibrio Rotacional (Torque)", desc: "Carga de 30 N a 2 m del eje (+60 N·m). ¿A qué distancia equilibra una fuerza de 40 N?", ans: 1.5, tol: 0.05, pista: "Divide 60 entre 40." },
+    { q: "MRU - Distancia", desc: "Un móvil va a 15 m/s constante durante 4 segundos. ¿Cuántos metros recorre?", ans: 60, tol: 0.5, pista: "d = v · t = 15 · 4." },
+    { q: "Fuerza Peso", desc: "Un objeto tiene una masa de 5 kg en la Tierra (g = 9.81 m/s²). ¿Cuál es su peso redondeado en N?", ans: 49.05, tol: 0.5, pista: "Peso = m · g = 5 · 9.81." },
+    { q: "Aceleración", desc: "Un auto pasa de 0 a 20 m/s en 5 segundos. ¿Aceleración en m/s²?", ans: 4, tol: 0.1, pista: "a = (vf - v0) / t = 20 / 5." }
   ],
-  dificil: [
-    { q: "Equilibrio Rotacional (Torque)", desc: "Carga de 30 N a 2 m del eje (+60 N·m). ¿A qué distancia equilibra una de 40 N?", ans: 1.5, tol: 0.05, pista: "Divide 60 entre 40." },
-    { q: "Derivada por Regla de la Potencia", desc: "Si f(x) = 5 · x^4, su derivada es k · x^3. ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica el coeficiente por el exponente: 5 · 4." }
+  robotica: [
+    { q: "Ley de Ohm - Corriente", desc: "Circuito con fuente de 12V y resistencia de 4 Ω. ¿Corriente en Amperes?", ans: 3, tol: 0.05, pista: "I = V / R = 12 / 4." },
+    { q: "Resistencias en Serie", desc: "R1 = 100 Ω, R2 = 220 Ω, R3 = 330 Ω conectadas en serie. ¿Req total en Ohms?", ans: 650, tol: 1, pista: "Suma directa: 100 + 220 + 330." },
+    { q: "Potencia Eléctrica", desc: "Un motor consume 12V a 2A. ¿Potencia en Watts?", ans: 24, tol: 0.1, pista: "P = V · I = 12 · 2." },
+    { q: "Resistencias en Paralelo", desc: "Dos resistencias idénticas de 100 Ω en paralelo. ¿Req en Ohms?", ans: 50, tol: 0.5, pista: "Dos iguales en paralelo equivalen a la mitad: 100 / 2." },
+    { q: "Caída de Diodo", desc: "Voltaje en circuito con Vcc = 5V y diodo de silicio (0.7V). ¿Voltaje restante en la resistencia?", ans: 4.3, tol: 0.1, pista: "VR = 5 - 0.7." }
+  ],
+  quimica: [
+    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono en la tabla periódica?", ans: 6, tol: 0.1, pista: "El Carbono tiene 6 protones: Z = 6." },
+    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar aproximada del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "2 H (2.016) + 1 O (15.999)." },
+    { q: "pH Neutro", desc: "¿Cuál es el valor de pH de una disolución completamente neutra a 25°C?", ans: 7, tol: 0.1, pista: "El agua pura tiene pH = 7." },
+    { q: "Número Atómico del Oxígeno", desc: "¿Cuál es el número atómico (Z) del Oxígeno?", ans: 8, tol: 0.1, pista: "Z = 8." },
+    { q: "Molaridad", desc: "Se disuelven 2 moles de NaCl en 4 Litros de solución. ¿Concentración molar (M)?", ans: 0.5, tol: 0.05, pista: "M = n / V = 2 / 4." }
   ]
 };
 
-let vidas = 3, xp = 0, preguntaActual = null;
-function cambiarDificultadTrivia() { cargarPreguntaTrivia(); }
+let sesionEstudio = {
+  preguntas: [],
+  indice: 0,
+  total: 10,
+  aciertos: 0,
+  vidas: 3,
+  xp: 0
+};
 
-function cargarPreguntaTrivia() {
-  const dif = document.getElementById('trivia-dificultad') ? document.getElementById('trivia-dificultad').value : 'medio';
-  const lista = bancoTrivia[dif] || bancoTrivia['medio'];
-  preguntaActual = lista[Math.floor(Math.random() * lista.length)];
+function iniciarSesionEstudio() {
+  const mat = document.getElementById('trivia-materia') ? document.getElementById('trivia-materia').value : 'todas';
+  const cant = parseInt(document.getElementById('trivia-total-preguntas') ? document.getElementById('trivia-total-preguntas').value : '10');
 
-  if (document.getElementById('j-titulo')) document.getElementById('j-titulo').innerText = preguntaActual.q;
-  if (document.getElementById('j-desc')) document.getElementById('j-desc').innerText = preguntaActual.desc;
-  if (document.getElementById('j-input')) document.getElementById('j-input').value = "";
-  if (document.getElementById('j-msg')) document.getElementById('j-msg').innerText = "";
-  if (document.getElementById('j-pista')) document.getElementById('j-pista').style.display = "none";
+  let bancoBase = [];
+  if (mat === 'todas') {
+    bancoBase = [
+      ...bancoGeneralEstudio.calculo,
+      ...bancoGeneralEstudio.fisica,
+      ...bancoGeneralEstudio.robotica,
+      ...bancoGeneralEstudio.quimica
+    ];
+  } else {
+    bancoBase = bancoGeneralEstudio[mat] ? [...bancoGeneralEstudio[mat]] : [...bancoGeneralEstudio.calculo];
+  }
+
+  // Barajar aleatoriamente
+  bancoBase.sort(() => Math.random() - 0.5);
+
+  // Duplicar si solicitan 20 y el banco base tiene menos
+  while (bancoBase.length < cant) {
+    bancoBase = bancoBase.concat(bancoBase);
+  }
+
+  sesionEstudio.preguntas = bancoBase.slice(0, cant);
+  sesionEstudio.indice = 0;
+  sesionEstudio.total = cant;
+  sesionEstudio.aciertos = 0;
+  sesionEstudio.vidas = 3;
+  sesionEstudio.xp = 0;
+
+  document.getElementById('j-panel-pregunta').style.display = 'block';
+  document.getElementById('j-panel-final').style.display = 'none';
+
+  actualizarMarcadorEstudio();
+  cargarReactivoActual();
+}
+
+function actualizarMarcadorEstudio() {
+  document.getElementById('j-progreso').innerText = `Reactivo ${sesionEstudio.indice + 1} de ${sesionEstudio.total}`;
+  let vStr = ""; for (let i = 0; i < sesionEstudio.vidas; i++) vStr += "❤️";
+  document.getElementById('j-vidas').innerText = vStr || "💀";
+  document.getElementById('j-xp').innerText = `${sesionEstudio.xp} XP`;
+  document.getElementById('j-aciertos').innerText = `Aciertos: ${sesionEstudio.aciertos}`;
+}
+
+function cargarReactivoActual() {
+  if (sesionEstudio.indice >= sesionEstudio.total) {
+    finalizarSesionEstudio();
+    return;
+  }
+  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
+  document.getElementById('j-titulo').innerText = reactivo.q;
+  document.getElementById('j-desc').innerText = reactivo.desc;
+  document.getElementById('j-input').value = "";
+  document.getElementById('j-msg').innerText = "";
+  document.getElementById('j-pista').style.display = "none";
+  actualizarMarcadorEstudio();
 }
 
 function mostrarPistaTrivia() {
-  if (preguntaActual) {
-    document.getElementById('j-pista').innerText = preguntaActual.pista;
-    document.getElementById('j-pista').style.display = 'block';
+  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
+  if (reactivo) {
+    const pBox = document.getElementById('j-pista');
+    pBox.innerHTML = `💡 <b>Pista para reflexionar:</b> ${reactivo.pista}`;
+    pBox.style.display = "block";
   }
 }
 
 function verificarJuego() {
-  const a = parseFloat(document.getElementById('j-input').value);
-  if (isNaN(a)) { alert("Escribe un número antes de comprobar."); return; }
+  const val = parseFloat(document.getElementById('j-input').value);
+  if (isNaN(val)) { alert("Escribe un número antes de comprobar."); return; }
 
-  if (Math.abs(a - preguntaActual.ans) <= preguntaActual.tol) {
-    xp += 50;
+  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
+
+  if (Math.abs(val - reactivo.ans) <= reactivo.tol) {
+    sesionEstudio.aciertos++;
+    sesionEstudio.xp += 50;
     document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta (+50 XP).</span>";
-    document.getElementById('j-xp').innerText = xp + " XP";
-    setTimeout(cargarPreguntaTrivia, 2000);
+    setTimeout(() => {
+      sesionEstudio.indice++;
+      cargarReactivoActual();
+    }, 1500);
   } else {
-    vidas--;
-    document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Casi, revisa la pista arriba e inténtalo de nuevo.</span>";
-    let vStr = ""; for (let i = 0; i < vidas; i++) vStr += "❤️";
-    document.getElementById('j-vidas').innerText = vStr || "💀";
-    if (vidas <= 0) {
-      alert("¡Recargando vidas para seguir aprendiendo!");
-      vidas = 3;
-      document.getElementById('j-vidas').innerText = "❤️❤️❤️";
-      cargarPreguntaTrivia();
+    sesionEstudio.vidas--;
+    document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Incorrecto. Revisa la pista arriba.</span>";
+    actualizarMarcadorEstudio();
+
+    if (sesionEstudio.vidas <= 0) {
+      alert("¡Se agotaron las vidas! Reiniciando contador de vidas para continuar el repaso.");
+      sesionEstudio.vidas = 3;
+      setTimeout(() => {
+        sesionEstudio.indice++;
+        cargarReactivoActual();
+      }, 1500);
     }
   }
 }
+
+function finalizarSesionEstudio() {
+  document.getElementById('j-panel-pregunta').style.display = 'none';
+  const panelFinal = document.getElementById('j-panel-final');
+  panelFinal.style.display = 'block';
+
+  const calif = ((sesionEstudio.aciertos / sesionEstudio.total) * 10).toFixed(1);
+  document.getElementById('j-resumen-final').innerHTML = `
+    Has completado los <b>${sesionEstudio.total} reactivos</b> del repaso.<br>
+    • Aciertos logrados: <b style="color:#10b981;">${sesionEstudio.aciertos} / ${sesionEstudio.total}</b><br>
+    • Calificación obtenida: <b style="color:#38bdf8; font-size:1.3rem;">${calif} / 10</b><br>
+    • Experiencia acumulada: <b style="color:#f59e0b;">${sesionEstudio.xp} XP</b>
+  `;
+}
+
+// ==========================================
+// 8. MODAL SECRETO / EASTER EGG (201961331)
+// ==========================================
+function abrirModalSecreto() {
+  const backdrop = document.getElementById('modal-secreto-backdrop');
+  if (backdrop) {
+    backdrop.style.display = 'flex';
+    document.getElementById('pantalla-clave-secreta').style.display = 'block';
+    document.getElementById('pantalla-mensaje-alumnos').style.display = 'none';
+    document.getElementById('msg-clave-error').style.display = 'none';
+    const inp = document.getElementById('input-clave-secreta');
+    if (inp) { inp.value = ""; inp.focus(); }
+  }
+}
+
+function cerrarModalSecreto() {
+  const backdrop = document.getElementById('modal-secreto-backdrop');
+  if (backdrop) backdrop.style.display = 'none';
+}
+
+function validarClaveSecreta() {
+  const clave = (document.getElementById('input-clave-secreta').value || "").trim();
+  if (clave === "201961331") {
+    document.getElementById('pantalla-clave-secreta').style.display = 'none';
+    document.getElementById('pantalla-mensaje-alumnos').style.display = 'block';
+  } else {
+    document.getElementById('msg-clave-error').style.display = 'block';
+  }
+}
+
+// ==========================================
+// 9. ARRANQUE SEGURO
+// ==========================================
+window.addEventListener('DOMContentLoaded', () => {
+  actualizarFamilia2D();
+  configurarInputs3D();
+  configurarInputsTrig();
+  actualizarListaIdentidades();
+  ajustarInputsExponentes();
+  renderizarListaTorques();
+  configurarInputsMRUA();
+  configurarInputsDCL();
+  configurarInputsComponente();
+  renderizarListaResistencias();
+  configurarInputsOhm();
+  configurarInputsGases();
+  configurarInputsSoluciones();
+  buscarElementoQuimico();
+  calcMasaMolarExtendida();
+  iniciarSesionEstudio();
+});
