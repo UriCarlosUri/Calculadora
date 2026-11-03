@@ -4,302 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Suite Científica & Robótica Didáctica</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #0b1120;
-      color: #f8fafc;
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .main-card {
-      max-width: 920px;
-      width: 100%;
-      background: #1e293b;
-      padding: 24px;
-      border-radius: 16px;
-      border: 1px solid #334155;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-      height: fit-content;
-    }
-    h1 { color: #38bdf8; text-align: center; margin: 0 0 6px 0; font-size: 1.6rem; }
-    p.sub { text-align: center; color: #94a3b8; margin: 0 0 18px 0; font-size: 0.9rem; }
-
-    /* Pestañas */
-    .tabs-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-    .btn-tab {
-      flex: 1; min-width: 105px; padding: 10px 8px; background: #0f172a;
-      border: 1px solid #334155; color: #94a3b8;
-      border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
-      user-select: none; transition: 0.2s;
-    }
-    .btn-tab.active { background: #38bdf8; color: #0b1120; border-color: #38bdf8; }
-    .btn-tab.challenge { border-color: #f59e0b; color: #fde68a; }
-    .btn-tab.challenge.active { background: #f59e0b; color: #0b1120; }
-
-    /* Módulos */
-    .mod-content { display: none; margin-top: 10px; }
-    .mod-content.visible { display: block !important; }
-
-    .form-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #94a3b8; }
-    input, select {
-      width: 100%; padding: 10px;
-      border-radius: 6px; border: 1px solid #334155;
-      background: #0f172a; color: #fff; font-size: 0.95rem;
-    }
-    input:focus, select:focus { outline: none; border-color: #38bdf8; }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
-    .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; }
-
-    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
-    .btn-main {
-      flex: 3; padding: 12px; background: #38bdf8;
-      color: #0b1120; border: none; border-radius: 8px;
-      font-weight: bold; font-size: 0.95rem; cursor: pointer;
-    }
-    .btn-code {
-      flex: 1; min-width: 95px; padding: 12px; background: #334155;
-      color: #38bdf8; border: 1px solid #38bdf8; border-radius: 8px;
-      font-weight: 600; font-size: 0.82rem; cursor: pointer;
-    }
-    .btn-hint {
-      background: #f59e0b; color: #0b1120; border: none; border-radius: 6px;
-      padding: 8px 12px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
-    }
-
-    /* Gráficos Canvas */
-    .canvas-container {
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      background: #070d19; border: 1px solid #334155; border-radius: 10px;
-      padding: 12px; margin: 14px 0;
-    }
-    canvas { background: #050811; border-radius: 8px; border: 1px solid #1e293b; max-width: 100%; }
-
-    /* Salidas de Procedimiento */
-    #salida {
-      margin-top: 18px; background: #070d19; padding: 16px;
-      border-radius: 10px; border: 1px solid #334155; display: none;
-    }
-    .step {
-      margin: 8px 0; padding-left: 12px; border-left: 3px solid #38bdf8;
-      font-size: 0.92rem; line-height: 1.5;
-    }
-    code {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 6px; border-radius: 4px;
-      font-family: monospace; color: #38bdf8;
-    }
-
-    /* Tablas */
-    table.didact-table {
-      width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem;
-    }
-    table.didact-table th, table.didact-table td {
-      border: 1px solid #334155; padding: 8px; text-align: left;
-    }
-    table.didact-table th { background: #0f172a; color: #38bdf8; }
-
-    /* Resistencias */
-    .resistor-display {
-      background: #334155; padding: 16px; border-radius: 10px;
-      display: flex; justify-content: center; margin: 10px 0;
-    }
-    .resistor-body {
-      width: 250px; height: 46px; background: #d4a373;
-      border-radius: 23px; display: flex; justify-content: space-around;
-      align-items: center; padding: 0 16px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
-    }
-    .banda { width: 14px; height: 100%; box-shadow: 0 0 3px rgba(0,0,0,0.5); }
-
-    /* Elementos dinámicos */
-    .torque-item, .fuerza-item {
-      display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
-      background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid #334155;
-    }
-    .color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .btn-del {
-      background: #ef4444; color: white; border: none; border-radius: 6px;
-      padding: 6px 10px; cursor: pointer; font-weight: bold;
-    }
-
-    /* Modal */
-    .modal-bg {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center;
-      z-index: 100;
-    }
-    .modal-box {
-      background: #1e293b; border: 1px solid #38bdf8;
-      border-radius: 10px; max-width: 540px; width: 90%; padding: 18px;
-    }
-    pre {
-      background: #050811; color: #a7f3d0; padding: 10px;
-      border-radius: 6px; font-family: monospace; font-size: 0.82rem;
-      overflow-x: auto; white-space: pre-wrap;
-    }
-  </style>
+  <!-- Hoja de estilos externa -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Motor CAS para Derivadas e Integrales Abiertas -->
+  <script src="https://cdn.jsdelivr.net/npm/algebrite@1.4.0/dist/algebrite.bundle-for-browser.js"></script>
 </head>
 <body>
 
 <div class="main-card">
   <h1>Suite Científica, Cálculo & Robótica</h1>
-  <p class="sub">Plataforma didáctica con deducción de fórmulas, simulación balística y diagramas interactivos.</p>
+  <p class="sub">Plataforma didáctica con cálculo simbólico libre, deducción de fórmulas y diagramas dinámicos.</p>
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
-    <button class="btn-tab active" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física & Diagramas</button>
-    <button class="btn-tab" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo & Geometría</button>
+    <button class="btn-tab active" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo & Geometría</button>
+    <button class="btn-tab" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física & Diagramas</button>
     <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica & Circuitos</button>
     <button class="btn-tab" id="btn-tab-quimica" onclick="verMateria('quimica')">🧪 Química</button>
     <button class="btn-tab challenge" id="btn-tab-juego" onclick="verMateria('juego')">🏆 Desafíos Anti-Estrés</button>
   </div>
 
+  <!-- Sub-pestañas Cálculo -->
+  <div class="tabs-row" id="sub-calculo">
+    <button class="btn-tab active" onclick="verModulo('calculo', 'calc-libre')">✍️ Cálculo Libre (Escribe tu función)</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-cuadri')">Cuadriláteros (Áreas 2D)</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-3d')">Volúmenes 3D & Peso</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-trig')">Razones Trigonométricas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-ident')">Identidades Trigonométricas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-exp')">Leyes de Exponentes</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'cuadritos')">Sumas de Riemann</button>
+  </div>
+
   <!-- Sub-pestañas Física -->
-  <div class="tabs-row" id="sub-fisica">
+  <div class="tabs-row" id="sub-fisica" style="display: none;">
     <button class="btn-tab active" onclick="verModulo('fisica', 'fis-torque')">Torque Multicomponente</button>
     <button class="btn-tab" onclick="verModulo('fisica', 'plano-fuerzas')">Plano Vectorial 2D (Ampliado)</button>
     <button class="btn-tab" onclick="verModulo('fisica', 'fis-mrua')">MRUA con Gráfica</button>
     <button class="btn-tab" onclick="verModulo('fisica', 'fis-parabolico')">Tiro Parabólico</button>
     <button class="btn-tab" onclick="verModulo('fisica', 'fis-friccion')">DCL: Fuerza & Fricción</button>
   </div>
-
-  <!-- Sub-pestañas Cálculo -->
-<div class="tabs-row" id="sub-calculo">
-  <button class="btn-tab active" onclick="verSubCalculo('calc-libre')">✍️ Derivadas/Integrales (Métodos)</button>
-  <button class="btn-tab" onclick="verSubCalculo('calc-areas')">📐 Figuras 2D (Áreas y Despejes)</button>
-  <button class="btn-tab" onclick="verSubCalculo('calc-volumenes')">📦 Cuerpos 3D (Volúmenes y Despejes)</button>
-  <button class="btn-tab" onclick="verSubCalculo('calc-trig')">📐 Razones Trigonométricas</button>
-  <button class="btn-tab" onclick="verSubCalculo('calc-ident')">🔄 Identidades Trigonométricas</button>
-</div>
-
-<!-- 1. DERIVADAS E INTEGRALES CON MÉTODOS -->
-<div id="submod-calc-libre" class="calc-subseccion" style="display:block;">
-  <div class="form-group">
-    <label><b>Escribe tu función en términos de x:</b></label>
-    <input type="text" id="calc-expr-input" value="x * cos(x)" placeholder="Ej: 3*x^2 + 5*x, x*sin(x), (2*x+1)/(x-3), exp(2*x)">
-    <small style="color:#94a3b8; display:block; margin-top:4px;">
-      Multiplicaciones con <code>*</code>, potencias con <code>^</code>. Métodos analizados: Regla de la Cadena, Producto u·v, Cociente u/v, Integración por partes ∫u dv y reglas directas.
-    </small>
-  </div>
-  <div class="grid-2">
-    <div class="form-group">
-      <label>Límite inferior [a] (opcional para área definida):</label>
-      <input type="number" id="calc-lim-a" placeholder="Ej: 0" step="any">
-    </div>
-    <div class="form-group">
-      <label>Límite superior [b] (opcional para área definida):</label>
-      <input type="number" id="calc-lim-b" placeholder="Ej: 3.1416" step="any">
-    </div>
-  </div>
-  <div class="btn-row">
-    <button class="btn-main" onclick="resolverCalculoMetodo('derivar')">d/dx Analizar y Derivar</button>
-    <button class="btn-main" style="background:#10b981;" onclick="resolverCalculoMetodo('integrar')">∫ Analizar e Integrar</button>
-  </div>
-</div>
-
-<!-- 2. ÁREAS 2D CON DESPEJES -->
-<div id="submod-calc-areas" class="calc-subseccion" style="display:none;">
-  <div class="grid-2">
-    <div class="form-group">
-      <label>Figura Geométrica:</label>
-      <select id="fig-tipo-2d" onchange="configurarInputs2D()">
-        <option value="rectangulo">Rectángulo / Romboide</option>
-        <option value="triangulo">Triángulo</option>
-        <option value="trapecio">Trapecio</option>
-        <option value="rombo">Rombo</option>
-        <option value="circulo">Círculo</option>
-        <option value="poligono">Polígono Regular (Pentágono/Hexágono)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>¿Qué variable deseas calcular/despejar?</label>
-      <select id="fig-incognita-2d" onchange="configurarInputs2D()"></select>
-    </div>
-  </div>
-  <div class="grid-3" id="inputs-dinamicos-2d"></div>
-  <div class="btn-row">
-    <button class="btn-main" onclick="calcularAreaDespeje()">Calcular con Procedimiento</button>
-  </div>
-</div>
-
-<!-- 3. VOLÚMENES 3D CON DESPEJES -->
-<div id="submod-calc-volumenes" class="calc-subseccion" style="display:none;">
-  <div class="grid-2">
-    <div class="form-group">
-      <label>Cuerpo Geométrico 3D:</label>
-      <select id="fig-tipo-3d" onchange="configurarInputs3D()">
-        <option value="prisma">Prisma Rectangular (Caja / Cubo)</option>
-        <option value="cilindro">Cilindro</option>
-        <option value="esfera">Esfera</option>
-        <option value="cono">Cono</option>
-        <option value="piramide">Pirámide de Base Cuadrada</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>¿Qué variable deseas calcular/despejar?</label>
-      <select id="fig-incognita-3d" onchange="configurarInputs3D()"></select>
-    </div>
-  </div>
-  <div class="grid-3" id="inputs-dinamicos-3d"></div>
-  <div class="btn-row">
-    <button class="btn-main" onclick="calcularVolumenDespeje()">Calcular con Procedimiento</button>
-  </div>
-</div>
-
-<!-- 4. RAZONES TRIGONOMÉTRICAS COMPLETAS -->
-<div id="submod-calc-trig" class="calc-subseccion" style="display:none;">
-  <div class="form-group">
-    <label>Método de Entrada:</label>
-    <select id="trig-modo-input" onchange="configurarInputsTrig()">
-      <option value="angulo">A partir de un Ángulo (grados o radianes)</option>
-      <option value="triangulo">A partir de los lados del Triángulo Rectángulo</option>
-    </select>
-  </div>
-  <div id="inputs-trig-container" class="grid-2"></div>
-  <div class="btn-row">
-    <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar Razones y Ángulos Notables</button>
-  </div>
-</div>
-
-<!-- 5. IDENTIDADES TRIGONOMÉTRICAS TOTALES -->
-<div id="submod-calc-ident" class="calc-subseccion" style="display:none;">
-  <div class="form-group">
-    <label>Familia de Identidades:</label>
-    <select id="ident-familia" onchange="actualizarListaIdentidades()">
-      <option value="pitagoricas">Pitagóricas (sen²θ + cos²θ = 1, etc.)</option>
-      <option value="reciprocas">Recíprocas (csc = 1/sen, sec = 1/cos, cot = 1/tan)</option>
-      <option value="cociente">Cociente (tan = sen/cos, cot = cos/sen)</option>
-      <option value="paridad">Paridad / Negativo (sen(-θ) = -sen(θ), cos(-θ) = cos(θ))</option>
-      <option value="doble">Ángulo Doble (sen 2θ, cos 2θ, tan 2θ)</option>
-      <option value="suma">Suma y Resta de Ángulos (sen(α ± β), cos(α ± β))</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Identidad Específica:</label>
-    <select id="ident-especifica"></select>
-  </div>
-  <div class="grid-2">
-    <div class="form-group">
-      <label>Ángulo principal (θ o α) en grados:</label>
-      <input type="number" id="ident-ang1" value="30" step="any">
-    </div>
-    <div class="form-group" id="grp-ident-ang2" style="display:none;">
-      <label>Segundo ángulo (β) en grados:</label>
-      <input type="number" id="ident-ang2" value="45" step="any">
-    </div>
-  </div>
-  <div class="btn-row">
-    <button class="btn-main" onclick="demostrarIdentidadCompleta()">Demostrar y Verificar Paso a Paso</button>
-  </div>
-</div>
 
   <!-- Sub-pestañas Robótica -->
   <div class="tabs-row" id="sub-robotica" style="display: none;">
@@ -321,72 +64,190 @@
     <button class="btn-tab active" onclick="verModulo('juego', 'trivia')">Misiones con Pistas</button>
   </div>
 
-  <!-- ========================================================
-       1. FÍSICA Y DIAGRAMAS
-       ======================================================== -->
+  <!-- ================= CÁLCULO ================= -->
+  <div id="mod-calc-libre" class="mod-content visible">
+    <label><b>Calculadora Simbólica: Escribe cualquier función para resolver</b></label>
+    <div class="form-group">
+      <input type="text" id="cas-input" value="3*x^2 + sin(x) - 4*x" placeholder="Ej: 4*x^3 - cos(2*x) + exp(x)">
+      <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-top:4px;">
+        Multiplicación con <code>*</code>, potencias con <code>^</code>. Funciones admitidas: <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>exp(x)</code>, <code>log(x)</code>.
+      </span>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Límite inferior [a] (integral definida):</label><input type="number" id="cas-lim-a" placeholder="Ej: 0" step="any"></div>
+      <div class="form-group"><label>Límite superior [b] (integral definida):</label><input type="number" id="cas-lim-b" placeholder="Ej: 3.1416" step="any"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="resolverCAS('derivar')">d/dx Derivar Función</button>
+      <button class="btn-main" style="background:#10b981;" onclick="resolverCAS('integrar')">∫ Integrar Función</button>
+      <button class="btn-code" onclick="verCodigo('cas')">💻 Ver Código</button>
+    </div>
+  </div>
 
-  <!-- Torque Multicomponente -->
-  <div id="mod-fis-torque" class="mod-content visible">
+  <div id="mod-calc-cuadri" class="mod-content">
+    <label>Guía Didáctica: Áreas de Cuadriláteros</label>
+    <div class="form-group">
+      <select id="cuadri-tipo" onchange="ajustarInputsCuadrilatero()">
+        <option value="cuadrado">Cuadrado (L · L = L²)</option>
+        <option value="rectangulo">Rectángulo (base · altura)</option>
+        <option value="rombo">Rombo [(D · d) / 2]</option>
+        <option value="romboide">Romboide / Paralelogramo (base · altura real)</option>
+        <option value="trapecio">Trapecio {[(B + b) / 2] · h}</option>
+      </select>
+    </div>
+    <div class="grid-3" id="cuadri-inputs-container">
+      <div class="form-group" id="grp-cuadri-1"><label id="lbl-cuadri-1">Lado (L):</label><input type="number" id="cuadri-val1" value="5" oninput="dibujarYCalcularCuadrilatero()"></div>
+      <div class="form-group" id="grp-cuadri-2" style="display:none;"><label id="lbl-cuadri-2">Altura (h):</label><input type="number" id="cuadri-val2" value="3" oninput="dibujarYCalcularCuadrilatero()"></div>
+      <div class="form-group" id="grp-cuadri-3" style="display:none;"><label id="lbl-cuadri-3">Base menor (b):</label><input type="number" id="cuadri-val3" value="3" oninput="dibujarYCalcularCuadrilatero()"></div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="cvsCuadrilatero" width="440" height="220"></canvas>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="dibujarYCalcularCuadrilatero()">Explicar Deducción</button>
+      <button class="btn-code" onclick="verCodigo('cuadrilateros')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <div id="mod-calc-3d" class="mod-content">
+    <label><b>Calculadora de Volúmenes y Estimación de Peso:</b></label>
+    <div class="form-group">
+      <select id="vol-cuerpo" onchange="ajustarInputsVolumen()">
+        <option value="cilindro">Cilindro (Ejes, motores, baterías 18650)</option>
+        <option value="cubo">Prisma Rectangular / Cubo (Chasis, baterías LiPo)</option>
+        <option value="esfera">Esfera (Balines, rueda loca esférica)</option>
+        <option value="cono">Cono</option>
+      </select>
+    </div>
+    <div class="grid-3" id="vol-inputs">
+      <div class="form-group" id="grp-v1"><label id="lbl-v1">Radio (r) [cm]:</label><input type="number" id="vol-val1" value="2" step="any"></div>
+      <div class="form-group" id="grp-v2"><label id="lbl-v2">Altura (h) [cm]:</label><input type="number" id="vol-val2" value="6" step="any"></div>
+      <div class="form-group" id="grp-v3" style="display:none;"><label id="lbl-v3">Profundidad [cm]:</label><input type="number" id="vol-val3" value="3" step="any"></div>
+    </div>
+    <div class="form-group">
+      <label>Material de fabricación:</label>
+      <select id="vol-material">
+        <option value="1.24">Filamento 3D PLA (1.24 g/cm³)</option>
+        <option value="1.04">Filamento 3D ABS (1.04 g/cm³)</option>
+        <option value="2.70">Aluminio Estructural (2.70 g/cm³)</option>
+        <option value="1.18">Acrílico Láser (1.18 g/cm³)</option>
+        <option value="7.85">Acero / Tornillería (7.85 g/cm³)</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcularVolumenYPeso()">Calcular Volumen y Masa</button>
+      <button class="btn-code" onclick="verCodigo('volumen')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <div id="mod-calc-trig" class="mod-content">
+    <div class="grid-2">
+      <div class="form-group"><label>Cateto Opuesto (a):</label><input type="number" id="trig-co" value="3"></div>
+      <div class="form-group"><label>Cateto Adyacente (b):</label><input type="number" id="trig-ca" value="4"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcRazonesTrig()">Calcular 6 Razones Trigonométricas</button>
+      <button class="btn-code" onclick="verCodigo('trig')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <div id="mod-calc-ident" class="mod-content">
+    <div class="form-group">
+      <select id="sel-identidad">
+        <option value="pitagora">sen²(θ) + cos²(θ) = 1</option>
+        <option value="tan-sec">1 + tan²(θ) = sec²(θ)</option>
+        <option value="sen-doble">sen(2θ) = 2·sen(θ)·cos(θ)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Ángulo θ [°]:</label><input type="number" id="ident-angulo" value="30"></div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="comprobarIdentidad()">Demostrar Identidad</button>
+      <button class="btn-code" onclick="verCodigo('identidades')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <div id="mod-calc-exp" class="mod-content">
+    <div class="form-group">
+      <select id="sel-ley-exp" onchange="ajustarInputsExponentes()">
+        <option value="prod">Producto: aⁿ · aᵐ = aⁿ⁺ᵐ</option>
+        <option value="coc">Cociente: aⁿ / aᵐ = aⁿ⁻ᵐ</option>
+        <option value="pot">Potencia: (aⁿ)ᵐ = aⁿ·ᵐ</option>
+        <option value="neg">Exponente negativo: a⁻ⁿ = 1/aⁿ</option>
+      </select>
+    </div>
+    <div class="grid-3">
+      <div class="form-group"><label>Base a:</label><input type="number" id="exp-a" value="2"></div>
+      <div class="form-group"><label>Exponente n:</label><input type="number" id="exp-n" value="3"></div>
+      <div class="form-group" id="grp-exp-m"><label>Exponente m:</label><input type="number" id="exp-m" value="4"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcLeyesExponentes()">Demostrar Ley</button>
+      <button class="btn-code" onclick="verCodigo('exponentes')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <div id="mod-cuadritos" class="mod-content">
+    <label>Rectángulos de Riemann: <b id="lbl-cuadritos">6</b></label>
+    <input type="range" min="2" max="30" value="6" oninput="dibujarRiemann(this.value)">
+    <div class="canvas-container">
+      <canvas id="cvsRiemann" width="400" height="180"></canvas>
+      <p id="areaRiemannText" style="font-size:0.95rem; color:#38bdf8; margin:8px 0 0 0; font-weight:bold;">Área estimada: 2.96 u²</p>
+    </div>
+  </div>
+
+  <!-- ================= FÍSICA ================= -->
+  <div id="mod-fis-torque" class="mod-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <label><b>Fuerzas y Cargas aplicadas en la viga/brazo:</b></label>
+      <label><b>Fuerzas y Cargas en la viga/brazo:</b></label>
       <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer;" onclick="agregarFuerzaTorque()">+ Añadir Carga/Fuerza</button>
     </div>
     <div id="lista-torques"></div>
-
     <div class="canvas-container">
       <canvas id="cvsTorque" width="500" height="220"></canvas>
-      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Diagrama de Palanca: Eje central (fulcro) y fuerzas aplicadas en cada brazo</span>
     </div>
-
     <div class="btn-row">
       <button class="btn-main" onclick="calcTorqueMulticomponente()">Calcular Equilibrio y Torque Neto (Στ)</button>
       <button class="btn-code" onclick="verCodigo('torque')">💻 Ver Código</button>
     </div>
   </div>
 
-  <!-- Plano Vectorial Ampliado -->
   <div id="mod-plano-fuerzas" class="mod-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <label><b>Fuerzas Concurrentes en el Plano (Vista Ampliada):</b></label>
+      <label><b>Fuerzas Concurrentes en el Plano:</b></label>
       <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer;" onclick="agregarFuerza()">+ Añadir Vector</button>
     </div>
     <div id="lista-fuerzas"></div>
     <div class="canvas-container">
       <canvas id="cvsPlano" width="460" height="460"></canvas>
-      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Plano Cartesiano 2D Ampliado con Escala Dinámica</span>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Suma Vectorial y Resultante</button>
+      <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Suma Vectorial</button>
       <button class="btn-code" onclick="verCodigo('vectores')">💻 Ver Código</button>
     </div>
   </div>
 
-  <!-- MRUA -->
   <div id="mod-fis-mrua" class="mod-content">
     <div class="grid-3">
-      <div class="form-group"><label>Velocidad Inicial (v₀) [m/s]:</label><input type="number" id="mrua-v0" value="0"></div>
-      <div class="form-group"><label>Aceleración (a) [m/s²]:</label><input type="number" id="mrua-a" value="2.5"></div>
-      <div class="form-group"><label>Tiempo (t) [s]:</label><input type="number" id="mrua-t" value="4"></div>
+      <div class="form-group"><label>v₀ [m/s]:</label><input type="number" id="mrua-v0" value="0"></div>
+      <div class="form-group"><label>a [m/s²]:</label><input type="number" id="mrua-a" value="2.5"></div>
+      <div class="form-group"><label>t [s]:</label><input type="number" id="mrua-t" value="4"></div>
     </div>
     <div class="canvas-container">
       <canvas id="cvsMRUA" width="460" height="200"></canvas>
-      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Gráfica Parabólica de Posición vs Tiempo: d(t)</span>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcMRUA_Grafico()">Analizar y Trazar Trayectoria</button>
+      <button class="btn-main" onclick="calcMRUA_Grafico()">Analizar Trayectoria</button>
       <button class="btn-code" onclick="verCodigo('mrua')">💻 Ver Código</button>
     </div>
   </div>
 
-  <!-- Tiro Parabólico -->
   <div id="mod-fis-parabolico" class="mod-content">
     <div class="grid-2">
-      <div class="form-group"><label>Velocidad de Disparo (v₀) [m/s]:</label><input type="number" id="par-v0" value="25" step="any"></div>
-      <div class="form-group"><label>Ángulo de Disparo (θ) [°]:</label><input type="number" id="par-ang" value="45" step="any"></div>
+      <div class="form-group"><label>v₀ [m/s]:</label><input type="number" id="par-v0" value="25" step="any"></div>
+      <div class="form-group"><label>Ángulo (θ) [°]:</label><input type="number" id="par-ang" value="45" step="any"></div>
     </div>
     <div class="canvas-container">
       <canvas id="cvsParabolico" width="480" height="220"></canvas>
-      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Trayectoria Balística 2D con Hmax y Alcance Total</span>
     </div>
     <div class="btn-row">
       <button class="btn-main" onclick="calcParabolico_Grafico()">Simular Trayectoria</button>
@@ -394,16 +255,14 @@
     </div>
   </div>
 
-  <!-- DCL Fricción -->
   <div id="mod-fis-friccion" class="mod-content">
     <div class="grid-3">
       <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="dcl-m" value="5" step="any"></div>
       <div class="form-group"><label>Fuerza Aplicada (F) [N]:</label><input type="number" id="dcl-f" value="30" step="any"></div>
-      <div class="form-group"><label>Coeficiente de Fricción (μ):</label><input type="number" id="dcl-mu" value="0.25" step="any"></div>
+      <div class="form-group"><label>Coef. Fricción (μ):</label><input type="number" id="dcl-mu" value="0.25" step="any"></div>
     </div>
     <div class="canvas-container">
       <canvas id="cvsDCL" width="440" height="240"></canvas>
-      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Diagrama de Cuerpo Libre (DCL): Vectores ortogonales de equilibrio y movimiento</span>
     </div>
     <div class="btn-row">
       <button class="btn-main" onclick="calcDCL_Friccion()">Generar DCL y Aceleración</button>
@@ -411,629 +270,7 @@
     </div>
   </div>
 
- // --- NAVEGACIÓN DENTRO DE CÁLCULO ---
-function verSubCalculo(idSubmod) {
-  document.querySelectorAll('#sub-calculo .btn-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.calc-subseccion').forEach(s => s.style.display = 'none');
-  
-  event.target.classList.add('active');
-  const target = document.getElementById('submod-' + idSubmod);
-  if (target) target.style.display = 'block';
-
-  // Inicializaciones al entrar
-  if (idSubmod === 'calc-areas') configurarInputs2D();
-  if (idSubmod === 'calc-volumenes') configurarInputs3D();
-  if (idSubmod === 'calc-trig') configurarInputsTrig();
-  if (idSubmod === 'calc-ident') actualizarListaIdentidades();
-}
-
-// ==========================================
-// 1. DERIVADAS E INTEGRALES POR MÉTODOS
-// ==========================================
-function resolverCalculoMetodo(tipo) {
-  const expr = document.getElementById('calc-expr-input').value.trim();
-  const limA = document.getElementById('calc-lim-a').value.trim();
-  const limB = document.getElementById('calc-lim-b').value.trim();
-  const s = document.getElementById('salida');
-
-  if (!expr) { alert("Escribe una función."); return; }
-  if (typeof Algebrite === 'undefined') {
-    alert("Cargando motor de cálculo. Verifica conexión a internet.");
-    return;
-  }
-
-  try {
-    let limpia = expr.replace(/sen\(/g, "sin(").replace(/(\d)([a-zA-Z])/g, "$1*$2");
-    let metodoDetectado = "";
-    let pasos = "";
-
-    if (tipo === 'derivar') {
-      // Detección de método pedagógico
-      if (limpia.includes("/") && limpia.includes("x")) {
-        metodoDetectado = "Regla del Cociente: d/dx [u / v] = (u'·v - u·v') / v²";
-      } else if (limpia.includes("*") && (limpia.match(/x/g) || []).length > 1) {
-        metodoDetectado = "Regla del Producto: d/dx [u · v] = u'·v + u·v'";
-      } else if (limpia.includes("sin(") || limpia.includes("cos(") || limpia.includes("exp(")) {
-        metodoDetectado = "Regla de la Cadena con Funciones Trascendentes: d/dx [f(g(x))] = f'(g(x)) · g'(x)";
-      } else {
-        metodoDetectado = "Regla de la Potencia y Suma Término a Término: d/dx [c · xⁿ] = c · n · xⁿ⁻¹";
-      }
-
-      let res = Algebrite.run(`d(${limpia}, x)`);
-
-      pasos = `
-        <h3 style="color:#38bdf8;margin:0 0 8px 0;">Derivada Explicada Paso a Paso</h3>
-        <div class="step"><b>1. Función propuesta:</b> <code>f(x) = ${expr}</code></div>
-        <div class="step"><b>2. Estructura y Método recomendado:</b><br><span style="color:#fde68a;">${metodoDetectado}</span></div>
-        <div class="step"><b>3. Procedimiento:</b> Se identifican los términos individuales, se aplica la derivada de cada factor y se simplifican términos algebraicos semejantes.</div>
-        <div class="step"><b>Resultado final simplificado:</b><br><b style="color:#38bdf8;font-size:1.15rem;">f'(x) = ${res}</b></div>
-      `;
-    } else {
-      // Integral
-      if (limpia.includes("*") && (limpia.includes("sin") || limpia.includes("cos") || limpia.includes("exp") || limpia.includes("log"))) {
-        metodoDetectado = "Método de Integración por Partes: ∫ u dv = u·v - ∫ v du (Mnemotecnia: 'Un Día Vi Una Vaca...')";
-      } else if (limpia.includes("^") && limpia.includes("(") && limpia.includes("*")) {
-        metodoDetectado = "Método de Cambio de Variable / Sustitución u: Se elige u = g(x), du = g'(x)dx para transformar en ∫ uⁿ du";
-      } else {
-        metodoDetectado = "Integración Inmediata Directa: ∫ xⁿ dx = (xⁿ⁺¹)/(n+1) + C";
-      }
-
-      let resIndef = Algebrite.run(`integral(${limpia}, x)`);
-
-      pasos = `
-        <h3 style="color:#10b981;margin:0 0 8px 0;">Integral Explicada Paso a Paso</h3>
-        <div class="step"><b>1. Integral planteada:</b> <code>∫ [ ${expr} ] dx</code></div>
-        <div class="step"><b>2. Estrategia de Solución:</b><br><span style="color:#fde68a;">${metodoDetectado}</span></div>
-        <div class="step"><b>3. Antiderivada general (Integral Indefinida):</b><br><b style="color:#10b981;font-size:1.15rem;">F(x) = ${resIndef} + C</b></div>
-      `;
-
-      if (limA !== "" && limB !== "") {
-        let valB = Algebrite.run(`float(subst(${limB}, x, ${resIndef}))`);
-        let valA = Algebrite.run(`float(subst(${limA}, x, ${resIndef}))`);
-        let areaDef = Algebrite.run(`float(${valB} - (${valA}))`);
-        pasos += `
-          <div class="step" style="border-left-color:#f59e0b;">
-            <b>4. Teorema Fundamental del Cálculo [Área entre ${limA} y ${limB}]:</b><br>
-            • F(b) = F(${limB}) = <code>${valB}</code><br>
-            • F(a) = F(${limA}) = <code>${valA}</code><br>
-            <b>Área = F(b) - F(a) = <span style="color:#f59e0b;font-size:1.1rem;">${areaDef} u²</span></b>
-          </div>
-        `;
-      }
-    }
-
-    s.innerHTML = pasos;
-    s.style.display = 'block';
-  } catch (err) {
-    alert("Error de sintaxis matemática. Asegúrate de usar operadores explícitos (ejemplo: 2*x en lugar de 2x).");
-  }
-}
-
-// ==========================================
-// 2. GEOMETRÍA 2D CON DESPEJES
-// ==========================================
-const esquemas2D = {
-  rectangulo: {
-    incognitas: { area: "Área (conozco Base y Altura)", base: "Base (conozco Área y Altura)", altura: "Altura (conozco Área y Base)" },
-    inputs: {
-      area: [ {id:"b", l:"Base (b):", v:6}, {id:"h", l:"Altura (h):", v:4} ],
-      base: [ {id:"A", l:"Área (A):", v:24}, {id:"h", l:"Altura (h):", v:4} ],
-      altura: [ {id:"A", l:"Área (A):", v:24}, {id:"b", l:"Base (b):", v:6} ]
-    }
-  },
-  triangulo: {
-    incognitas: { area: "Área (conozco Base y Altura)", base: "Base (conozco Área y Altura)", altura: "Altura (conozco Área y Base)" },
-    inputs: {
-      area: [ {id:"b", l:"Base (b):", v:5}, {id:"h", l:"Altura (h):", v:4} ],
-      base: [ {id:"A", l:"Área (A):", v:10}, {id:"h", l:"Altura (h):", v:4} ],
-      altura: [ {id:"A", l:"Área (A):", v:10}, {id:"b", l:"Base (b):", v:5} ]
-    }
-  },
-  trapecio: {
-    incognitas: { area: "Área (conozco B, b y h)", altura: "Altura (conozco A, B y b)" },
-    inputs: {
-      area: [ {id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4}, {id:"h", l:"Altura (h):", v:5} ],
-      altura: [ {id:"A", l:"Área (A):", v:30}, {id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4} ]
-    }
-  },
-  rombo: {
-    incognitas: { area: "Área (conozco D y d)", diagMenor: "Diagonal Menor (conozco A y D)" },
-    inputs: {
-      area: [ {id:"D", l:"Diagonal Mayor (D):", v:8}, {id:"d", l:"Diagonal Menor (d):", v:5} ],
-      diagMenor: [ {id:"A", l:"Área (A):", v:20}, {id:"D", l:"Diagonal Mayor (D):", v:8} ]
-    }
-  },
-  circulo: {
-    incognitas: { area: "Área (conozco Radio)", radio: "Radio (conozco Área)" },
-    inputs: {
-      area: [ {id:"r", l:"Radio (r):", v:3} ],
-      radio: [ {id:"A", l:"Área (A):", v:28.27} ]
-    }
-  },
-  poligono: {
-    incognitas: { area: "Área (conozco Perímetro y Apotema)", apotema: "Apotema (conozco Área y Perímetro)" },
-    inputs: {
-      area: [ {id:"P", l:"Perímetro total (P):", v:30}, {id:"ap", l:"Apotema (ap):", v:4.13} ],
-      apotema: [ {id:"A", l:"Área (A):", v:61.95}, {id:"P", l:"Perímetro (P):", v:30} ]
-    }
-  }
-};
-
-function configurarInputs2D() {
-  const fig = document.getElementById('fig-tipo-2d').value;
-  const selInc = document.getElementById('fig-incognita-2d');
-  const cont = document.getElementById('inputs-dinamicos-2d');
-  
-  // Llenar selector de incógnita si cambió la figura
-  const mapaInc = esquemas2D[fig].incognitas;
-  if (!mapaInc[selInc.value]) {
-    selInc.innerHTML = "";
-    for (let k in mapaInc) selInc.innerHTML += `<option value="${k}">${mapaInc[k]}</option>`;
-  }
-
-  const incActual = selInc.value;
-  const listaInputs = esquemas2D[fig].inputs[incActual];
-  cont.innerHTML = "";
-  listaInputs.forEach(inp => {
-    cont.innerHTML += `
-      <div class="form-group">
-        <label>${inp.l}</label>
-        <input type="number" id="inp-2d-${inp.id}" value="${inp.v}" step="any">
-      </div>
-    `;
-  });
-}
-
-function calcularAreaDespeje() {
-  const fig = document.getElementById('fig-tipo-2d').value;
-  const inc = document.getElementById('fig-incognita-2d').value;
-  const s = document.getElementById('salida');
-
-  let res = 0, formula = "", despeje = "";
-
-  if (fig === 'rectangulo') {
-    if (inc === 'area') {
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      const h = parseFloat(document.getElementById('inp-2d-h').value);
-      res = b * h;
-      formula = "A = b · h";
-      despeje = `Multiplicación directa: A = ${b} · ${h} = <b>${res.toFixed(2)} u²</b>`;
-    } else if (inc === 'base') {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const h = parseFloat(document.getElementById('inp-2d-h').value);
-      res = A / h;
-      formula = "A = b · h  →  b = A / h";
-      despeje = `Despeje dividiendo entre altura: b = ${A} / ${h} = <b>${res.toFixed(2)} u</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      res = A / b;
-      formula = "A = b · h  →  h = A / b";
-      despeje = `Despeje dividiendo entre base: h = ${A} / ${b} = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'triangulo') {
-    if (inc === 'area') {
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      const h = parseFloat(document.getElementById('inp-2d-h').value);
-      res = (b * h) / 2;
-      formula = "A = (b · h) / 2";
-      despeje = `A = (${b} · ${h}) / 2 = <b>${res.toFixed(2)} u²</b>`;
-    } else if (inc === 'base') {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const h = parseFloat(document.getElementById('inp-2d-h').value);
-      res = (2 * A) / h;
-      formula = "A = (b · h) / 2  →  b = (2 · A) / h";
-      despeje = `b = (2 · ${A}) / ${h} = <b>${res.toFixed(2)} u</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      res = (2 * A) / b;
-      formula = "A = (b · h) / 2  →  h = (2 · A) / b";
-      despeje = `h = (2 · ${A}) / ${b} = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'circulo') {
-    if (inc === 'area') {
-      const r = parseFloat(document.getElementById('inp-2d-r').value);
-      res = Math.PI * r * r;
-      formula = "A = π · r²";
-      despeje = `A = π · (${r})² = <b>${res.toFixed(3)} u²</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      res = Math.sqrt(A / Math.PI);
-      formula = "A = π · r²  →  r = √(A / π)";
-      despeje = `r = √(${A} / π) = <b>${res.toFixed(3)} u</b>`;
-    }
-  } else if (fig === 'trapecio') {
-    if (inc === 'area') {
-      const B = parseFloat(document.getElementById('inp-2d-B').value);
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      const h = parseFloat(document.getElementById('inp-2d-h').value);
-      res = ((B + b) / 2) * h;
-      formula = "A = [ (B + b) / 2 ] · h";
-      despeje = `A = [ (${B} + ${b}) / 2 ] · ${h} = <b>${res.toFixed(2)} u²</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const B = parseFloat(document.getElementById('inp-2d-B').value);
-      const b = parseFloat(document.getElementById('inp-2d-b').value);
-      res = (2 * A) / (B + b);
-      formula = "h = (2 · A) / (B + b)";
-      despeje = `h = (2 · ${A}) / (${B} + ${b}) = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'rombo') {
-    if (inc === 'area') {
-      const D = parseFloat(document.getElementById('inp-2d-D').value);
-      const d = parseFloat(document.getElementById('inp-2d-d').value);
-      res = (D * d) / 2;
-      formula = "A = (D · d) / 2";
-      despeje = `A = (${D} · ${d}) / 2 = <b>${res.toFixed(2)} u²</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const D = parseFloat(document.getElementById('inp-2d-D').value);
-      res = (2 * A) / D;
-      formula = "d = (2 · A) / D";
-      despeje = `d = (2 · ${A}) / ${D} = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else {
-    // Polígono regular
-    if (inc === 'area') {
-      const P = parseFloat(document.getElementById('inp-2d-P').value);
-      const ap = parseFloat(document.getElementById('inp-2d-ap').value);
-      res = (P * ap) / 2;
-      formula = "A = (Perímetro · apotema) / 2";
-      despeje = `A = (${P} · ${ap}) / 2 = <b>${res.toFixed(2)} u²</b>`;
-    } else {
-      const A = parseFloat(document.getElementById('inp-2d-A').value);
-      const P = parseFloat(document.getElementById('inp-2d-P').value);
-      res = (2 * A) / P;
-      formula = "apotema = (2 · A) / Perímetro";
-      despeje = `ap = (2 · ${A}) / ${P} = <b>${res.toFixed(3)} u</b>`;
-    }
-  }
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D: Resolución y Despeje</h3>
-    <div class="step"><b>1. Fórmula canónica:</b> <code>${formula}</code></div>
-    <div class="step"><b>2. Despeje de la variable desconocida:</b><br>${despeje}</div>
-  `;
-  s.style.display = 'block';
-}
-
-// ==========================================
-// 3. VOLÚMENES 3D CON DESPEJES
-// ==========================================
-const esquemas3D = {
-  cilindro: {
-    incognitas: { vol: "Volumen (conozco Radio y Altura)", altura: "Altura (conozco Volumen y Radio)", radio: "Radio (conozco Volumen y Altura)" },
-    inputs: {
-      vol: [ {id:"r", l:"Radio (r):", v:3}, {id:"h", l:"Altura (h):", v:8} ],
-      altura: [ {id:"V", l:"Volumen (V):", v:226.19}, {id:"r", l:"Radio (r):", v:3} ],
-      radio: [ {id:"V", l:"Volumen (V):", v:226.19}, {id:"h", l:"Altura (h):", v:8} ]
-    }
-  },
-  prisma: {
-    incognitas: { vol: "Volumen (conozco Largo, Ancho y Alto)", altura: "Alto (conozco Volumen, Largo y Ancho)" },
-    inputs: {
-      vol: [ {id:"l", l:"Largo (a):", v:6}, {id:"w", l:"Ancho (b):", v:4}, {id:"h", l:"Alto (c):", v:3} ],
-      altura: [ {id:"V", l:"Volumen (V):", v:72}, {id:"l", l:"Largo (a):", v:6}, {id:"w", l:"Ancho (b):", v:4} ]
-    }
-  },
-  esfera: {
-    incognitas: { vol: "Volumen (conozco Radio)", radio: "Radio (conozco Volumen)" },
-    inputs: {
-      vol: [ {id:"r", l:"Radio (r):", v:4} ],
-      radio: [ {id:"V", l:"Volumen (V):", v:268.08} ]
-    }
-  },
-  cono: {
-    incognitas: { vol: "Volumen (conozco Radio y Altura)", altura: "Altura (conozco Volumen y Radio)" },
-    inputs: {
-      vol: [ {id:"r", l:"Radio (r):", v:3}, {id:"h", l:"Altura (h):", v:7} ],
-      altura: [ {id:"V", l:"Volumen (V):", v:65.97}, {id:"r", l:"Radio (r):", v:3} ]
-    }
-  },
-  piramide: {
-    incognitas: { vol: "Volumen (conozco Lado base y Altura)", altura: "Altura (conozco Volumen y Lado base)" },
-    inputs: {
-      vol: [ {id:"L", l:"Lado de base cuadrada (L):", v:4}, {id:"h", l:"Altura (h):", v:6} ],
-      altura: [ {id:"V", l:"Volumen (V):", v:32}, {id:"L", l:"Lado base (L):", v:4} ]
-    }
-  }
-};
-
-function configurarInputs3D() {
-  const fig = document.getElementById('fig-tipo-3d').value;
-  const selInc = document.getElementById('fig-incognita-3d');
-  const cont = document.getElementById('inputs-dinamicos-3d');
-
-  const mapaInc = esquemas3D[fig].incognitas;
-  if (!mapaInc[selInc.value]) {
-    selInc.innerHTML = "";
-    for (let k in mapaInc) selInc.innerHTML += `<option value="${k}">${mapaInc[k]}</option>`;
-  }
-
-  const incActual = selInc.value;
-  const listaInputs = esquemas3D[fig].inputs[incActual];
-  cont.innerHTML = "";
-  listaInputs.forEach(inp => {
-    cont.innerHTML += `
-      <div class="form-group">
-        <label>${inp.l}</label>
-        <input type="number" id="inp-3d-${inp.id}" value="${inp.v}" step="any">
-      </div>
-    `;
-  });
-}
-
-function calcularVolumenDespeje() {
-  const fig = document.getElementById('fig-tipo-3d').value;
-  const inc = document.getElementById('fig-incognita-3d').value;
-  const s = document.getElementById('salida');
-
-  let res = 0, formula = "", despeje = "";
-
-  if (fig === 'cilindro') {
-    if (inc === 'vol') {
-      const r = parseFloat(document.getElementById('inp-3d-r').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      res = Math.PI * r * r * h;
-      formula = "V = π · r² · h";
-      despeje = `V = π · (${r})² · ${h} = <b>${res.toFixed(2)} u³</b>`;
-    } else if (inc === 'altura') {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const r = parseFloat(document.getElementById('inp-3d-r').value);
-      res = V / (Math.PI * r * r);
-      formula = "V = π · r² · h  →  h = V / (π · r²)";
-      despeje = `h = ${V} / [ π · (${r})² ] = <b>${res.toFixed(2)} u</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      res = Math.sqrt(V / (Math.PI * h));
-      formula = "r = √[ V / (π · h) ]";
-      despeje = `r = √[ ${V} / (π · ${h}) ] = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'prisma') {
-    if (inc === 'vol') {
-      const l = parseFloat(document.getElementById('inp-3d-l').value);
-      const w = parseFloat(document.getElementById('inp-3d-w').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      res = l * w * h;
-      formula = "V = largo · ancho · alto";
-      despeje = `V = ${l} · ${w} · ${h} = <b>${res.toFixed(2)} u³</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const l = parseFloat(document.getElementById('inp-3d-l').value);
-      const w = parseFloat(document.getElementById('inp-3d-w').value);
-      res = V / (l * w);
-      formula = "alto = V / (largo · ancho)";
-      despeje = `h = ${V} / (${l} · ${w}) = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'esfera') {
-    if (inc === 'vol') {
-      const r = parseFloat(document.getElementById('inp-3d-r').value);
-      res = (4/3) * Math.PI * Math.pow(r, 3);
-      formula = "V = (4/3) · π · r³";
-      despeje = `V = (4/3) · π · (${r})³ = <b>${res.toFixed(2)} u³</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      res = Math.cbrt((3 * V) / (4 * Math.PI));
-      formula = "r = ∛[ (3 · V) / (4 · π) ]";
-      despeje = `r = ∛[ (3 · ${V}) / (4 · π) ] = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else if (fig === 'cono') {
-    if (inc === 'vol') {
-      const r = parseFloat(document.getElementById('inp-3d-r').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      res = (1/3) * Math.PI * r * r * h;
-      formula = "V = (1/3) · π · r² · h";
-      despeje = `V = (1/3) · π · (${r})² · ${h} = <b>${res.toFixed(2)} u³</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const r = parseFloat(document.getElementById('inp-3d-r').value);
-      res = (3 * V) / (Math.PI * r * r);
-      formula = "h = (3 · V) / (π · r²)";
-      despeje = `h = (3 · ${V}) / (π · ${r}²) = <b>${res.toFixed(2)} u</b>`;
-    }
-  } else {
-    // Pirámide
-    if (inc === 'vol') {
-      const L = parseFloat(document.getElementById('inp-3d-L').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      res = (L * L * h) / 3;
-      formula = "V = (L² · h) / 3";
-      despeje = `V = (${L}² · ${h}) / 3 = <b>${res.toFixed(2)} u³</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const L = parseFloat(document.getElementById('inp-3d-L').value);
-      res = (3 * V) / (L * L);
-      formula = "h = (3 · V) / L²";
-      despeje = `h = (3 · ${V}) / ${L}² = <b>${res.toFixed(2)} u</b>`;
-    }
-  }
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cuerpos 3D: Resolución y Despeje</h3>
-    <div class="step"><b>1. Fórmula canónica:</b> <code>${formula}</code></div>
-    <div class="step"><b>2. Despeje de la variable:</b><br>${despeje}</div>
-  `;
-  s.style.display = 'block';
-}
-
-// ==========================================
-// 4. TRIGONOMETRÍA COMPLETA (6 RAZONES Y ÁNGULOS)
-// ==========================================
-function configurarInputsTrig() {
-  const modo = document.getElementById('trig-modo-input').value;
-  const cont = document.getElementById('inputs-trig-container');
-
-  if (modo === 'angulo') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Ángulo (θ) en grados:</label><input type="number" id="trig-val-ang" value="45" step="any"></div>
-      <div class="form-group"><label>Ángulo (θ) en radianes (opcional):</label><input type="number" id="trig-val-rad" placeholder="Ej: 0.785" step="any"></div>
-    `;
-  } else {
-    cont.innerHTML = `
-      <div class="form-group"><label>Cateto Opuesto (a):</label><input type="number" id="trig-val-co" value="3" step="any"></div>
-      <div class="form-group"><label>Cateto Adyacente (b):</label><input type="number" id="trig-val-ca" value="4" step="any"></div>
-    `;
-  }
-}
-
-function calcularTrigonometriaCompleta() {
-  const modo = document.getElementById('trig-modo-input').value;
-  const s = document.getElementById('salida');
-
-  let rad = 0, deg = 0;
-  let co = 0, ca = 0, hip = 0;
-
-  if (modo === 'angulo') {
-    let inpDeg = document.getElementById('trig-val-ang').value;
-    let inpRad = document.getElementById('trig-val-rad').value;
-    if (inpRad !== "") {
-      rad = parseFloat(inpRad);
-      deg = rad * 180 / Math.PI;
-    } else {
-      deg = parseFloat(inpDeg) || 0;
-      rad = deg * Math.PI / 180;
-    }
-  } else {
-    co = parseFloat(document.getElementById('trig-val-co').value) || 1;
-    ca = parseFloat(document.getElementById('trig-val-ca').value) || 1;
-    hip = Math.sqrt(co * co + ca * ca);
-    rad = Math.atan2(co, ca);
-    deg = rad * 180 / Math.PI;
-  }
-
-  const sin = Math.sin(rad);
-  const cos = Math.cos(rad);
-  const tan = Math.abs(cos) > 1e-9 ? Math.tan(rad) : Infinity;
-  const csc = Math.abs(sin) > 1e-9 ? 1 / sin : Infinity;
-  const sec = Math.abs(cos) > 1e-9 ? 1 / cos : Infinity;
-  const cot = Math.abs(sin) > 1e-9 && Math.abs(tan) > 1e-9 ? 1 / tan : Infinity;
-
-  // Ángulo notable
-  let notable = "Ángulo general";
-  const degNorm = Math.abs(deg % 360);
-  if (Math.abs(degNorm - 0) < 0.1) notable = "Ángulo notable: 0 rad (0°)";
-  if (Math.abs(degNorm - 30) < 0.1) notable = "Ángulo notable: π/6 rad (30°) [sen=1/2, cos=√3/2]";
-  if (Math.abs(degNorm - 45) < 0.1) notable = "Ángulo notable: π/4 rad (45°) [sen=√2/2, cos=√2/2]";
-  if (Math.abs(degNorm - 60) < 0.1) notable = "Ángulo notable: π/3 rad (60°) [sen=√3/2, cos=1/2]";
-  if (Math.abs(degNorm - 90) < 0.1) notable = "Ángulo notable: π/2 rad (90°) [sen=1, cos=0]";
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Las 6 Razones Trigonométricas</h3>
-    <div class="step">Ángulo evaluado: <b>${deg.toFixed(2)}°</b> = <b>${rad.toFixed(4)} radianes</b> (${notable})</div>
-    <table class="didact-table">
-      <tr><th>Razón Directa</th><th>Valor</th><th>Razón Recíproca</th><th>Valor</th></tr>
-      <tr><td><b>sen(θ)</b></td><td>${sin.toFixed(4)}</td><td><b>csc(θ) = 1/sen</b></td><td>${isFinite(csc) ? csc.toFixed(4) : "Indefinido (asíntota)"}</td></tr>
-      <tr><td><b>cos(θ)</b></td><td>${cos.toFixed(4)}</td><td><b>sec(θ) = 1/cos</b></td><td>${isFinite(sec) ? sec.toFixed(4) : "Indefinido (asíntota)"}</td></tr>
-      <tr><td><b>tan(θ)</b></td><td>${isFinite(tan) ? tan.toFixed(4) : "Indefinido (±∞)"}</td><td><b>cot(θ) = 1/tan</b></td><td>${isFinite(cot) ? cot.toFixed(4) : "Indefinido (±∞)"}</td></tr>
-    </table>
-  `;
-  s.style.display = 'block';
-}
-
-// ==========================================
-// 5. IDENTIDADES TRIGONOMÉTRICAS TOTALES
-// ==========================================
-const catalogoIdentidades = {
-  pitagoricas: [
-    { id: "p1", txt: "sen²(θ) + cos²(θ) = 1" },
-    { id: "p2", txt: "1 + tan²(θ) = sec²(θ)" },
-    { id: "p3", txt: "1 + cot²(θ) = csc²(θ)" }
-  ],
-  reciprocas: [
-    { id: "r1", txt: "sen(θ) · csc(θ) = 1" },
-    { id: "r2", txt: "cos(θ) · sec(θ) = 1" },
-    { id: "r3", txt: "tan(θ) · cot(θ) = 1" }
-  ],
-  cociente: [
-    { id: "c1", txt: "tan(θ) = sen(θ) / cos(θ)" },
-    { id: "c2", txt: "cot(θ) = cos(θ) / sen(θ)" }
-  ],
-  paridad: [
-    { id: "pa1", txt: "sen(-θ) = -sen(θ)  [Función Impar]" },
-    { id: "pa2", txt: "cos(-θ) = cos(θ)   [Función Par]" },
-    { id: "pa3", txt: "tan(-θ) = -tan(θ)  [Función Impar]" }
-  ],
-  doble: [
-    { id: "d1", txt: "sen(2θ) = 2 · sen(θ) · cos(θ)" },
-    { id: "d2", txt: "cos(2θ) = cos²(θ) - sen²(θ)" },
-    { id: "d3", txt: "tan(2θ) = [2·tan(θ)] / [1 - tan²(θ)]" }
-  ],
-  suma: [
-    { id: "s1", txt: "sen(α + β) = sen(α)·cos(β) + cos(α)·sen(β)" },
-    { id: "s2", txt: "cos(α + β) = cos(α)·cos(β) - sen(α)·sen(β)" }
-  ]
-};
-
-function actualizarListaIdentidades() {
-  const fam = document.getElementById('ident-familia').value;
-  const selEsp = document.getElementById('ident-especifica');
-  const grpAng2 = document.getElementById('grp-ident-ang2');
-
-  selEsp.innerHTML = "";
-  catalogoIdentidades[fam].forEach(item => {
-    selEsp.innerHTML += `<option value="${item.id}">${item.txt}</option>`;
-  });
-
-  grpAng2.style.display = fam === 'suma' ? 'block' : 'none';
-}
-
-function demostrarIdentidadCompleta() {
-  const fam = document.getElementById('ident-familia').value;
-  const esp = document.getElementById('ident-especifica').value;
-  const t1 = parseFloat(document.getElementById('ident-ang1').value) || 0;
-  const t2 = parseFloat(document.getElementById('ident-ang2').value) || 0;
-  const s = document.getElementById('salida');
-
-  const r1 = t1 * Math.PI / 180;
-  const r2 = t2 * Math.PI / 180;
-
-  let izq = 0, der = 0, formula = "", explicacion = "";
-
-  if (esp === 'p1') {
-    izq = Math.pow(Math.sin(r1), 2) + Math.pow(Math.cos(r1), 2);
-    der = 1.0;
-    formula = "sen²(θ) + cos²(θ) = 1";
-    explicacion = `(${Math.sin(r1).toFixed(4)})² + (${Math.cos(r1).toFixed(4)})² = ${Math.pow(Math.sin(r1),2).toFixed(4)} + ${Math.pow(Math.cos(r1),2).toFixed(4)} = <b>${izq.toFixed(4)}</b>`;
-  } else if (esp === 'p2') {
-    izq = 1 + Math.pow(Math.tan(r1), 2);
-    der = 1 / Math.pow(Math.cos(r1), 2);
-    formula = "1 + tan²(θ) = sec²(θ)";
-    explicacion = `1 + (${Math.tan(r1).toFixed(4)})² = <b>${izq.toFixed(4)}</b>  |  sec²(${t1}°) = 1 / (${Math.cos(r1).toFixed(4)})² = <b>${der.toFixed(4)}</b>`;
-  } else if (esp === 'd1') {
-    izq = Math.sin(2 * r1);
-    der = 2 * Math.sin(r1) * Math.cos(r1);
-    formula = "sen(2θ) = 2 · sen(θ) · cos(θ)";
-    explicacion = `sen(${2 * t1}°) = <b>${izq.toFixed(4)}</b>  |  2 · sen(${t1}°) · cos(${t1}°) = 2 · (${Math.sin(r1).toFixed(4)}) · (${Math.cos(r1).toFixed(4)}) = <b>${der.toFixed(4)}</b>`;
-  } else if (esp === 'pa1') {
-    izq = Math.sin(-r1);
-    der = -Math.sin(r1);
-    formula = "sen(-θ) = -sen(θ)";
-    explicacion = `sen(-${t1}°) = <b>${izq.toFixed(4)}</b>  |  -sen(${t1}°) = <b>${der.toFixed(4)}</b>`;
-  } else if (esp === 's1') {
-    izq = Math.sin(r1 + r2);
-    der = (Math.sin(r1) * Math.cos(r2)) + (Math.cos(r1) * Math.sin(r2));
-    formula = "sen(α + β) = sen(α)·cos(β) + cos(α)·sen(β)";
-    explicacion = `sen(${t1}° + ${t2}°) = sen(${t1+t2}°) = <b>${izq.toFixed(4)}</b><br>Lado derecho: (${Math.sin(r1).toFixed(3)}·${Math.cos(r2).toFixed(3)}) + (${Math.cos(r1).toFixed(3)}·${Math.sin(r2).toFixed(3)}) = <b>${der.toFixed(4)}</b>`;
-  } else {
-    izq = Math.tan(r1);
-    der = Math.sin(r1) / Math.cos(r1);
-    formula = "tan(θ) = sen(θ) / cos(θ)";
-    explicacion = `tan(${t1}°) = <b>${izq.toFixed(4)}</b>  |  sen/cos = <b>${der.toFixed(4)}</b>`;
-  }
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Identidad Trigonométrica</h3>
-    <div class="step"><b>Identidad analizada:</b> <code>${formula}</code></div>
-    <div class="step"><b>Evaluación con los ángulos dados:</b><br>${explicacion}</div>
-    <div class="step" style="border-left-color:#10b981;"><b>Conclusión matemática:</b> Lado Izquierdo (${izq.toFixed(4)}) = Lado Derecho (${der.toFixed(4)}). ¡La identidad se comprueba!</div>
-  `;
-  s.style.display = 'block';
-}
-  <!-- ========================================================
-       3. ROBÓTICA
-       ======================================================== -->
+  <!-- ================= ROBÓTICA ================= -->
   <div id="mod-rob-resistor" class="mod-content">
     <div class="form-group">
       <label>Tipo de Resistor:</label>
@@ -1119,9 +356,7 @@ function demostrarIdentidadCompleta() {
     </div>
   </div>
 
-  <!-- ========================================================
-       4. QUÍMICA
-       ======================================================== -->
+  <!-- ================= QUÍMICA ================= -->
   <div id="mod-quim-molar" class="mod-content">
     <div class="form-group">
       <select id="chem-comp">
@@ -1165,9 +400,7 @@ function demostrarIdentidadCompleta() {
     </div>
   </div>
 
-  <!-- ========================================================
-       5. DESAFÍOS ANTI-ESTRÉS CON DIFICULTAD Y PISTAS
-       ======================================================== -->
+  <!-- ================= DESAFÍOS ANTI-ESTRÉS ================= -->
   <div id="mod-trivia" class="mod-content">
     <div style="background:#0f172a; border:2px dashed #f59e0b; border-radius:12px; padding:20px; text-align:center;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
@@ -1214,765 +447,8 @@ function demostrarIdentidadCompleta() {
   </div>
 </div>
 
-<script>
-  // ==========================================
-  // NAVEGACIÓN GENERAL SEGURA
-  // ==========================================
-  function verMateria(mat) {
-    try {
-      document.querySelectorAll('#tabs-nivel-1 .btn-tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('[id^="sub-"]').forEach(s => s.style.display = 'none');
-      const salida = document.getElementById('salida');
-      if (salida) salida.style.display = 'none';
-
-      const btnActivo = document.getElementById('btn-tab-' + mat);
-      if (btnActivo) btnActivo.classList.add('active');
-
-      const sub = document.getElementById('sub-' + mat);
-      if (sub) sub.style.display = 'flex';
-
-      const porDefecto = {
-        fisica: 'fis-torque',
-        calculo: 'calc-cuadri',
-        robotica: 'rob-resistor',
-        quimica: 'quim-molar',
-        juego: 'trivia'
-      };
-      verModulo(mat, porDefecto[mat]);
-    } catch (e) { console.error(e); }
-  }
-
-  function verModulo(materia, mod) {
-    try {
-      const sub = document.getElementById('sub-' + materia);
-      if (sub) {
-        sub.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
-        sub.querySelectorAll('.btn-tab').forEach(btn => {
-          const fn = btn.getAttribute('onclick');
-          if (fn && fn.includes("'" + mod + "'")) btn.classList.add('active');
-        });
-      }
-
-      document.querySelectorAll('.mod-content').forEach(m => m.classList.remove('visible'));
-      const salida = document.getElementById('salida');
-      if (salida) salida.style.display = 'none';
-
-      const target = document.getElementById('mod-' + mod);
-      if (target) {
-        target.classList.add('visible');
-        if (mod === 'fis-torque') renderizarListaTorques();
-        if (mod === 'plano-fuerzas') renderizarListaFuerzas();
-        if (mod === 'fis-mrua') calcMRUA_Grafico();
-        if (mod === 'fis-parabolico') calcParabolico_Grafico();
-        if (mod === 'fis-friccion') calcDCL_Friccion();
-        if (mod === 'calc-cuadri') { ajustarInputsCuadrilatero(); dibujarYCalcularCuadrilatero(); }
-        if (mod === 'calc-trig') calcRazonesTrig();
-        if (mod === 'rob-resistor') actualizarBandasColor();
-        if (mod === 'rob-esquematico') calcCircuitoEsquematico();
-        if (mod === 'cuadritos') dibujarRiemann(document.querySelector('#mod-cuadritos input').value);
-        if (mod === 'trivia') cargarPreguntaTrivia();
-      }
-    } catch (e) { console.error(e); }
-  }
-
-  // ==========================================
-  // 1. TORQUE MULTICOMPONENTE & DCL
-  // ==========================================
-  const paletaTorque = ['#38bdf8', '#ef4444', '#10b981', '#f59e0b', '#a855f7'];
-  let torquesData = [
-    { f: 20, d: 0.3, ang: 90, lado: 'izq', color: '#38bdf8' }, // Brazo izquierdo
-    { f: 15, d: 0.4, ang: 90, lado: 'der', color: '#ef4444' }  // Brazo derecho
-  ];
-
-  function renderizarListaTorques() {
-    const cont = document.getElementById('lista-torques');
-    if (!cont) return;
-    cont.innerHTML = "";
-
-    torquesData.forEach((it, i) => {
-      cont.innerHTML += `
-        <div class="torque-item">
-          <span class="color-dot" style="background:${it.color};"></span>
-          <b>F${i+1}:</b>
-          <input type="number" value="${it.f}" min="0" placeholder="F(N)" style="flex:1;padding:4px;" onchange="torquesData[${i}].f=parseFloat(this.value)||0;dibujarVigaTorque();"> N
-          <span style="font-size:0.8rem;color:#94a3b8;">Distancia (d):</span>
-          <input type="number" value="${it.d}" step="0.05" min="0" style="flex:1;padding:4px;" onchange="torquesData[${i}].d=parseFloat(this.value)||0;dibujarVigaTorque();"> m
-          <select style="width:auto;padding:4px;" onchange="torquesData[${i}].lado=this.value;dibujarVigaTorque();">
-            <option value="izq" ${it.lado==='izq'?'selected':''}>Lado Izq (↺ Antihorario +)</option>
-            <option value="der" ${it.lado==='der'?'selected':''}>Lado Der (↻ Horario -)</option>
-          </select>
-          ${torquesData.length > 1 ? `<button class="btn-del" onclick="eliminarTorque(${i})">✖</button>` : ''}
-        </div>
-      `;
-    });
-    dibujarVigaTorque();
-  }
-
-  function agregarFuerzaTorque() {
-    if (torquesData.length >= 5) { alert("Máximo 5 fuerzas simultáneas."); return; }
-    torquesData.push({ f: 10, d: 0.25, ang: 90, lado: 'der', color: paletaTorque[torquesData.length % paletaTorque.length] });
-    renderizarListaTorques();
-  }
-
-  function eliminarTorque(idx) {
-    torquesData.splice(idx, 1);
-    renderizarListaTorques();
-  }
-
-  function dibujarVigaTorque() {
-    const cvs = document.getElementById('cvsTorque');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-    ctx.clearRect(0,0,w,h);
-
-    // Viga principal
-    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 8;
-    ctx.beginPath(); ctx.moveTo(40, cy); ctx.lineTo(w - 40, cy); ctx.stroke();
-
-    // Fulcro central (Triángulo de apoyo)
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx - 16, cy + 28); ctx.lineTo(cx + 16, cy + 28); ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif'; ctx.fillText("Eje / Fulcro", cx - 25, cy + 42);
-
-    // Dibujar cada carga a escala
-    const maxD = Math.max(...torquesData.map(t => t.d), 0.5);
-    const escalaX = (w/2 - 60) / maxD;
-
-    torquesData.forEach((it, i) => {
-      const xPos = it.lado === 'izq' ? cx - (it.d * escalaX) : cx + (it.d * escalaX);
-      const flechaY = cy + 50;
-
-      dibujarFlecha(ctx, xPos, flechaY, xPos, cy, it.color, 3);
-      ctx.fillStyle = it.color; ctx.font = 'bold 11px sans-serif';
-      ctx.fillText(`F${i+1}=${it.f}N`, xPos - 15, flechaY + 14);
-      ctx.fillText(`${it.d}m`, xPos - 10, cy - 10);
-    });
-  }
-
-  function calcTorqueMulticomponente() {
-    let tAntihorario = 0; // Positivo (+)
-    let tHorario = 0;     // Negativo (-)
-    let desglose = "";
-
-    torquesData.forEach((it, i) => {
-      const rad = (it.ang * Math.PI) / 180;
-      const tMag = it.f * it.d * Math.sin(rad);
-
-      if (it.lado === 'izq') {
-        tAntihorario += tMag;
-        desglose += `<li><b>F${i+1} (Brazo Izq):</b> ${it.f}N · ${it.d}m = <code>+${tMag.toFixed(2)} N·m</code> (Giro Antihorario ↺)</li>`;
-      } else {
-        tHorario += tMag;
-        desglose += `<li><b>F${i+1} (Brazo Der):</b> ${it.f}N · ${it.d}m = <code>-${tMag.toFixed(2)} N·m</code> (Giro Horario ↻)</li>`;
-      }
-    });
-
-    const tNeto = tAntihorario - tHorario;
-    let estado = "";
-    if (Math.abs(tNeto) <= 0.05) {
-      estado = "⚖️ <b style='color:#10b981;'>¡EQUILIBRIO ROTACIONAL PERFECTO!</b> (Στ = 0). La viga permanece completamente horizontal.";
-    } else if (tNeto > 0) {
-      estado = "↺ <b style='color:#38bdf8;'>Rotación Antihoraria</b>. El lado izquierdo desciende con un torque neto de <b>" + tNeto.toFixed(2) + " N·m</b>.";
-    } else {
-      estado = "↻ <b style='color:#ef4444;'>Rotación Horaria</b>. El lado derecho desciende con un torque neto de <b>" + Math.abs(tNeto).toFixed(2) + " N·m</b>.";
-    }
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Físico de Torque y Palanca (Στ)</h3>
-      <div class="step"><b>1. Convención de Signos de Rotación:</b><br>
-        • Giro en contra de las manecillas del reloj (Antihorario) = <b>Positivo (+)</b><br>
-        • Giro a favor de las manecillas del reloj (Horario) = <b>Negativo (-)</b>
-      </div>
-      <div class="step"><b>2. Desglose individual de cada componente:</b>
-        <ul style="margin:4px 0;padding-left:18px;">${desglose}</ul>
-      </div>
-      <div class="step"><b>3. Sumatoria de Torques Netos:</b><br>
-        <code>Στ = Στ_antihorarios - Στ_horarios = ${tAntihorario.toFixed(2)} - ${tHorario.toFixed(2)} = <b>${tNeto.toFixed(2)} N·m</b></code>
-      </div>
-      <div class="step" style="border-left-color:#10b981;"><b>Diagnóstico del Sistema:</b> ${estado}</div>
-    `;
-    s.style.display = 'block';
-  }
-
-  // --- PLANO 2D AMPLIADO ---
-  const paleta = ['#38bdf8', '#10b981', '#f59e0b', '#a855f7', '#ec4899'];
-  let fuerzasData = [{ f: 20, ang: 30, color: '#38bdf8' }, { f: 15, ang: 120, color: '#10b981' }];
-
-  function renderizarListaFuerzas() {
-    const cont = document.getElementById('lista-fuerzas');
-    if (!cont) return;
-    cont.innerHTML = "";
-    fuerzasData.forEach((it, i) => {
-      cont.innerHTML += `
-        <div class="fuerza-item">
-          <span class="color-dot" style="background:${it.color};"></span>
-          <b>Vector ${i+1}:</b>
-          <input type="number" value="${it.f}" min="0" placeholder="Magnitud" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].f=parseFloat(this.value)||0;dibujarPlano();"> N
-          <input type="number" value="${it.ang}" placeholder="Ángulo" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].ang=parseFloat(this.value)||0;dibujarPlano();"> °
-          ${fuerzasData.length > 1 ? `<button class="btn-del" onclick="eliminarFuerza(${i})">✖</button>` : ''}
-        </div>
-      `;
-    });
-    dibujarPlano();
-  }
-
-  function agregarFuerza() {
-    if (fuerzasData.length >= 6) return;
-    fuerzasData.push({ f: 12, ang: 45, color: paleta[fuerzasData.length % paleta.length] });
-    renderizarListaFuerzas();
-  }
-
-  function eliminarFuerza(idx) {
-    fuerzasData.splice(idx, 1);
-    renderizarListaFuerzas();
-  }
-
-  function dibujarPlano(res = null) {
-    const cvs = document.getElementById('cvsPlano');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-    ctx.clearRect(0,0,w,h);
-
-    // Rejilla cuadriculada
-    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
-    for (let x = 30; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-    for (let y = 30; y < h; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-
-    // Ejes
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(15, cy); ctx.lineTo(w-15, cy); ctx.moveTo(cx, 15); ctx.lineTo(cx, h-15); ctx.stroke();
-
-    ctx.fillStyle = '#94a3b8'; ctx.font = '11px monospace';
-    ctx.fillText('+X (0°)', w - 50, cy - 8); ctx.fillText('-X (180°)', 15, cy - 8);
-    ctx.fillText('+Y (90°)', cx + 8, 25); ctx.fillText('-Y (270°)', cx + 8, h - 15);
-
-    let maxF = Math.max(...fuerzasData.map(f => f.f), res ? res.mag : 10, 10);
-    const escala = (w/2 - 50) / maxF;
-
-    fuerzasData.forEach((it, i) => {
-      const r = it.ang * Math.PI / 180;
-      const tx = cx + (it.f * Math.cos(r) * escala);
-      const ty = cy - (it.f * Math.sin(r) * escala);
-      dibujarFlecha(ctx, cx, cy, tx, ty, it.color, 2.5);
-      ctx.fillStyle = it.color; ctx.font = 'bold 11px sans-serif';
-      ctx.fillText(`F${i+1} (${it.f}N)`, tx + 6, ty - 6);
-    });
-
-    if (res && res.mag > 0.01) {
-      const r = res.ang * Math.PI / 180;
-      const tx = cx + (res.mag * Math.cos(r) * escala);
-      const ty = cy - (res.mag * Math.sin(r) * escala);
-      dibujarFlecha(ctx, cx, cy, tx, ty, '#ef4444', 4);
-      ctx.fillStyle = '#ef4444'; ctx.font = 'bold 12px sans-serif';
-      ctx.fillText(`FR (${res.mag.toFixed(1)}N)`, tx + 8, ty - 8);
-    }
-  }
-
-  function calcularPlanoFuerzas() {
-    let sx = 0, sy = 0, desglose = "";
-    fuerzasData.forEach((it, i) => {
-      const r = it.ang * Math.PI / 180;
-      const fx = it.f * Math.cos(r);
-      const fy = it.f * Math.sin(r);
-      sx += fx; sy += fy;
-      desglose += `<li><b>F${i+1} (${it.f}N a ${it.ang}°):</b> Fx = ${it.f}·cos(${it.ang}°) = <code>${fx.toFixed(2)}N</code> | Fy = ${it.f}·sen(${it.ang}°) = <code>${fy.toFixed(2)}N</code></li>`;
-    });
-
-    const mag = Math.sqrt(sx*sx + sy*sy);
-    let ang = Math.atan2(sy, sx) * 180 / Math.PI;
-    if (ang < 0) ang += 360;
-    dibujarPlano({ mag, ang });
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#ef4444;margin:0 0 8px 0;">Resolución Vectorial Analítica</h3>
-      <div class="step"><b>1. Descomposición cartesiana individual:</b><ul>${desglose}</ul></div>
-      <div class="step"><b>2. Sumatorias en ejes independientes:</b> ΣFx = <b>${sx.toFixed(2)} N</b> | ΣFy = <b>${sy.toFixed(2)} N</b></div>
-      <div class="step"><b>3. Teorema de Pitágoras (Magnitud):</b> <code>FR = √[(${sx.toFixed(2)})² + (${sy.toFixed(2)})²] = <b>${mag.toFixed(2)} N</b></code></div>
-      <div class="step"><b>4. Dirección del Vector:</b> <code>θ = arctan(ΣFy / ΣFx) = <b>${ang.toFixed(1)}°</b></code></div>
-    `;
-    s.style.display = 'block';
-  }
-
-  // --- DEMÁS FÍSICA CON EXPLICACIÓN PASO A PASO ---
-  function calcMRUA_Grafico() {
-    const v0 = parseFloat(document.getElementById('mrua-v0').value) || 0;
-    const a = parseFloat(document.getElementById('mrua-a').value) || 0;
-    const t = parseFloat(document.getElementById('mrua-t').value) || 0;
-    const vf = v0 + (a * t);
-    const d = (v0 * t) + (0.5 * a * t * t);
-
-    const cvs = document.getElementById('cvsMRUA');
-    if (cvs) {
-      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-      ctx.clearRect(0,0,w,h);
-      ctx.strokeStyle = '#475569'; ctx.beginPath();
-      ctx.moveTo(35, 15); ctx.lineTo(35, h - 25); ctx.lineTo(w - 15, h - 25); ctx.stroke();
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
-      for (let i = 0; i <= 30; i++) {
-        let tc = (t/30)*i, dc = (v0*tc) + (0.5*a*tc*tc);
-        let px = 35 + (tc/(t||1))*(w-60), py = (h-25) - (dc/(d||1))*(h-50);
-        if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-      }
-      ctx.stroke();
-    }
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática: Deducción de Trayectoria MRUA</h3>
-      <div class="step"><b>1. Identificación de datos:</b> Velocidad inicial v₀ = ${v0} m/s, Aceleración constante a = ${a} m/s², Tiempo t = ${t} s.</div>
-      <div class="step"><b>2. Ecuación de Velocidad Final:</b> <code>v_f = v_0 + a·t = ${v0} + (${a} · ${t}) = <b>${vf.toFixed(2)} m/s</b></code></div>
-      <div class="step"><b>3. Ecuación de Posición Cuadrática:</b><br>
-        <code>d = v_0·t + ½·a·t² = (${v0}·${t}) + 0.5·(${a})·(${t}²) = <b>${d.toFixed(2)} metros</b></code>
-      </div>
-      <div class="step" style="border-left-color:#10b981;">💡 <b>¿Por qué la gráfica es una curva?</b> Porque al haber aceleración, la distancia no aumenta en línea recta, sino como una parábola dependiente de <b>t²</b>.</div>
-    `;
-    s.style.display = 'block';
-  }
-
-  function calcParabolico_Grafico() {
-    const v0 = parseFloat(document.getElementById('par-v0').value) || 20;
-    const ang = parseFloat(document.getElementById('par-ang').value) || 45;
-    const g = 9.81, rad = ang * Math.PI / 180;
-    const voy = v0 * Math.sin(rad), vox = v0 * Math.cos(rad);
-    const tv = (2 * voy) / g, hmax = (voy * voy) / (2 * g), xmax = vox * tv;
-
-    const cvs = document.getElementById('cvsParabolico');
-    if (cvs) {
-      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-      ctx.clearRect(0,0,w,h);
-      ctx.strokeStyle = '#475569'; ctx.beginPath();
-      ctx.moveTo(30, 20); ctx.lineTo(30, h-25); ctx.lineTo(w-20, h-25); ctx.stroke();
-      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2.5; ctx.beginPath();
-      for (let px = 0; px <= w-60; px += 4) {
-        let xr = (px/(w-60))*xmax, tc = xr/(vox||1), yr = (voy*tc) - (0.5*g*tc*tc);
-        if (yr<0) yr=0;
-        let cy = (h-25) - (yr/(hmax||1))*(h-60);
-        if (px===0) ctx.moveTo(30+px, cy); else ctx.lineTo(30+px, cy);
-      }
-      ctx.stroke();
-    }
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#f59e0b;margin:0 0 8px 0;">Explicación Balística del Tiro Parabólico</h3>
-      <div class="step"><b>1. Descomposición del disparo:</b> El movimiento se divide en dos ejes independientes:<br>
-        • Horizontal (MRU): <code>v_0x = ${v0}·cos(${ang}°) = ${vox.toFixed(2)} m/s</code> (permanece constante).<br>
-        • Vertical (Tiro vertical): <code>v_0y = ${v0}·sen(${ang}°) = ${voy.toFixed(2)} m/s</code> (frenado por la gravedad g = 9.81 m/s²).
-      </div>
-      <div class="step"><b>2. Altura Máxima (cuando vy = 0):</b> <code>H_max = (v_0y)² / (2·g) = (${voy.toFixed(2)})² / 19.62 = <b>${hmax.toFixed(2)} m</b></code></div>
-      <div class="step"><b>3. Tiempo Total en el Aire:</b> <code>t_vuelo = (2 · v_0y) / g = <b>${tv.toFixed(2)} s</b></code></div>
-      <div class="step"><b>4. Alcance Horizontal Total:</b> <code>X_max = v_0x · t_vuelo = ${vox.toFixed(2)} · ${tv.toFixed(2)} = <b>${xmax.toFixed(2)} metros</b></code></div>
-    `;
-    s.style.display = 'block';
-  }
-
-  function calcDCL_Friccion() {
-    const m = parseFloat(document.getElementById('dcl-m').value) || 1;
-    const f = parseFloat(document.getElementById('dcl-f').value) || 0;
-    const mu = parseFloat(document.getElementById('dcl-mu').value) || 0;
-    const g = 9.81, peso = m * g, norm = peso, fric = mu * norm, a = Math.max(0, (f - fric) / m);
-
-    const cvs = document.getElementById('cvsDCL');
-    if (cvs) {
-      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-      ctx.clearRect(0,0,w,h);
-      ctx.strokeStyle = '#475569'; ctx.beginPath(); ctx.moveTo(40, cy+30); ctx.lineTo(w-40, cy+30); ctx.stroke();
-      ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-      ctx.fillRect(cx-30, cy-30, 60, 60); ctx.strokeRect(cx-30, cy-30, 60, 60);
-
-      dibujarFlecha(ctx, cx+30, cy, cx+90, cy, '#38bdf8', 2.5);
-      dibujarFlecha(ctx, cx-30, cy, cx-80, cy, '#ef4444', 2.5);
-      dibujarFlecha(ctx, cx, cy-30, cx, cy-80, '#10b981', 2.5);
-      dibujarFlecha(ctx, cx, cy+30, cx, cy+80, '#f59e0b', 2.5);
-    }
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">DCL: Equilibrio Vertical y Movimiento Horizontal</h3>
-      <div class="step"><b>1. Eje Vertical (Equilibrio ΣFy = 0):</b> La Normal contrarresta al Peso.<br>
-        <code>N = P = m · g = ${m} kg · 9.81 m/s² = <b>${peso.toFixed(2)} N</b></code>
-      </div>
-      <div class="step"><b>2. Fuerza de Fricción Opuesta:</b> Depende del material y la fuerza que comprime la superficie.<br>
-        <code>f_r = μ · N = ${mu} · ${peso.toFixed(2)} N = <b>${fric.toFixed(2)} N</b></code>
-      </div>
-      <div class="step"><b>3. Eje Horizontal (Segunda Ley de Newton ΣFx = m·a):</b><br>
-        Fuerza Neta = F_aplicada - f_r = ${f}N - ${fric.toFixed(2)}N = <b>${(f - fric).toFixed(2)} N</b>
-      </div>
-      <div class="step" style="border-left-color:#10b981;"><b>Aceleración del bloque:</b> <code>a = F_neta / m = <b>${a.toFixed(2)} m/s²</b></code></div>
-    `;
-    s.style.display = 'block';
-  }
-
-  // ==========================================
-  // 5. DESAFÍOS ANTI-ESTRÉS CON PISTAS
-  // ==========================================
-  const bancoTrivia = {
-    facil: [
-      {
-        q: "Identidad Pitagórica Fundamental",
-        desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta la suma sen²(θ) + cos²(θ)?",
-        ans: 1, tol: 0.05,
-        pista: "Recuerda la identidad reina de la trigonometría: para cualquier ángulo que elijas, sen² + cos² siempre da el mismo número entero básico."
-      },
-      {
-        q: "Leyes de los Exponentes: Todo número a la cero",
-        desc: "¿Cuál es el resultado de elevar 999⁰?",
-        ans: 1, tol: 0.01,
-        pista: "Cualquier número diferente de cero elevado a la potencia 0 siempre es igual a la unidad."
-      },
-      {
-        q: "Área de un Cuadrado",
-        desc: "Un robot de batalla tiene una base cuadrada cuyos lados miden 4 metros. ¿Cuál es su área en m²?",
-        ans: 16, tol: 0.1,
-        pista: "La fórmula es Lado multiplicado por Lado (L²)."
-      }
-    ],
-    medio: [
-      {
-        q: "Área de un Rombo",
-        desc: "Un rombo tiene una Diagonal Mayor D = 8 m y una diagonal menor d = 5 m. ¿Cuál es su área en m²?",
-        ans: 20, tol: 0.2,
-        pista: "Multiplica las dos diagonales (D · d) y no olvides dividir el resultado exactamente entre 2."
-      },
-      {
-        q: "Fuerza Resultante en una sola dimensión",
-        desc: "Dos robots jalan una cuerda: el Robot A jala hacia la derecha con 12 N y el Robot B jala a la izquierda con 5 N. ¿Cuál es la magnitud de la fuerza resultante neta en Newtons?",
-        ans: 7, tol: 0.1,
-        pista: "Como las dos fuerzas van en sentidos contrarios sobre la misma línea, solo tienes que restar la fuerza mayor menos la menor."
-      },
-      {
-        q: "Ley de Ohm para Arduino",
-        desc: "Quieres que por un resistor pasen 0.02 Amperes (20 mA) cuando hay un voltaje de 5 Volts. ¿Cuántos Ohms debe tener la resistencia (R = V / I)?",
-        ans: 250, tol: 2,
-        pista: "Aplica la Ley de Ohm despejada: R = Voltaje / Corriente. Divide 5 entre 0.02."
-      }
-    ],
-    dificil: [
-      {
-        q: "Equilibrio de Palanca (Torque Neto)",
-        desc: "En un balancín, un niño de 30 N se sienta a 2 metros del fulcro en el lado izquierdo (+60 N·m). ¿A cuántos metros del fulcro en el lado derecho debe sentarse una persona de 40 N para que el sistema quede en perfecto equilibrio?",
-        ans: 1.5, tol: 0.05,
-        pista: "Para estar en equilibrio, el torque izquierdo debe ser igual al torque derecho: (30 N · 2 m) = (40 N · distancia). Despeja la distancia dividiendo 60 entre 40."
-      },
-      {
-        q: "Derivada Trigonométrica",
-        desc: "Si f(x) = 5 · sen(4x), su derivada es f'(x) = k · cos(4x). ¿Cuál es el valor del nuevo coeficiente k?",
-        ans: 20, tol: 0.1,
-        pista: "Aplica la regla de la cadena: multiplica la amplitud externa (5) por la constante de adentro (4)."
-      }
-    ]
-  };
-
-  let vidas = 3, xp = 0, preguntaActual = null;
-
-  function cambiarDificultadTrivia() {
-    cargarPreguntaTrivia();
-  }
-
-  function cargarPreguntaTrivia() {
-    const dif = document.getElementById('trivia-dificultad').value;
-    const lista = bancoTrivia[dif];
-    preguntaActual = lista[Math.floor(Math.random() * lista.length)];
-
-    document.getElementById('j-titulo').innerText = preguntaActual.q;
-    document.getElementById('j-desc').innerText = preguntaActual.desc;
-    document.getElementById('j-input').value = "";
-    document.getElementById('j-msg').innerText = "";
-    document.getElementById('j-pista').style.display = "none";
-  }
-
-  function mostrarPistaTrivia() {
-    if (!preguntaActual) return;
-    const pBox = document.getElementById('j-pista');
-    pBox.innerHTML = `💡 <b>Pista para no estresarse:</b> ${preguntaActual.pista}`;
-    pBox.style.display = "block";
-  }
-
-  function verificarJuego() {
-    const a = parseFloat(document.getElementById('j-input').value);
-    if (isNaN(a)) { alert("Escribe un número antes de comprobar."); return; }
-
-    if (Math.abs(a - preguntaActual.ans) <= preguntaActual.tol) {
-      xp += 50;
-      document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta. Ganaste +50 XP.</span>";
-      document.getElementById('j-xp').innerText = xp + " XP";
-      setTimeout(cargarPreguntaTrivia, 2200);
-    } else {
-      vidas--;
-      document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ No pasa nada, revisa la pista arriba y vuelve a intentar.</span>";
-      let vStr = ""; for (let i = 0; i < vidas; i++) vStr += "❤️";
-      document.getElementById('j-vidas').innerText = vStr || "💀";
-      if (vidas <= 0) {
-        alert("¡Recargando vidas para seguir aprendiendo!");
-        vidas = 3;
-        document.getElementById('j-vidas').innerText = "❤️❤️❤️";
-        cargarPreguntaTrivia();
-      }
-    }
-  }
-
-  // --- DEMÁS FUNCIONES DE CÁLCULO, ROBÓTICA Y QUÍMICA ---
-  function ajustarInputsCuadrilatero() {
-    const t = document.getElementById('cuadri-tipo').value;
-    const g2 = document.getElementById('grp-cuadri-2'), g3 = document.getElementById('grp-cuadri-3');
-    const l1 = document.getElementById('lbl-cuadri-1'), l2 = document.getElementById('lbl-cuadri-2'), l3 = document.getElementById('lbl-cuadri-3');
-    if (t === 'cuadrado') { l1.innerText = "Lado (L):"; g2.style.display = 'none'; g3.style.display = 'none'; }
-    else if (t === 'rectangulo') { l1.innerText = "Base (b):"; l2.innerText = "Altura (h):"; g2.style.display = 'block'; g3.style.display = 'none'; }
-    else if (t === 'rombo') { l1.innerText = "Diagonal D:"; l2.innerText = "Diagonal d:"; g2.style.display = 'block'; g3.style.display = 'none'; }
-    else if (t === 'romboide') { l1.innerText = "Base (b):"; l2.innerText = "Altura real (h):"; g2.style.display = 'block'; g3.style.display = 'none'; }
-    else { l1.innerText = "Base Mayor (B):"; l2.innerText = "Altura (h):"; l3.innerText = "Base Menor (b):"; g2.style.display = 'block'; g3.style.display = 'block'; }
-    dibujarYCalcularCuadrilatero();
-  }
-
-  function dibujarYCalcularCuadrilatero() {
-    const t = document.getElementById('cuadri-tipo').value;
-    const v1 = parseFloat(document.getElementById('cuadri-val1').value) || 1;
-    const v2 = parseFloat(document.getElementById('cuadri-val2').value) || 1;
-    const v3 = parseFloat(document.getElementById('cuadri-val3').value) || 1;
-    let area = t === 'cuadrado' ? v1*v1 : t === 'rectangulo' ? v1*v2 : t === 'rombo' ? (v1*v2)/2 : t === 'romboide' ? v1*v2 : ((v1+v3)/2)*v2;
-
-    const cvs = document.getElementById('cvsCuadrilatero');
-    if (cvs) {
-      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-      ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
-      if (t === 'cuadrado') { ctx.fillRect(cx-45, cy-45, 90, 90); ctx.strokeRect(cx-45, cy-45, 90, 90); }
-      else if (t === 'rectangulo') { ctx.fillRect(cx-75, cy-35, 150, 70); ctx.strokeRect(cx-75, cy-35, 150, 70); }
-      else if (t === 'rombo') {
-        ctx.beginPath(); ctx.moveTo(cx, cy-50); ctx.lineTo(cx+70, cy); ctx.lineTo(cx, cy+50); ctx.lineTo(cx-70, cy); ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      } else {
-        ctx.beginPath(); ctx.moveTo(cx-60, cy+35); ctx.lineTo(cx+60, cy+35); ctx.lineTo(cx+85, cy-35); ctx.lineTo(cx-35, cy-35); ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-    }
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Área del Cuadrilátero: <b>${area.toFixed(2)} u²</b></h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcRazonesTrig() {
-    const co = parseFloat(document.getElementById('trig-co').value) || 3, ca = parseFloat(document.getElementById('trig-ca').value) || 4;
-    const h = Math.sqrt(co*co + ca*ca);
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Hipotenusa: ${h.toFixed(2)} | sen: ${(co/h).toFixed(4)} | cos: ${(ca/h).toFixed(4)} | tan: ${(co/ca).toFixed(4)}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function comprobarIdentidad() {
-    const deg = parseFloat(document.getElementById('ident-angulo').value) || 30, rad = deg * Math.PI / 180;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">sen²(${deg}°) + cos²(${deg}°) = <b>1.000</b></h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function ajustarInputsExponentes() {
-    const l = document.getElementById('sel-ley-exp').value;
-    document.getElementById('grp-exp-m').style.display = (l === 'neg') ? 'none' : 'block';
-  }
-
-  function calcLeyesExponentes() {
-    const l = document.getElementById('sel-ley-exp').value;
-    const a = parseFloat(document.getElementById('exp-a').value)||2, n = parseFloat(document.getElementById('exp-n').value)||3, m = parseFloat(document.getElementById('exp-m').value)||2;
-    let r = l === 'prod' ? Math.pow(a, n+m) : l === 'coc' ? Math.pow(a, n-m) : l === 'pot' ? Math.pow(a, n*m) : 1/Math.pow(a, n);
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Resultado: ${r}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function ajustarInputsDerivada() {
-    document.getElementById('grp-der2').style.display = (document.getElementById('der-tipo').value === 'ln') ? 'none' : 'block';
-  }
-
-  function calcDerivadaTrascendente() {
-    const t = document.getElementById('der-tipo').value, a = parseFloat(document.getElementById('der-in1').value)||1, k = parseFloat(document.getElementById('der-in2').value)||1;
-    let d = t === 'sin' ? `${a*k} · cos(${k}x)` : t === 'cos' ? `${-(a*k)} · sen(${k}x)` : t === 'tan' ? `${a*k} · sec²(${k}x)` : `${a*k} · e^(${k}x)`;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Derivada: ${d}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function ajustarInputsIntegral() {
-    document.getElementById('grp-int2').style.display = (document.getElementById('int-tipo').value === 'inv') ? 'none' : 'block';
-  }
-
-  function calcIntegralTrascendente() {
-    const t = document.getElementById('int-tipo').value, a = parseFloat(document.getElementById('int-in1').value)||1, k = parseFloat(document.getElementById('int-in2').value)||1;
-    let r = t === 'sin' ? `${(-a/k).toFixed(2)} · cos(${k}x) + C` : `${(a/k).toFixed(2)} · sen(${k}x) + C`;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Integral: ${r}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function dibujarRiemann(n) {
-    document.getElementById('lbl-cuadritos').innerText = n;
-    const cvs = document.getElementById('cvsRiemann');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0,0,w,h);
-    const dx = 2 / n; let suma = 0;
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.strokeStyle = '#38bdf8';
-    for (let i = 0; i < n; i++) {
-      let x = i * dx, y = (x + dx) * (x + dx);
-      suma += y * dx;
-      ctx.fillRect(30 + (x * 160), (h - 25) - (y * 32), dx * 160, y * 32);
-      ctx.strokeRect(30 + (x * 160), (h - 25) - (y * 32), dx * 160, y * 32);
-    }
-    document.getElementById('areaRiemannText').innerText = `Área aproximada: ${suma.toFixed(3)} u²`;
-  }
-
-  // --- ROBÓTICA Y QUÍMICA ---
-  const coloresRes = [
-    { n: "Negro", v: 0, m: 1, c: "#000000" }, { n: "Marrón", v: 1, m: 10, c: "#a52a2a", t: 1 },
-    { n: "Rojo", v: 2, m: 100, c: "#ef4444", t: 2 }, { n: "Naranja", v: 3, m: 1000, c: "#f97316" },
-    { n: "Amarillo", v: 4, m: 10000, c: "#eab308" }, { n: "Verde", v: 5, m: 100000, c: "#22c55e", t: 0.5 },
-    { n: "Azul", v: 6, m: 1000000, c: "#3b82f6" }, { n: "Oro", m: 0.1, c: "#ffd700", t: 5 }, { n: "Plata", m: 0.01, c: "#c0c0c0", t: 10 }
-  ];
-
-  function poblarSelectoresResistor() {
-    const s1 = document.getElementById('rc1'), s2 = document.getElementById('rc2'), s3 = document.getElementById('rc3');
-    const sm = document.getElementById('rc-mult'), st = document.getElementById('rc-tol');
-    if (!s1) return;
-    s1.innerHTML = ""; s2.innerHTML = ""; s3.innerHTML = ""; sm.innerHTML = ""; st.innerHTML = "";
-    coloresRes.forEach(c => {
-      if (c.v !== undefined) {
-        s1.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
-        s2.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
-        s3.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
-      }
-      if (c.m !== undefined) sm.innerHTML += `<option value="${c.m}" data-c="${c.c}">${c.n} (x${c.m})</option>`;
-      if (c.t !== undefined) st.innerHTML += `<option value="${c.t}" data-c="${c.c}">${c.n} (±${c.t}%)</option>`;
-    });
-    s1.selectedIndex = 2; s2.selectedIndex = 2; s3.selectedIndex = 0; sm.selectedIndex = 1; st.selectedIndex = 1;
-  }
-
-  function cambiarModoResistor() {
-    const m = document.getElementById('sel-tipo-resistor').value;
-    document.getElementById('grp-rc3').style.display = m === "5" ? "block" : "none";
-    document.getElementById('b3-digito').style.display = m === "5" ? "block" : "none";
-    document.getElementById('resistor-visual').style.background = m === "5" ? "#60a5fa" : "#d4a373";
-    actualizarBandasColor();
-  }
-
-  function actualizarBandasColor() {
-    const s1 = document.getElementById('rc1'), s2 = document.getElementById('rc2'), s3 = document.getElementById('rc3');
-    const sm = document.getElementById('rc-mult'), st = document.getElementById('rc-tol');
-    if (!s1 || !s1.options[s1.selectedIndex]) return;
-    document.getElementById('b1').style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
-    document.getElementById('b2').style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
-    document.getElementById('b3-digito').style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
-    document.getElementById('b-mult').style.background = sm.options[sm.selectedIndex].getAttribute('data-c');
-    document.getElementById('b-tol').style.background = st.options[st.selectedIndex].getAttribute('data-c');
-  }
-
-  function calcResistorCompleto() {
-    const modo = document.getElementById('sel-tipo-resistor').value;
-    const d1 = parseInt(document.getElementById('rc1').value), d2 = parseInt(document.getElementById('rc2').value), d3 = parseInt(document.getElementById('rc3').value);
-    const m = parseFloat(document.getElementById('rc-mult').value), tol = parseFloat(document.getElementById('rc-tol').value);
-    let base = modo === "5" ? (d1*100) + (d2*10) + d3 : (d1*10) + d2;
-    let ohms = base * m;
-    let txt = ohms >= 1e6 ? (ohms/1e6).toFixed(2) + " MΩ" : ohms >= 1e3 ? (ohms/1e3).toFixed(2) + " kΩ" : ohms.toFixed(1) + " Ω";
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Resistencia: ${txt} (±${tol}%)</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcCircuitoEsquematico() {
-    const vcc = parseFloat(document.getElementById('cir-vcc').value) || 5;
-    const r1 = parseFloat(document.getElementById('cir-r1').value) || 220;
-    const r2 = parseFloat(document.getElementById('cir-r2').value) || 0;
-    const i = (r1 + r2) > 0 ? (vcc / (r1 + r2)) : 0;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Corriente Circulante: ${(i*1000).toFixed(1)} mA</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function moverServo(v) {
-    document.getElementById('servoDegText').innerText = v + "°";
-    document.getElementById('servoUsText').innerText = Math.round(1000 + (v/180)*1000) + " µs";
-  }
-
-  function explicarServo() {
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Código Arduino:</h3><pre>#include &lt;Servo.h&gt;\nServo s;\nvoid setup(){ s.attach(9); }\nvoid loop(){ s.write(${document.getElementById('servoR').value}); }</pre>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcBateria() {
-    const cap = parseFloat(document.getElementById('b-cap').value) || 2000;
-    const tot = (parseFloat(document.getElementById('b-ard').value)||0) + (parseFloat(document.getElementById('b-sen').value)||0) + (parseFloat(document.getElementById('b-mot').value)||0);
-    const h = tot > 0 ? (cap * 0.70) / tot : 0;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Autonomía Estimada: ${h.toFixed(1)} horas (~${Math.round(h*60)} min)</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  const masasAtom = { H: 1.008, C: 12.011, O: 15.999, N: 14.007, Na: 22.990, Cl: 35.453, S: 32.065, Ca: 40.078, K: 39.098, Mn: 54.938 };
-  const composiciones = {
-    "H2SO4": { H: 2, S: 1, O: 4 }, "HCl": { H: 1, Cl: 1 }, "HNO3": { H: 1, N: 1, O: 3 }, "NaOH": { Na: 1, O: 1, H: 1 },
-    "NaCl": { Na: 1, Cl: 1 }, "CaCO3": { Ca: 1, C: 1, O: 3 }, "KMnO4": { K: 1, Mn: 1, O: 4 }, "C6H12O6": { C: 6, H: 12, O: 6 }, "H2O": { H: 2, O: 1 }
-  };
-
-  function calcMasaMolarExtendida() {
-    const f = document.getElementById('chem-comp').value;
-    const comps = composiciones[f];
-    let total = 0;
-    for (let el in comps) total += comps[el] * masasAtom[el];
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Masa Molar de ${f}: <b>${total.toFixed(2)} g/mol</b></h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcGases() {
-    const p = parseFloat(document.getElementById('g-p').value)||1, v = parseFloat(document.getElementById('g-v').value)||22.4, t = parseFloat(document.getElementById('g-t').value)||0;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Cantidad: ${((p*v)/(0.0821*(t+273.15))).toFixed(3)} moles</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcMolaridad() {
-    const n = parseFloat(document.getElementById('sol-n').value)||1, v = parseFloat(document.getElementById('sol-v').value)||1;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Molaridad: ${(n/v).toFixed(3)} M</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function dibujarFlecha(ctx, x1, y1, x2, y2, color, w) {
-    const head = 8, a = Math.atan2(y2 - y1, x2 - x1);
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w;
-    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - head * Math.cos(a - Math.PI/6), y2 - head * Math.sin(a - Math.PI/6));
-    ctx.lineTo(x2 - head * Math.cos(a + Math.PI/6), y2 - head * Math.sin(a + Math.PI/6));
-    ctx.fill();
-  }
-
-  const snippets = {
-    torque: `function torqueNeto(fuerzas) {\n  let tNeto = 0;\n  fuerzas.forEach(f => {\n    let t = f.f * f.d * Math.sin(f.ang * Math.PI / 180);\n    tNeto += f.lado === 'izq' ? t : -t;\n  });\n  return tNeto;\n}`,
-    vectores: `function sumaVectores(fx, fy) { return Math.sqrt(fx*fx + fy*fy); }`,
-    mrua: `function dMRUA(v0, a, t) { return (v0 * t) + (0.5 * a * t * t); }`,
-    parabolico: `function hMax(v0, ang) { let vy = v0 * Math.sin(ang * Math.PI / 180); return (vy * vy) / (2 * 9.81); }`,
-    dcl: `function fNeta(f, mu, m) { return f - (mu * m * 9.81); }`,
-    cuadrilateros: `function areaRombo(D, d) { return (D * d) / 2; }`,
-    trig: `function hipotenusa(a, b) { return Math.sqrt(a*a + b*b); }`,
-    identidades: `// sen²(θ) + cos²(θ) = 1`,
-    exponentes: `function prodBases(a, n, m) { return Math.pow(a, n + m); }`,
-    derivada: `function dSin(A, k) { return (A * k) + " · cos(" + k + "x)"; }`,
-    integral: `function iSin(A, k) { return (-A / k) + " · cos(" + k + "x) + C"; }`,
-    resistor: `function calcR(d1, d2, d3, m) { return ((d1*100) + (d2*10) + d3) * m; }`,
-    esquema: `function leyOhm(v, r) { return v / r; }`,
-    servo: `function servoPwm(deg) { return 1000 + (deg / 180) * 1000; }`,
-    bateria: `function bat(cap, cTot) { return (cap * 0.70) / cTot; }`,
-    molar: `function masaH2SO4() { return (2*1.008) + 32.065 + (4*15.999); }`,
-    gases: `function moles(p, v, tC) { return (p * v) / (0.0821 * (tC + 273.15)); }`,
-    molaridad: `function molaridad(n, v) { return n / v; }`
-  };
-
-  function verCodigo(id) {
-    document.getElementById('codeSnippet').innerText = snippets[id] || "// Código disponible";
-    document.getElementById('codeModal').style.display = 'flex';
-  }
-  function cerrarModal(e) { if (e.target.id === 'codeModal') cerrarModalDirecto(); }
-  function cerrarModalDirecto() { document.getElementById('codeModal').style.display = 'none'; }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    poblarSelectoresResistor();
-    actualizarBandasColor();
-    renderizarListaTorques();
-    cargarPreguntaTrivia();
-  });
-</script>
+<!-- Enlace al archivo de lógica -->
+<script src="script.js"></script>
 
 </body>
 </html>
