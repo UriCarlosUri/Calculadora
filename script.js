@@ -1042,21 +1042,205 @@ function calcBateria() {
 }
 
 // ==========================================
-// 6. QUÍMICA & DESAFÍOS
+// 6. QUÍMICA INTEGRAL: TABLA COMPLETA, PARSER Y DIBUJO ESTRUCTURAL
 // ==========================================
-const masasAtom = { H: 1.008, C: 12.011, O: 15.999, N: 14.007, Na: 22.990, Cl: 35.453, S: 32.065, Ca: 40.078, K: 39.098, Mn: 54.938 };
-const tablaPesosCompletos = { ...masasAtom, Al: 26.982, Fe: 55.845, Cu: 63.546, Zn: 65.38, Ag: 107.87, Au: 196.97, P: 30.974 };
 
-function limpiarSelectorPredefinido() { const s = document.getElementById('chem-comp'); if (s) s.value = ""; }
+// Base de datos de la Tabla Periódica
+const tablaPeriodicaCompleta = [
+  { z: 1, s: "H", n: "Hidrógeno", m: 1.008, g: "No metal", val: "1, -1" },
+  { z: 2, s: "He", n: "Helio", m: 4.003, g: "Gas noble", val: "0" },
+  { z: 3, s: "Li", n: "Litio", m: 6.94, g: "Metal alcalino", val: "1" },
+  { z: 4, s: "Be", n: "Berilio", m: 9.012, g: "Alcalinotérreo", val: "2" },
+  { z: 5, s: "B", n: "Boro", m: 10.81, g: "Metaloide", val: "3" },
+  { z: 6, s: "C", n: "Carbono", m: 12.011, g: "No metal", val: "2, 4, -4" },
+  { z: 7, s: "N", n: "Nitrógeno", m: 14.007, g: "No metal", val: "1, 2, 3, 4, 5, -3" },
+  { z: 8, s: "O", n: "Oxígeno", m: 15.999, g: "No metal", val: "-2" },
+  { z: 9, s: "F", n: "Flúor", m: 18.998, g: "Halógeno", val: "-1" },
+  { z: 10, s: "Ne", n: "Neón", m: 20.180, g: "Gas noble", val: "0" },
+  { z: 11, s: "Na", n: "Sodio", m: 22.990, g: "Metal alcalino", val: "1" },
+  { z: 12, s: "Mg", n: "Magnesio", m: 24.305, g: "Alcalinotérreo", val: "2" },
+  { z: 13, s: "Al", n: "Aluminio", m: 26.982, g: "Metal del bloque p", val: "3" },
+  { z: 14, s: "Si", n: "Silicio", m: 28.085, g: "Metaloide", val: "4, -4" },
+  { z: 15, s: "P", n: "Fósforo", m: 30.974, g: "No metal", val: "3, 5, -3" },
+  { z: 16, s: "S", n: "Azufre", m: 32.06, g: "No metal", val: "2, 4, 6, -2" },
+  { z: 17, s: "Cl", n: "Cloro", m: 35.45, g: "Halógeno", val: "1, 3, 5, 7, -1" },
+  { z: 18, s: "Ar", n: "Argón", m: 39.948, g: "Gas noble", val: "0" },
+  { z: 19, s: "K", n: "Potasio", m: 39.098, g: "Metal alcalino", val: "1" },
+  { z: 20, s: "Ca", n: "Calcio", m: 40.078, g: "Alcalinotérreo", val: "2" },
+  { z: 21, s: "Sc", n: "Escandio", m: 44.956, g: "Transición", val: "3" },
+  { z: 22, s: "Ti", n: "Titanio", m: 47.867, g: "Transición", val: "2, 3, 4" },
+  { z: 23, s: "V", n: "Vanadio", m: 50.942, g: "Transición", val: "2, 3, 4, 5" },
+  { z: 24, s: "Cr", n: "Cromo", m: 51.996, g: "Transición", val: "2, 3, 6" },
+  { z: 25, s: "Mn", n: "Manganeso", m: 54.938, g: "Transición", val: "2, 3, 4, 6, 7" },
+  { z: 26, s: "Fe", n: "Hierro", m: 55.845, g: "Transición", val: "2, 3" },
+  { z: 27, s: "Co", n: "Cobalto", m: 58.933, g: "Transición", val: "2, 3" },
+  { z: 28, s: "Ni", n: "Níquel", m: 58.693, g: "Transición", val: "2, 3" },
+  { z: 29, s: "Cu", n: "Cobre", m: 63.546, g: "Transición", val: "1, 2" },
+  { z: 30, s: "Zn", n: "Zinc", m: 65.38, g: "Transición", val: "2" },
+  { z: 31, s: "Ga", n: "Galio", m: 69.723, g: "Metal del bloque p", val: "3" },
+  { z: 32, s: "Ge", n: "Germanio", m: 72.630, g: "Metaloide", val: "4" },
+  { z: 33, s: "As", n: "Arsénico", m: 74.922, g: "Metaloide", val: "3, 5, -3" },
+  { z: 34, s: "Se", n: "Selenio", m: 78.971, g: "No metal", val: "2, 4, 6, -2" },
+  { z: 35, s: "Br", n: "Bromo", m: 79.904, g: "Halógeno", val: "1, 3, 5, -1" },
+  { z: 36, s: "Kr", n: "Kriptón", m: 83.798, g: "Gas noble", val: "0" },
+  { z: 37, s: "Rb", n: "Rubidio", m: 85.468, g: "Metal alcalino", val: "1" },
+  { z: 38, s: "Sr", n: "Estroncio", m: 87.62, g: "Alcalinotérreo", val: "2" },
+  { z: 47, s: "Ag", n: "Plata", m: 107.87, g: "Transición", val: "1" },
+  { z: 50, s: "Sn", n: "Estaño", m: 118.71, g: "Metal del bloque p", val: "2, 4" },
+  { z: 53, s: "I", n: "Yodo", m: 126.90, g: "Halógeno", val: "1, 3, 5, 7, -1" },
+  { z: 56, s: "Ba", n: "Bario", m: 137.33, g: "Alcalinotérreo", val: "2" },
+  { z: 74, s: "W", n: "Wolframio / Tungsteno", m: 183.84, g: "Transición", val: "2, 4, 6" },
+  { z: 78, s: "Pt", n: "Platino", m: 195.08, g: "Transición", val: "2, 4" },
+  { z: 79, s: "Au", n: "Oro", m: 196.97, g: "Transición", val: "1, 3" },
+  { z: 80, s: "Hg", n: "Mercurio", m: 200.59, g: "Transición", val: "1, 2" },
+  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal del bloque p", val: "2, 4" },
+  { z: 92, s: "U", n: "Uranio", m: 238.03, g: "Actínido", val: "3, 4, 5, 6" }
+];
+
+// Diccionario de pesos atómicos indexado por símbolo
+const tablaPesosCompletos = {};
+tablaPeriodicaCompleta.forEach(el => { tablaPesosCompletos[el.s] = el.m; });
+
+// Paleta CPK
+const coloresCPK = {
+  H: "#f8fafc", C: "#334155", O: "#ef4444", N: "#3b82f6", S: "#eab308",
+  Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea",
+  Al: "#94a3b8", Fe: "#d97706", Cu: "#ea580c", Zn: "#475569", Br: "#991b1b",
+  I: "#6b21a8", P: "#f59e0b", Ba: "#059669", Ti: "#64748b", Ag: "#cbd5e1", Au: "#eab308"
+};
+
+// Geometrías exactas para compuestos frecuentes
+const datosCompuestosQuim = {
+  "H2O": {
+    nom: { iupac: "Monóxido de dihidrógeno", stock: "Óxido de hidrógeno", trad: "Agua" },
+    tipoEnlace: "Covalente polar (104.5°)", geom: "Angular",
+    atomos: [{el:"O", x:0, y:-10, r:24}, {el:"H", x:-65, y:40, r:16}, {el:"H", x:65, y:40, r:16}],
+    enlaces: [[0,1,1], [0,2,1]]
+  },
+  "CO2": {
+    nom: { iupac: "Dióxido de carbono", stock: "Óxido de carbono(IV)", trad: "Anhídrido carbónico" },
+    tipoEnlace: "Covalente no polar (Dobles enlaces)", geom: "Lineal (180°)",
+    atomos: [{el:"C", x:0, y:0, r:22}, {el:"O", x:-90, y:0, r:22}, {el:"O", x:90, y:0, r:22}],
+    enlaces: [[0,1,2], [0,2,2]]
+  },
+  "CH4": {
+    nom: { iupac: "Tetrahidruro de carbono", stock: "Hidruro de carbono(IV)", trad: "Metano" },
+    tipoEnlace: "Covalente no polar", geom: "Tetraédrica (109.5°)",
+    atomos: [{el:"C", x:0, y:0, r:22}, {el:"H", x:0, y:-70, r:16}, {el:"H", x:70, y:20, r:16}, {el:"H", x:-70, y:20, r:16}, {el:"H", x:0, y:70, r:16}],
+    enlaces: [[0,1,1], [0,2,1], [0,3,1], [0,4,1]]
+  },
+  "NH3": {
+    nom: { iupac: "Trihidruro de nitrógeno", stock: "Hidruro de nitrógeno(III)", trad: "Amoníaco" },
+    tipoEnlace: "Covalente polar", geom: "Piramidal trigonal",
+    atomos: [{el:"N", x:0, y:-15, r:22}, {el:"H", x:-60, y:45, r:16}, {el:"H", x:60, y:45, r:16}, {el:"H", x:0, y:60, r:16}],
+    enlaces: [[0,1,1], [0,2,1], [0,3,1]]
+  },
+  "HCl": {
+    nom: { iupac: "Cloruro de hidrógeno", stock: "Cloruro de hidrógeno", trad: "Ácido clorhídrico" },
+    tipoEnlace: "Covalente polar", geom: "Lineal",
+    atomos: [{el:"Cl", x:-40, y:0, r:26}, {el:"H", x:50, y:0, r:16}],
+    enlaces: [[0,1,1]]
+  },
+  "NaCl": {
+    nom: { iupac: "Monocloruro de sodio", stock: "Cloruro de sodio", trad: "Sal común" },
+    tipoEnlace: "Iónico (Na⁺ Cl⁻)", geom: "Red iónica",
+    atomos: [{el:"Na", x:-50, y:0, r:20}, {el:"Cl", x:50, y:0, r:26}],
+    enlaces: [[0,1,1]]
+  },
+  "C2H5OH": {
+    nom: { iupac: "Etanol", stock: "Etanol", trad: "Alcohol etílico" },
+    tipoEnlace: "Covalente polar (-OH)", geom: "Tetraédrica plegada",
+    atomos: [{el:"C", x:-70, y:0, r:20}, {el:"C", x:0, y:0, r:20}, {el:"O", x:65, y:0, r:22}, {el:"H", x:115, y:0, r:15}],
+    enlaces: [[0,1,1], [1,2,1], [2,3,1]]
+  },
+  "H2SO4": {
+    nom: { iupac: "Tetraoxosulfato(VI) de hidrógeno", stock: "Sulfato(VI) de hidrógeno", trad: "Ácido sulfúrico" },
+    tipoEnlace: "Covalente coordinado", geom: "Tetraédrica en S",
+    atomos: [{el:"S", x:0, y:0, r:24}, {el:"O", x:0, y:-60, r:20}, {el:"O", x:0, y:60, r:20}, {el:"O", x:-60, y:0, r:20}, {el:"O", x:60, y:0, r:20}],
+    enlaces: [[0,1,2], [0,2,2], [0,3,1], [0,4,1]]
+  },
+  "HNO3": {
+    nom: { iupac: "Trioxonitrato(V) de hidrógeno", stock: "Nitrato(V) de hidrógeno", trad: "Ácido nítrico" },
+    tipoEnlace: "Covalente polar resonante", geom: "Trigonal plana",
+    atomos: [{el:"N", x:0, y:0, r:22}, {el:"O", x:0, y:-55, r:20}, {el:"O", x:55, y:30, r:20}, {el:"O", x:-55, y:30, r:20}],
+    enlaces: [[0,1,2], [0,2,1], [0,3,1]]
+  },
+  "NaOH": {
+    nom: { iupac: "Hidróxido de sodio", stock: "Hidróxido de sodio", trad: "Sosa cáustica" },
+    tipoEnlace: "Iónico (Na⁺ OH⁻)", geom: "Lineal iónica",
+    atomos: [{el:"Na", x:-65, y:0, r:20}, {el:"O", x:10, y:0, r:22}, {el:"H", x:65, y:0, r:15}],
+    enlaces: [[0,1,1], [1,2,1]]
+  },
+  "CaCO3": {
+    nom: { iupac: "Trioxocarbonato de calcio", stock: "Carbonato de calcio", trad: "Caliza" },
+    tipoEnlace: "Iónico y covalente", geom: "Trigonal plana en anión",
+    atomos: [{el:"Ca", x:-75, y:0, r:24}, {el:"C", x:20, y:0, r:20}, {el:"O", x:20, y:-50, r:18}, {el:"O", x:75, y:0, r:18}, {el:"O", x:20, y:50, r:18}],
+    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,1]]
+  },
+  "KMnO4": {
+    nom: { iupac: "Tetraoxomanganato(VII) de potasio", stock: "Permanganato de potasio", trad: "Permanganato potásico" },
+    tipoEnlace: "Iónico", geom: "Tetraédrica en Mn",
+    atomos: [{el:"K", x:-80, y:0, r:22}, {el:"Mn", x:15, y:0, r:24}, {el:"O", x:15, y:-55, r:18}, {el:"O", x:70, y:0, r:18}, {el:"O", x:15, y:55, r:18}],
+    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,2]]
+  },
+  "C6H12O6": {
+    nom: { iupac: "2,3,4,5,6-pentahidroxihexanal", stock: "D-Glucosa", trad: "Glucosa" },
+    tipoEnlace: "Covalente polar", geom: "Anillo piranósico",
+    atomos: [{el:"C", x:-45, y:-25, r:17}, {el:"C", x:0, y:-45, r:17}, {el:"C", x:45, y:-25, r:17}, {el:"C", x:45, y:25, r:17}, {el:"C", x:0, y:45, r:17}, {el:"O", x:-45, y:25, r:19}],
+    enlaces: [[0,1,1], [1,2,1], [2,3,1], [3,4,1], [4,5,1], [5,0,1]]
+  }
+};
+
+function buscarElementoQuimico() {
+  const txt = (document.getElementById('tabla-buscador') ? document.getElementById('tabla-buscador').value : "").toLowerCase().trim();
+  const cont = document.getElementById('tabla-resultados-contenedor');
+  if (!cont) return;
+
+  const filtrados = tablaPeriodicaCompleta.filter(el =>
+    el.n.toLowerCase().includes(txt) ||
+    el.s.toLowerCase().includes(txt) ||
+    el.z.toString() === txt
+  );
+
+  cont.innerHTML = "";
+  if (filtrados.length === 0) {
+    cont.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:10px;">No se encontraron elementos coincidentes con "${txt}".</div>`;
+    return;
+  }
+
+  filtrados.forEach(el => {
+    cont.innerHTML += `
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding:6px 8px;">
+        <div>
+          <b style="color:#38bdf8; font-size:1.15rem;">${el.s}</b> <span style="color:#f8fafc; font-weight:bold;">— ${el.n}</span> (Z = ${el.z})
+          <span style="display:block; font-size:0.8rem; color:#94a3b8;">Familia: ${el.g} | Valencia: ${el.val}</span>
+        </div>
+        <div style="text-align:right;">
+          <b style="color:#10b981; font-family:monospace; font-size:0.95rem;">${el.m} g/mol</b>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function limpiarSelectorPredefinido() {
+  const s = document.getElementById('chem-comp');
+  if (s) s.value = "";
+}
+
 function cargarCompuestoPredefinido() {
   const s = document.getElementById('chem-comp').value;
-  if (s) { document.getElementById('chem-custom-input').value = s; calcMasaMolarExtendida(); }
+  if (s) {
+    document.getElementById('chem-custom-input').value = s;
+    calcMasaMolarExtendida();
+  }
 }
 
 function parsearFormulaQuimica(formula) {
   const stack = [{}];
   const regex = /([A-Z][a-z]?)|(\()|(\))|(\d+)/g;
   let match, elementoPrevio = null;
+
   while ((match = regex.exec(formula)) !== null) {
     const [token, elem, abre, cierra, num] = match;
     if (elem) {
@@ -1065,8 +1249,10 @@ function parsearFormulaQuimica(formula) {
     } else if (num && elementoPrevio) {
       stack[stack.length - 1][elementoPrevio] += parseInt(num) - 1;
       elementoPrevio = null;
-    } else if (abre) { stack.push({}); elementoPrevio = null; }
-    else if (cierra) {
+    } else if (abre) {
+      stack.push({});
+      elementoPrevio = null;
+    } else if (cierra) {
       const grupo = stack.pop();
       elementoPrevio = null;
       let mult = 1;
@@ -1078,57 +1264,236 @@ function parsearFormulaQuimica(formula) {
   return stack[0];
 }
 
+function dibujarEstructura2DMolecula(compKey) {
+  const cvs = document.getElementById('cvsMol2D');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
+  ctx.clearRect(0, 0, w, h);
+
+  const mol = datosCompuestosQuim[compKey];
+  if (!mol || !mol.atomos) return;
+
+  // Enlaces
+  mol.enlaces.forEach(enl => {
+    const a1 = mol.atomos[enl[0]], a2 = mol.atomos[enl[1]], orden = enl[2] || 1;
+    const x1 = cx + a1.x, y1 = cy + a1.y, x2 = cx + a2.x, y2 = cy + a2.y;
+    ctx.strokeStyle = '#64748b';
+    if (orden === 1) {
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    } else {
+      ctx.lineWidth = 3;
+      const dx = y2 - y1, dy = -(x2 - x1);
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const ox = (dx / len) * 4, oy = (dy / len) * 4;
+      ctx.beginPath(); ctx.moveTo(x1 + ox, y1 + oy); ctx.lineTo(x2 + ox, y2 + oy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1 - ox, y1 - oy); ctx.lineTo(x2 - ox, y2 - oy); ctx.stroke();
+    }
+  });
+
+  // Esferas atómicas
+  mol.atomos.forEach(at => {
+    const px = cx + at.x, py = cy + at.y, col = coloresCPK[at.el] || "#cbd5e1";
+    let grad = ctx.createRadialGradient(px - at.r * 0.3, py - at.r * 0.3, at.r * 0.1, px, py, at.r);
+    grad.addColorStop(0, "#ffffff"); grad.addColorStop(0.4, col); grad.addColorStop(1, "#090d16");
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(px, py, at.r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = at.el === "H" ? "#0f172a" : "#f8fafc";
+    ctx.font = `bold ${Math.round(at.r * 0.85)}px sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(at.el, px, py);
+  });
+}
+
+function dibujarEstructuraQuimicaGenerica(formula, conteo) {
+  const cvs = document.getElementById('cvsMol2D');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
+  ctx.clearRect(0, 0, w, h);
+
+  if (datosCompuestosQuim[formula]) {
+    dibujarEstructura2DMolecula(formula);
+    return;
+  }
+
+  const elementos = Object.keys(conteo);
+  let atomoCentral = elementos.find(e => e !== "H" && e !== "O") || elementos[0];
+  let listaPerifericos = [];
+
+  for (let el in conteo) {
+    let cant = conteo[el];
+    if (el === atomoCentral) cant -= 1;
+    for (let i = 0; i < cant; i++) listaPerifericos.push(el);
+  }
+
+  const totalPerifericos = Math.min(listaPerifericos.length, 10);
+  const radioOrbita = totalPerifericos > 5 ? 85 : 70;
+
+  // Enlaces radiales
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 4;
+  for (let i = 0; i < totalPerifericos; i++) {
+    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
+    const px = cx + radioOrbita * Math.cos(ang);
+    const py = cy + radioOrbita * Math.sin(ang);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+  }
+
+  const dibujarEsfera = (el, x, y, r) => {
+    const col = coloresCPK[el] || "#cbd5e1";
+    let grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+    grad.addColorStop(0, "#ffffff"); grad.addColorStop(0.4, col); grad.addColorStop(1, "#090d16");
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = el === "H" ? "#0f172a" : "#f8fafc";
+    ctx.font = `bold ${Math.round(r * 0.85)}px sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(el, x, y);
+  };
+
+  // Átomos periféricos
+  for (let i = 0; i < totalPerifericos; i++) {
+    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
+    const px = cx + radioOrbita * Math.cos(ang);
+    const py = cy + radioOrbita * Math.sin(ang);
+    const el = listaPerifericos[i];
+    dibujarEsfera(el, px, py, el === "H" ? 16 : 22);
+  }
+
+  // Átomo central
+  dibujarEsfera(atomoCentral, cx, cy, 26);
+}
+
 function calcMasaMolarExtendida() {
   const f = (document.getElementById('chem-custom-input') ? document.getElementById('chem-custom-input').value : "H2O").trim();
+  const s = document.getElementById('salida');
+  if (!f) return;
+
   const conteo = parsearFormulaQuimica(f);
+  if (!conteo || Object.keys(conteo).length === 0) {
+    alert("Fórmula no válida. Escribe elementos respetando mayúsculas y minúsculas (ej: NaCl, Ca(OH)2).");
+    return;
+  }
+
   let total = 0, desglose = "";
   for (let el in conteo) {
-    let p = tablaPesosCompletos[el] || 1;
-    total += conteo[el] * p;
-    desglose += `<li><b>${el}:</b> ${conteo[el]} átomo(s) = <code>${(conteo[el]*p).toFixed(2)} g/mol</code></li>`;
+    let p = tablaPesosCompletos[el] || 1.0;
+    let sub = conteo[el] * p;
+    total += sub;
+    desglose += `<li><b>${el}:</b> ${conteo[el]} átomo(s) × ${p} g/mol = <code>${sub.toFixed(2)} g/mol</code></li>`;
   }
-  const cvs = document.getElementById('cvsMol2D');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
-    ctx.clearRect(0,0,cvs.width, cvs.height);
-    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 22px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(f, cx, cy);
+
+  // Dibuja la estructura y los enlaces
+  dibujarEstructuraQuimicaGenerica(f, conteo);
+
+  const predef = datosCompuestosQuim[f];
+  let bloqueNom = "";
+  if (predef) {
+    bloqueNom = `
+      <div class="step" style="border-left-color:#10b981;">
+        <b>Nomenclaturas Químicas:</b>
+        <table class="didact-table" style="margin-top:6px;">
+          <tr><th>IUPAC / Sistemática</th><th>Stock</th><th>Tradicional</th></tr>
+          <tr>
+            <td><b style="color:#38bdf8;">${predef.nom.iupac}</b></td>
+            <td><b>${predef.nom.stock}</b></td>
+            <td><span style="color:#fde68a;">${predef.nom.trad}</span></td>
+          </tr>
+        </table>
+        <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
+          • <b>Enlace:</b> ${predef.tipoEnlace} | • <b>Geometría:</b> ${predef.geom}
+        </div>
+      </div>
+    `;
   }
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#38bdf8;">Masa Molar: ${f} = <b style="color:#10b981;">${total.toFixed(2)} g/mol</b></h3><ul>${desglose}</ul>`;
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Químico: ${f}</h3>
+    ${bloqueNom}
+    <div class="step">
+      <b>Composición Elemental:</b>
+      <ul style="margin:4px 0; padding-left:18px;">${desglose}</ul>
+      <b>Masa Molar Total:</b> <b style="color:#10b981; font-size:1.15rem;">${total.toFixed(2)} g/mol</b>
+    </div>
+  `;
   s.style.display = 'block';
 }
 
 function configurarInputsGases() {
   const inc = document.getElementById('gas-despeje').value;
   const cont = document.getElementById('inputs-gases-dinamicos');
-  cont.innerHTML = `
-    <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1"></div>
-    <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4"></div>
-    <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0"></div>
-  `;
+  if (inc === 'n') {
+    cont.innerHTML = `
+      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
+      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+    `;
+  } else if (inc === 'p') {
+    cont.innerHTML = `
+      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
+      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+    `;
+  } else if (inc === 'v') {
+    cont.innerHTML = `
+      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
+      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
+      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+    `;
+  } else {
+    cont.innerHTML = `
+      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
+      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
+      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+    `;
+  }
 }
+
 function calcGases() {
-  const p = parseFloat(document.getElementById('g-p').value)||1;
-  const v = parseFloat(document.getElementById('g-v').value)||22.4;
-  const t = (parseFloat(document.getElementById('g-t').value)||0) + 273.15;
-  const n = (p * v) / (0.0821 * t);
+  const inc = document.getElementById('gas-despeje').value;
+  const R = 0.0821;
   const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#10b981;">Gases: n = <b>${n.toFixed(3)} moles</b></h3>`;
+  let resTexto = "";
+
+  if (inc === 'n') {
+    let p = parseFloat(document.getElementById('g-p').value), v = parseFloat(document.getElementById('g-v').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
+    let n = (p * v) / (R * t);
+    resTexto = `n = (P · V) / (R · T) = (${p} · ${v}) / (0.0821 · ${t.toFixed(1)}) = <b style="color:#10b981;">${n.toFixed(3)} moles</b>`;
+  } else if (inc === 'p') {
+    let n = parseFloat(document.getElementById('g-n').value), v = parseFloat(document.getElementById('g-v').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
+    let p = (n * R * t) / v;
+    resTexto = `P = (n · R · T) / V = <b style="color:#10b981;">${p.toFixed(3)} atm</b>`;
+  } else if (inc === 'v') {
+    let n = parseFloat(document.getElementById('g-n').value), p = parseFloat(document.getElementById('g-p').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
+    let v = (n * R * t) / p;
+    resTexto = `V = (n · R · T) / P = <b style="color:#10b981;">${v.toFixed(3)} Litros</b>`;
+  } else {
+    let n = parseFloat(document.getElementById('g-n').value), p = parseFloat(document.getElementById('g-p').value), v = parseFloat(document.getElementById('g-v').value);
+    let tK = (p * v) / (n * R);
+    resTexto = `T = (P · V) / (n · R) = <b>${tK.toFixed(1)} K</b> (<b style="color:#10b981;">${(tK - 273.15).toFixed(1)} °C</b>)`;
+  }
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de Gases Ideales (PV = nRT)</h3>
+    <div class="step">${resTexto}</div>
+  `;
   s.style.display = 'block';
 }
+
 function configurarInputsSoluciones() {
   const cont = document.getElementById('inputs-soluciones-dinamicos');
-  cont.innerHTML = `<div class="form-group"><label>Moles:</label><input type="number" id="sol-n" value="0.75"></div><div class="form-group"><label>Volumen [L]:</label><input type="number" id="sol-v" value="1.5"></div>`;
+  cont.innerHTML = `<div class="form-group"><label>Moles de soluto [mol]:</label><input type="number" id="sol-n" value="0.75" step="any"></div><div class="form-group"><label>Volumen [L]:</label><input type="number" id="sol-v" value="1.5" step="any"></div>`;
 }
+
 function calcMolaridad() {
-  const n = parseFloat(document.getElementById('sol-n').value)||0.75;
-  const v = parseFloat(document.getElementById('sol-v').value)||1.5;
+  const n = parseFloat(document.getElementById('sol-n').value) || 0.75;
+  const v = parseFloat(document.getElementById('sol-v').value) || 1.5;
   const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#38bdf8;">Molaridad = <b>${(n/v).toFixed(3)} M</b></h3>`;
+  s.innerHTML = `<h3 style="color:#38bdf8;">Molaridad = n / V = <b>${(n/v).toFixed(3)} M</b></h3>`;
   s.style.display = 'block';
 }
+
 function ajustarInputsPH() {}
+
 function calcularPH() {
   const val = parseFloat(document.getElementById('val-ph-in').value) || 0.001;
   const ph = -Math.log10(val);
@@ -1136,9 +1501,70 @@ function calcularPH() {
   s.innerHTML = `<h3 style="color:#10b981;">pH = <b>${ph.toFixed(2)}</b> | pOH = <b>${(14 - ph).toFixed(2)}</b></h3>`;
   s.style.display = 'block';
 }
-function buscarElementoQuimico() {
-  const cont = document.getElementById('tabla-resultados-contenedor');
-  if (cont) cont.innerHTML = `<div style="padding:8px; color:#38bdf8;"><b>H (Hidrógeno)</b> - Z=1, Masa=1.008 | <b>C (Carbono)</b> - Z=6, Masa=12.011 | <b>O (Oxígeno)</b> - Z=8, Masa=15.999</div>`;
+
+// ==========================================
+// 7. DESAFÍOS ANTI-ESTRÉS
+// ==========================================
+const bancoTrivia = {
+  facil: [
+    { q: "Identidad Pitagórica Fundamental", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta sen²(θ) + cos²(θ)?", ans: 1, tol: 0.05, pista: "sen²(θ) + cos²(θ) siempre es igual a 1." },
+    { q: "Exponente Cero", desc: "¿Cuánto es 999⁰?", ans: 1, tol: 0.01, pista: "Cualquier número distinto de cero elevado a cero es 1." },
+    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono?", ans: 6, tol: 0.1, pista: "El Carbono tiene 6 protones: Z = 6." }
+  ],
+  medio: [
+    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "A = (D · d) / 2 = (8 · 5) / 2." },
+    { q: "Fuerzas Opuestas", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Fuerza resultante?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
+    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar aproximada del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "Dos hidrógenos (2) + un oxígeno (16)." }
+  ],
+  dificil: [
+    { q: "Equilibrio Rotacional (Torque)", desc: "Carga de 30 N a 2 m del eje (+60 N·m). ¿A qué distancia equilibra una de 40 N?", ans: 1.5, tol: 0.05, pista: "Divide 60 entre 40." },
+    { q: "Derivada por Regla de la Potencia", desc: "Si f(x) = 5 · x^4, su derivada es k · x^3. ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica el coeficiente por el exponente: 5 · 4." }
+  ]
+};
+
+let vidas = 3, xp = 0, preguntaActual = null;
+function cambiarDificultadTrivia() { cargarPreguntaTrivia(); }
+
+function cargarPreguntaTrivia() {
+  const dif = document.getElementById('trivia-dificultad') ? document.getElementById('trivia-dificultad').value : 'medio';
+  const lista = bancoTrivia[dif] || bancoTrivia['medio'];
+  preguntaActual = lista[Math.floor(Math.random() * lista.length)];
+
+  if (document.getElementById('j-titulo')) document.getElementById('j-titulo').innerText = preguntaActual.q;
+  if (document.getElementById('j-desc')) document.getElementById('j-desc').innerText = preguntaActual.desc;
+  if (document.getElementById('j-input')) document.getElementById('j-input').value = "";
+  if (document.getElementById('j-msg')) document.getElementById('j-msg').innerText = "";
+  if (document.getElementById('j-pista')) document.getElementById('j-pista').style.display = "none";
+}
+
+function mostrarPistaTrivia() {
+  if (preguntaActual) {
+    document.getElementById('j-pista').innerText = preguntaActual.pista;
+    document.getElementById('j-pista').style.display = 'block';
+  }
+}
+
+function verificarJuego() {
+  const a = parseFloat(document.getElementById('j-input').value);
+  if (isNaN(a)) { alert("Escribe un número antes de comprobar."); return; }
+
+  if (Math.abs(a - preguntaActual.ans) <= preguntaActual.tol) {
+    xp += 50;
+    document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta (+50 XP).</span>";
+    document.getElementById('j-xp').innerText = xp + " XP";
+    setTimeout(cargarPreguntaTrivia, 2000);
+  } else {
+    vidas--;
+    document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Casi, revisa la pista arriba e inténtalo de nuevo.</span>";
+    let vStr = ""; for (let i = 0; i < vidas; i++) vStr += "❤️";
+    document.getElementById('j-vidas').innerText = vStr || "💀";
+    if (vidas <= 0) {
+      alert("¡Recargando vidas para seguir aprendiendo!");
+      vidas = 3;
+      document.getElementById('j-vidas').innerText = "❤️❤️❤️";
+      cargarPreguntaTrivia();
+    }
+  }
 }
 
 // Desafíos
