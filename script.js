@@ -196,7 +196,7 @@ function dibujarGraficaIntegral(exprLimpia, a, b, sombrear) {
 
     ctx.setLineDash([4, 4]); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(toCanvasX(a), 15); ctx.lineTo(toCanvasX(a), h - 15); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(toCanvasX(b), 15); ctx.lineTo(toCanvasX(b), h - 15); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(toCanvasX(b), 15); ctx.lineTo(toCanvasX(a + (b - a)), h - 15); ctx.stroke();
     ctx.setLineDash([]);
   }
 
@@ -1144,7 +1144,7 @@ function calcBateria() {
 }
 
 // ==========================================
-// 11. QUÍMICA: TABLA PERIÓDICA, NOMENCLATURA & ESTRUCTURA 2D
+// 11. QUÍMICA: TABLA PERIÓDICA, NOMENCLATURAS & PARSER 2D
 // ==========================================
 const elementosTabla = [
   { z: 1, s: "H", n: "Hidrógeno", m: 1.008, g: "No metal", val: "1, -1" },
@@ -1208,6 +1208,15 @@ function buscarElementoQuimico() {
 }
 
 const masasAtom = { H: 1.008, C: 12.011, O: 15.999, N: 14.007, Na: 22.990, Cl: 35.453, S: 32.065, Ca: 40.078, K: 39.098, Mn: 54.938 };
+
+const tablaPesosCompletos = {
+  H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122, B: 10.81, C: 12.011, N: 14.007, O: 15.999,
+  F: 18.998, Ne: 20.180, Na: 22.990, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06,
+  Cl: 35.45, Ar: 39.948, K: 39.098, Ca: 40.078, Sc: 44.956, Ti: 47.867, V: 50.942, Cr: 51.996,
+  Mn: 54.938, Fe: 55.845, Co: 58.933, Ni: 58.693, Cu: 63.546, Zn: 65.38, Ga: 69.723, Ge: 72.630,
+  As: 74.922, Se: 78.971, Br: 79.904, Kr: 83.798, Rb: 85.468, Sr: 87.62, Ag: 107.87, Sn: 118.71,
+  I: 126.90, Ba: 137.33, Pt: 195.08, Au: 196.97, Hg: 200.59, Pb: 207.2, U: 238.03
+};
 
 const datosCompuestosQuim = {
   "H2O": {
@@ -1318,8 +1327,61 @@ const datosCompuestosQuim = {
 
 const coloresCPK = {
   H: "#f8fafc", C: "#334155", O: "#ef4444", N: "#3b82f6", S: "#eab308",
-  Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea"
+  Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea",
+  Al: "#94a3b8", Fe: "#e2e8f0", Cu: "#f97316", P: "#f59e0b"
 };
+
+function limpiarSelectorPredefinido() {
+  const sel = document.getElementById('chem-comp');
+  if (sel) sel.value = "";
+}
+
+function cargarCompuestoPredefinido() {
+  const sel = document.getElementById('chem-comp').value;
+  if (sel) {
+    document.getElementById('chem-custom-input').value = sel;
+    calcMasaMolarExtendida();
+  }
+}
+
+function parsearFormulaQuimica(formula) {
+  const stack = [{}];
+  const regex = /([A-Z][a-z]?)|(\()|(\))|(\d+)/g;
+  let match;
+  let elementoPrevio = null;
+
+  while ((match = regex.exec(formula)) !== null) {
+    const [token, elem, abre, cierra, num] = match;
+
+    if (elem) {
+      elementoPrevio = elem;
+      stack[stack.length - 1][elem] = (stack[stack.length - 1][elem] || 0) + 1;
+    } else if (num) {
+      const cantidad = parseInt(num) - 1;
+      if (elementoPrevio) {
+        stack[stack.length - 1][elementoPrevio] += cantidad;
+        elementoPrevio = null;
+      }
+    } else if (abre) {
+      stack.push({});
+      elementoPrevio = null;
+    } else if (cierra) {
+      const grupo = stack.pop();
+      elementoPrevio = null;
+      let multiplicador = 1;
+      const siguienteMatch = formula.slice(regex.lastIndex).match(/^\d+/);
+      if (siguienteMatch) {
+        multiplicador = parseInt(siguienteMatch[0]);
+        regex.lastIndex += siguienteMatch[0].length;
+      }
+      for (let k in grupo) {
+        stack[stack.length - 1][k] = (stack[stack.length - 1][k] || 0) + (grupo[k] * multiplicador);
+      }
+    }
+  }
+
+  return stack[0];
+}
 
 function dibujarEstructura2DMolecula(compKey) {
   const cvs = document.getElementById('cvsMol2D');
@@ -1330,7 +1392,6 @@ function dibujarEstructura2DMolecula(compKey) {
   const mol = datosCompuestosQuim[compKey];
   if (!mol || !mol.atomos) return;
 
-  // Dibujar Enlaces (Líneas simples y dobles)
   mol.enlaces.forEach(enl => {
     const a1 = mol.atomos[enl[0]], a2 = mol.atomos[enl[1]], orden = enl[2] || 1;
     const x1 = cx + a1.x, y1 = cy + a1.y, x2 = cx + a2.x, y2 = cy + a2.y;
@@ -1340,7 +1401,6 @@ function dibujarEstructura2DMolecula(compKey) {
       ctx.lineWidth = 5;
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     } else {
-      // Doble enlace paralelo
       ctx.lineWidth = 3;
       const dx = y2 - y1, dy = -(x2 - x1);
       const len = Math.sqrt(dx*dx + dy*dy) || 1;
@@ -1350,7 +1410,6 @@ function dibujarEstructura2DMolecula(compKey) {
     }
   });
 
-  // Dibujar Átomos (Esferas con degradado)
   mol.atomos.forEach(at => {
     const px = cx + at.x, py = cy + at.y, col = coloresCPK[at.el] || "#cbd5e1";
     let grad = ctx.createRadialGradient(px - at.r * 0.3, py - at.r * 0.3, at.r * 0.1, px, py, at.r);
@@ -1369,46 +1428,151 @@ function dibujarEstructura2DMolecula(compKey) {
   });
 }
 
-function calcMasaMolarExtendida() {
-  const f = document.getElementById('chem-comp').value;
-  const compInfo = datosCompuestosQuim[f];
-  const s = document.getElementById('salida');
-  if (!compInfo) return;
+function dibujarEstructuraQuimicaGenerica(formula, conteo) {
+  const cvs = document.getElementById('cvsMol2D');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w / 2, cy = h / 2;
+  ctx.clearRect(0, 0, w, h);
 
-  const comps = compInfo.comps;
-  let total = 0, desglose = "";
-
-  for (let el in comps) total += comps[el] * masasAtom[el];
-
-  for (let el in comps) {
-    let sub = comps[el] * masasAtom[el];
-    let pct = (sub / total) * 100;
-    desglose += `<li><b>${el}:</b> ${comps[el]} átomo(s) × ${masasAtom[el]} g/mol = <code>${sub.toFixed(2)} g/mol</code> (<b>${pct.toFixed(1)}%</b>)</li>`;
+  if (datosCompuestosQuim[formula]) {
+    dibujarEstructura2DMolecula(formula);
+    return;
   }
 
-  dibujarEstructura2DMolecula(f);
+  const elementos = Object.keys(conteo);
+  let atomoCentral = elementos.find(e => e !== "H" && e !== "O") || elementos[0];
+  let listaPerifericos = [];
+
+  for (let el in conteo) {
+    let cant = conteo[el];
+    if (el === atomoCentral) cant -= 1;
+    for (let i = 0; i < cant; i++) listaPerifericos.push(el);
+  }
+
+  const totalPerifericos = Math.min(listaPerifericos.length, 10);
+  const radioOrbita = totalPerifericos > 5 ? 85 : 70;
+
+  ctx.strokeStyle = '#64748b';
+  ctx.lineWidth = 4;
+  for (let i = 0; i < totalPerifericos; i++) {
+    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
+    const px = cx + radioOrbita * Math.cos(ang);
+    const py = cy + radioOrbita * Math.sin(ang);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(px, py);
+    ctx.stroke();
+  }
+
+  const dibujarAtomo = (el, x, y, r) => {
+    const col = coloresCPK[el] || "#cbd5e1";
+    let grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+    grad.addColorStop(0, "#ffffff");
+    grad.addColorStop(0.4, col);
+    grad.addColorStop(1, "#090d16");
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = el === "H" ? "#0f172a" : "#f8fafc";
+    ctx.font = `bold ${Math.round(r * 0.85)}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(el, x, y);
+  };
+
+  for (let i = 0; i < totalPerifericos; i++) {
+    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
+    const px = cx + radioOrbita * Math.cos(ang);
+    const py = cy + radioOrbita * Math.sin(ang);
+    const el = listaPerifericos[i];
+    dibujarAtomo(el, px, py, el === "H" ? 16 : 22);
+  }
+
+  dibujarAtomo(atomoCentral, cx, cy, 26);
+}
+
+function calcMasaMolarExtendida() {
+  const formulaRaw = (document.getElementById('chem-custom-input') ? document.getElementById('chem-custom-input').value : "").trim();
+  const s = document.getElementById('salida');
+
+  if (!formulaRaw) {
+    alert("Escribe una fórmula química (ejemplo: H2SO4, Ca(OH)2, Al2O3).");
+    return;
+  }
+
+  const conteoAtomos = parsearFormulaQuimica(formulaRaw);
+  if (!conteoAtomos || Object.keys(conteoAtomos).length === 0) {
+    alert("Formato de fórmula no reconocido. Respeta mayúsculas (ej: NaCl, no nacl).");
+    return;
+  }
+
+  let totalMasa = 0;
+  let desglose = "";
+  let elementosNoEncontrados = [];
+
+  for (let el in conteoAtomos) {
+    const peso = tablaPesosCompletos[el] || masasAtom[el];
+    if (peso) {
+      totalMasa += conteoAtomos[el] * peso;
+    } else {
+      elementosNoEncontrados.push(el);
+    }
+  }
+
+  if (elementosNoEncontrados.length > 0) {
+    alert("No se reconoció el símbolo atómico: " + elementosNoEncontrados.join(", "));
+    return;
+  }
+
+  for (let el in conteoAtomos) {
+    const peso = tablaPesosCompletos[el] || masasAtom[el];
+    const subtotal = conteoAtomos[el] * peso;
+    const pct = (subtotal / totalMasa) * 100;
+    desglose += `<li><b>${el}:</b> ${conteoAtomos[el]} átomo(s) × ${peso} g/mol = <code>${subtotal.toFixed(2)} g/mol</code> (<b>${pct.toFixed(1)}%</b>)</li>`;
+  }
+
+  dibujarEstructuraQuimicaGenerica(formulaRaw, conteoAtomos);
+
+  const predef = datosCompuestosQuim[formulaRaw];
+  let bloqueNomenclatura = "";
+  if (predef) {
+    bloqueNomenclatura = `
+      <div class="step" style="border-left-color:#10b981;">
+        <b>Nomenclaturas Químicas:</b>
+        <table class="didact-table" style="margin-top:6px;">
+          <tr><th>Sistemática (IUPAC)</th><th>Stock</th><th>Tradicional</th></tr>
+          <tr>
+            <td><b style="color:#38bdf8;">${predef.nom.iupac}</b></td>
+            <td><b>${predef.nom.stock}</b></td>
+            <td><span style="color:#fde68a;">${predef.nom.trad}</span></td>
+          </tr>
+        </table>
+        <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
+          • <b>Tipo de Enlace:</b> ${predef.tipoEnlace} | <b>Geometría:</b> ${predef.geom}
+        </div>
+      </div>
+    `;
+  } else {
+    bloqueNomenclatura = `
+      <div class="step" style="border-left-color:#f59e0b;">
+        <b>Compuesto Personalizado:</b> <code>${formulaRaw}</code>
+        <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
+          Estructura molecular analizada con ${Object.values(conteoAtomos).reduce((a,b)=>a+b, 0)} átomos enlazados en total.
+        </div>
+      </div>
+    `;
+  }
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estructura y Masa Molar: ${f}</h3>
-    <div class="step" style="border-left-color:#10b981;">
-      <b>Nomenclaturas Químicas:</b>
-      <table class="didact-table" style="margin-top:6px;">
-        <tr><th>Sistemática (IUPAC)</th><th>Stock</th><th>Tradicional</th></tr>
-        <tr>
-          <td><b style="color:#38bdf8;">${compInfo.nom.iupac}</b></td>
-          <td><b>${compInfo.nom.stock}</b></td>
-          <td><span style="color:#fde68a;">${compInfo.nom.trad}</span></td>
-        </tr>
-      </table>
-      <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
-        • <b>Tipo de Enlace:</b> ${compInfo.tipoEnlace}<br>
-        • <b>Geometría Molecular:</b> ${compInfo.geom}
-      </div>
-    </div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Químico: ${formulaRaw}</h3>
+    ${bloqueNomenclatura}
     <div class="step">
       <b>Composición Porcentual en Masa:</b>
       <ul style="margin:4px 0; padding-left:18px;">${desglose}</ul>
-      <b>Masa Molar Total:</b> <b style="color:#10b981; font-size:1.15rem;">${total.toFixed(2)} g/mol</b>
+      <b>Masa Molar Total:</b> <b style="color:#10b981; font-size:1.15rem;">${totalMasa.toFixed(2)} g/mol</b>
     </div>
   `;
   s.style.display = 'block';
