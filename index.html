@@ -7,14 +7,12 @@
   <link rel="stylesheet" href="style.css">
   <!-- Motor CAS para Derivadas e Integrales Simbólicas -->
   <script src="https://cdn.jsdelivr.net/npm/algebrite@1.4.0/dist/algebrite.bundle-for-browser.js"></script>
-  <!-- Visor 3D Interactivo para Química (3Dmol.js) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
 </head>
 <body>
 
 <div class="main-card">
   <h1>Suite Científica, Cálculo & Robótica</h1>
-  <p class="sub">Plataforma didáctica integral: métodos analíticos, diagramas interactivos y diseño en ingeniería.</p>
+  <p class="sub">Plataforma didáctica integral: métodos analíticos, diagramas interactivos y química estructural.</p>
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
@@ -32,11 +30,11 @@
     <div class="tabs-row" id="sub-calculo">
       <button class="btn-tab active" onclick="verSubCalculo('calc-libre')">✍️ Derivadas</button>
       <button class="btn-tab" onclick="verSubCalculo('calc-integrales')">∫ Integrales & Área</button>
-      <button class="btn-tab" onclick="verSubCalculo('calc-figuras')">📐 Geometría 2D (Todas)</button>
+      <button class="btn-tab" onclick="verSubCalculo('calc-figuras')">📐 Geometría 2D</button>
       <button class="btn-tab" onclick="verSubCalculo('calc-volumenes')">📦 Volúmenes 3D</button>
-      <button class="btn-tab" onclick="verSubCalculo('calc-trig')">📐 Razones Trigonométricas</button>
-      <button class="btn-tab" onclick="verSubCalculo('calc-ident')">🔄 Identidades Totales</button>
-      <button class="btn-tab" onclick="verSubCalculo('calc-exp')">⚡ Leyes de Exponentes</button>
+      <button class="btn-tab" onclick="verSubCalculo('calc-trig')">📐 Razones Trig</button>
+      <button class="btn-tab" onclick="verSubCalculo('calc-ident')">🔄 Identidades</button>
+      <button class="btn-tab" onclick="verSubCalculo('calc-exp')">⚡ Leyes Exponentes</button>
     </div>
 
     <!-- 1.1 Derivadas -->
@@ -78,7 +76,7 @@
       </div>
     </div>
 
-    <!-- 1.3 Figuras 2D (Triángulos, Círculos, Cuadriláteros, n-Polígonos) -->
+    <!-- 1.3 Figuras 2D -->
     <div id="submod-calc-figuras" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
@@ -91,7 +89,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Tipo Específico / Incógnita:</label>
+          <label>Tipo Específico:</label>
           <select id="fig-tipo-2d" onchange="configurarInputs2D()"></select>
         </div>
       </div>
@@ -100,7 +98,7 @@
         <canvas id="cvsGeometria2D" width="460" height="210"></canvas>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularGeometria2D()">Calcular Área y Despeje con Diagrama</button>
+        <button class="btn-main" onclick="calcularGeometria2D()">Calcular Área y Diagrama</button>
       </div>
     </div>
 
@@ -137,7 +135,7 @@
       </div>
     </div>
 
-    <!-- 1.5 Razones Trigonométricas Totales -->
+    <!-- 1.5 Razones Trigonométricas -->
     <div id="submod-calc-trig" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
@@ -168,11 +166,11 @@
         <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Círculo Unitario: Proyecciones trigonométricas en vivo</span>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar 6 Razones, Gráfica y Triángulo</button>
+        <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar 6 Razones y Notables</button>
       </div>
     </div>
 
-    <!-- 1.6 Identidades Trigonométricas Totales -->
+    <!-- 1.6 Identidades Trigonométricas -->
     <div id="submod-calc-ident" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
@@ -182,7 +180,7 @@
             <option value="reciprocas">Recíprocas (csc = 1/sen, sec = 1/cos, cot = 1/tan)</option>
             <option value="cociente">Cociente (tan = sen/cos, cot = cos/sen)</option>
             <option value="paridad">Paridad / Negativo (sen(-θ) = -sen(θ), cos(-θ) = cos(θ))</option>
-            <option value="doble">Ángulo Doble (sen 2θ, cos 2θ, tan 2θ)</option>
+            <option value="doble">Ángulo Doble (sen 2θ, cos 2θ)</option>
             <option value="mitad">Ángulo Mitad (sen θ/2, cos θ/2)</option>
             <option value="suma">Suma y Resta (sen(α ± β), cos(α ± β))</option>
           </select>
@@ -201,7 +199,7 @@
       </div>
     </div>
 
-    <!-- 1.7 Leyes de los Exponentes Totales -->
+    <!-- 1.7 Leyes de los Exponentes -->
     <div id="submod-calc-exp" class="calc-subseccion" style="display:none;">
       <div class="form-group">
         <label>Selecciona la Ley o Propiedad:</label>
@@ -333,7 +331,7 @@
       <button class="btn-tab" onclick="verSubRobotica('rob-bateria')">Batería Robot</button>
     </div>
 
-    <!-- 3.1 Componentes Electrónicos de Robótica -->
+    <!-- 3.1 Componentes -->
     <div id="submod-rob-componentes" class="rob-subseccion" style="display:block;">
       <div class="form-group">
         <label>Selecciona el componente a analizar:</label>
@@ -428,12 +426,12 @@
   <div id="mod-quimica" class="mod-content">
     <div class="tabs-row" id="sub-quimica">
       <button class="btn-tab active" onclick="verSubQuimica('quim-tabla')">🔍 Buscador Tabla Periódica</button>
-      <button class="btn-tab" onclick="verSubQuimica('quim-molar')">Masa Molar</button>
+      <button class="btn-tab" onclick="verSubQuimica('quim-molar')">Masa Molar & Estructura 2D</button>
       <button class="btn-tab" onclick="verSubQuimica('quim-gases')">Gases Ideales (PV=nRT)</button>
       <button class="btn-tab" onclick="verSubQuimica('quim-soluciones')">Molaridad & Dilución</button>
     </div>
 
-    <!-- 4.1 Buscador de Elementos de la Tabla Periódica -->
+    <!-- 4.1 Buscador Tabla Periódica -->
     <div id="submod-quim-tabla" class="quim-subseccion" style="display:block;">
       <div class="form-group">
         <label><b>Buscador de Elementos Químicos:</b></label>
@@ -442,8 +440,7 @@
       <div id="tabla-resultados-contenedor" style="max-height: 250px; overflow-y: auto; background: #070d19; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-bottom: 12px;"></div>
     </div>
 
-
-<!-- 4.2 Masa Molar con Visor 3D y Nomenclatura -->
+    <!-- 4.2 Masa Molar con Visor 2D Nativo -->
     <div id="submod-quim-molar" class="quim-subseccion" style="display:none;">
       <div class="form-group">
         <label><b>Selecciona un Compuesto Químico:</b></label>
@@ -451,31 +448,32 @@
           <option value="H2O">Agua (H₂O)</option>
           <option value="CO2">Dióxido de Carbono (CO₂)</option>
           <option value="CH4">Metano (CH₄)</option>
-          <option value="C2H5OH">Etanol / Alcohol etílico (C₂H₅OH)</option>
           <option value="NH3">Amoníaco (NH₃)</option>
           <option value="HCl">Ácido Clorhídrico (HCl)</option>
+          <option value="NaCl">Cloruro de Sodio (NaCl)</option>
+          <option value="C2H5OH">Etanol / Alcohol etílico (C₂H₅OH)</option>
           <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
           <option value="HNO3">Ácido Nítrico (HNO₃)</option>
           <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
-          <option value="NaCl">Cloruro de Sodio (NaCl)</option>
           <option value="CaCO3">Carbonato de Calcio (CaCO₃)</option>
           <option value="KMnO4">Permanganato de Potasio (KMnO₄)</option>
           <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
         </select>
       </div>
 
-      <!-- Contenedor del Visor 3D Interactivo -->
+      <!-- Lienzo 2D Nativo de Estructura Molecular -->
       <div class="canvas-container" style="padding: 6px;">
-        <div id="mol-3d-viewer" style="width: 100%; height: 260px; position: relative; border-radius: 8px; overflow: hidden; background: #050811; border: 1px solid #1e293b;"></div>
+        <canvas id="cvsMol2D" width="480" height="240" style="background:#050811; border-radius:8px;"></canvas>
         <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
-          🖱️ <b>Arrastra para rotar en 3D</b> | Rueda para zoom | Modelo esferas y varillas (CPK)
+          🔬 Diagrama estructural 2D con enlaces químicos y esferas con códigos de color CPK
         </span>
       </div>
 
       <div class="btn-row">
-        <button class="btn-main" onclick="calcMasaMolarExtendida()">Analizar Estructura 3D y Nomenclatura</button>
+        <button class="btn-main" onclick="calcMasaMolarExtendida()">Analizar Estructura y Nomenclaturas</button>
       </div>
     </div>
+
     <!-- 4.3 Gases -->
     <div id="submod-quim-gases" class="quim-subseccion" style="display:none;">
       <div class="grid-3">
