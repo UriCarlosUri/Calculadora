@@ -304,16 +304,40 @@ table.didact-table th {
   background: #dc2626;
 }
 
-/* Scrollbar para Buscador de Tabla Periódica */
-#tabla-resultados-contenedor::-webkit-scrollbar {
+/* Scrollbar personalizado */
+#tabla-resultados-contenedor::-webkit-scrollbar,
+#pantalla-mensaje-alumnos::-webkit-scrollbar {
   width: 6px;
 }
 
-#tabla-resultados-contenedor::-webkit-scrollbar-track {
+#tabla-resultados-contenedor::-webkit-scrollbar-track,
+#pantalla-mensaje-alumnos::-webkit-scrollbar-track {
   background: #070d19;
 }
 
-#tabla-resultados-contenedor::-webkit-scrollbar-thumb {
+#tabla-resultados-contenedor::-webkit-scrollbar-thumb,
+#pantalla-mensaje-alumnos::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 3px;
+}
+
+/* Modal Secreto / Easter Egg */
+#modal-secreto-backdrop {
+  animation: fadeInModal 0.25s ease-out;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#pantalla-mensaje-alumnos {
+  max-height: 80vh;
+  overflow-y: auto;
 }
