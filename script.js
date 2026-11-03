@@ -105,6 +105,71 @@ function resolverCAS(operacion) {
 }
 
 // ==========================================
+// MÓDULO EXCLUSIVO DE INTEGRALES
+// ==========================================
+function calcularIntegralDedicada() {
+  const expr = document.getElementById('int-expr-input').value.trim();
+  const limA = document.getElementById('int-lim-a').value.trim();
+  const limB = document.getElementById('int-lim-b').value.trim();
+  const s = document.getElementById('salida');
+
+  if (!expr) {
+    alert("Por favor escribe una función para integrar.");
+    return;
+  }
+
+  if (typeof Algebrite === 'undefined') {
+    alert("Cargando motor matemático Algebrite. Revisa tu conexión a internet.");
+    return;
+  }
+
+  try {
+    let limpia = expr.replace(/sen\(/g, "sin(").replace(/(\d)([a-zA-Z])/g, "$1*$2");
+
+    // Identificación del método
+    let metodo = "Integración directa inmediata (Regla de la potencia: ∫xⁿ dx = xⁿ⁺¹/(n+1))";
+    if (limpia.includes("*") && (limpia.includes("sin") || limpia.includes("cos") || limpia.includes("exp") || limpia.includes("log"))) {
+      metodo = "Integración por Partes (∫ u dv = u·v - ∫ v du)";
+    } else if (limpia.includes("(") && limpia.includes("^")) {
+      metodo = "Cambio de Variable / Sustitución u";
+    }
+
+    // Resolución simbólica
+    const resIndef = Algebrite.run(`integral(${limpia}, x)`);
+
+    let explicacion = `
+      <h3 style="color:#10b981;margin:0 0 8px 0;">Integral Resuelta Paso a Paso</h3>
+      <div class="step"><b>1. Función a integrar:</b> <code>∫ [ ${expr} ] dx</code></div>
+      <div class="step"><b>2. Método sugerido:</b> <span style="color:#fde68a;">${metodo}</span></div>
+      <div class="step"><b>3. Integral Indefinida (Antiderivada general):</b><br>
+        <b style="color:#10b981;font-size:1.15rem;">F(x) = ${resIndef} + C</b>
+      </div>
+    `;
+
+    // Evaluación definida si se indican límites
+    if (limA !== "" && limB !== "") {
+      const valB = Algebrite.run(`float(subst(${limB}, x, ${resIndef}))`);
+      const valA = Algebrite.run(`float(subst(${limA}, x, ${resIndef}))`);
+      const area = Algebrite.run(`float(${valB} - (${valA}))`);
+
+      explicacion += `
+        <div class="step" style="border-left-color:#f59e0b;">
+          <b>4. Evaluación de Límites [${limA} a ${limB}] (Teorema Fundamental del Cálculo):</b><br>
+          • F(b) = F(${limB}) = <code>${valB}</code><br>
+          • F(a) = F(${limA}) = <code>${valA}</code><br>
+          <b>Área bajo la curva: F(b) - F(a) = <span style="color:#f59e0b;font-size:1.1rem;">${area} u²</span></b>
+        </div>
+      `;
+    }
+
+    s.innerHTML = explicacion;
+    s.style.display = 'block';
+  } catch (err) {
+    alert("Error de sintaxis en la expresión. Revisa paréntesis y multiplicaciones explícitas.");
+  }
+}
+
+// ==========================================
 // GEOMETRÍA 2D Y 3D
 // ==========================================
 function ajustarInputsCuadrilatero() {
