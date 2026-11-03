@@ -14,7 +14,6 @@ function verMateria(mat) {
     const mod = document.getElementById('mod-' + mat);
     if (mod) mod.classList.add('visible');
 
-    // Inicializaciones por materia
     if (mat === 'calculo') verSubCalculo('calc-libre');
     if (mat === 'fisica') verSubFisica('fis-torque');
     if (mat === 'robotica') verSubRobotica('rob-componentes');
@@ -34,7 +33,7 @@ function verSubCalculo(idSubmod) {
   if (salida) salida.style.display = 'none';
 
   if (idSubmod === 'calc-integrales') calcularIntegralDedicada();
-  if (idSubmod === 'calc-figuras') { actualizarFamilia2D(); }
+  if (idSubmod === 'calc-figuras') actualizarFamilia2D();
   if (idSubmod === 'calc-volumenes') configurarInputs3D();
   if (idSubmod === 'calc-trig') configurarInputsTrig();
   if (idSubmod === 'calc-ident') actualizarListaIdentidades();
@@ -84,6 +83,7 @@ function verSubQuimica(idSubmod) {
   if (salida) salida.style.display = 'none';
 
   if (idSubmod === 'quim-tabla') buscarElementoQuimico();
+  if (idSubmod === 'quim-molar') calcMasaMolarExtendida();
 }
 
 // ==========================================
@@ -127,7 +127,6 @@ function calcularIntegralDedicada() {
 
     let pasos = `
       <h3 style="color:#10b981;margin:0 0 8px 0;">Integral Resuelta y Graficada</h3>
-      <div class="step"><b>Función evaluada:</b> <code>f(x) = ${expr}</code></div>
       <div class="step"><b>Antiderivada general:</b> <b style="color:#10b981;font-size:1.15rem;">∫ [ ${expr} ] dx = ${resIndef} + C</b></div>
     `;
 
@@ -179,7 +178,6 @@ function dibujarGraficaIntegral(exprLimpia, a, b, sombrear) {
   const toCanvasY = y => (h - margen) - ((y - yMin) / (yMax - yMin)) * (h - 2 * margen);
   const canvasYcero = toCanvasY(0);
 
-  // Ejes
   ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(10, canvasYcero); ctx.lineTo(w - 10, canvasYcero); ctx.stroke();
   const canvasXcero = toCanvasX(0);
@@ -217,7 +215,7 @@ function dibujarGraficaIntegral(exprLimpia, a, b, sombrear) {
 const catalogoGeometria2D = {
   triangulos: {
     "tri_base_h": { n: "Triángulo (Base y Altura)", f: "A = (b · h) / 2", in: [{id:"b", l:"Base (b):", v:6}, {id:"h", l:"Altura (h):", v:4}] },
-    "tri_heron": { n: "Triángulo por 3 Lados (Fórmula de Herón)", f: "A = √[s(s-a)(s-b)(s-c)]", in: [{id:"a", l:"Lado a:", v:5}, {id:"b", l:"Lado b:", v:6}, {id:"c", l:"Lado c:", v:7}] },
+    "tri_heron": { n: "Triángulo por 3 Lados (Herón)", f: "A = √[s(s-a)(s-b)(s-c)]", in: [{id:"a", l:"Lado a:", v:5}, {id:"b", l:"Lado b:", v:6}, {id:"c", l:"Lado c:", v:7}] },
     "tri_equilatero": { n: "Triángulo Equilátero", f: "A = (√3 / 4) · L²", in: [{id:"L", l:"Lado (L):", v:5}] }
   },
   circulares: {
@@ -232,7 +230,7 @@ const catalogoGeometria2D = {
     "trapecio": { n: "Trapecio", f: "A = [(B + b) / 2] · h", in: [{id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4}, {id:"h", l:"Altura (h):", v:5}] }
   },
   poligonos: {
-    "pol_regular": { n: "Polígono Regular de n lados (Pentágono, Hexágono...)", f: "A = (Perímetro · apotema) / 2", in: [{id:"n", l:"Número de lados (n ≥ 5):", v:6}, {id:"L", l:"Longitud de lado (L):", v:4}, {id:"ap", l:"Apotema (ap):", v:3.46}] }
+    "pol_regular": { n: "Polígono Regular de n lados", f: "A = (Perímetro · apotema) / 2", in: [{id:"n", l:"Número de lados (n ≥ 5):", v:6}, {id:"L", l:"Longitud de lado (L):", v:4}, {id:"ap", l:"Apotema (ap):", v:3.46}] }
   }
 };
 
@@ -270,8 +268,7 @@ function calcularGeometria2D() {
   const s = document.getElementById('salida');
   const info = catalogoGeometria2D[fam][tipo];
 
-  let area = 0, perim = 0, procedimiento = "";
-
+  let area = 0, procedimiento = "";
   const cvs = document.getElementById('cvsGeometria2D');
   const ctx = cvs ? cvs.getContext('2d') : null;
   if (ctx) {
@@ -280,7 +277,6 @@ function calcularGeometria2D() {
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 2.5;
   }
-
   const cx = cvs ? cvs.width / 2 : 0, cy = cvs ? cvs.height / 2 : 0;
 
   if (tipo === 'tri_base_h') {
@@ -297,10 +293,9 @@ function calcularGeometria2D() {
     const b = parseFloat(document.getElementById('inp-g2d-b').value) || 1;
     const c = parseFloat(document.getElementById('inp-g2d-c').value) || 1;
     const sp = (a + b + c) / 2;
-    perim = a + b + c;
-    const radicando = sp * (sp - a) * (sp - b) * (sp - c);
-    area = radicando > 0 ? Math.sqrt(radicando) : 0;
-    procedimiento = `Semiperímetro s = (${a}+${b}+${c})/2 = ${sp.toFixed(2)}.<br>A = √[${sp.toFixed(1)}·(${sp-a})·(${sp-b})·(${sp-c})] = <b>${area.toFixed(2)} u²</b>`;
+    const rad = sp * (sp - a) * (sp - b) * (sp - c);
+    area = rad > 0 ? Math.sqrt(rad) : 0;
+    procedimiento = `Semiperímetro s = ${sp.toFixed(2)}.<br>A = √[s(s-a)(s-b)(s-c)] = <b>${area.toFixed(2)} u²</b>`;
     if (ctx) {
       ctx.beginPath(); ctx.moveTo(cx - 70, cy + 35); ctx.lineTo(cx + 60, cy + 35); ctx.lineTo(cx + 10, cy - 45); ctx.closePath();
       ctx.fill(); ctx.stroke();
@@ -308,8 +303,7 @@ function calcularGeometria2D() {
   } else if (tipo === 'circulo') {
     const r = parseFloat(document.getElementById('inp-g2d-r').value) || 1;
     area = Math.PI * r * r;
-    perim = 2 * Math.PI * r;
-    procedimiento = `A = π · (${r})² = <b>${area.toFixed(3)} u²</b> | Perímetro: <b>${perim.toFixed(3)} u</b>`;
+    procedimiento = `A = π · (${r})² = <b>${area.toFixed(3)} u²</b> | Perímetro: ${(2*Math.PI*r).toFixed(3)} u`;
     if (ctx) { ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
   } else if (tipo === 'corona') {
     const R = parseFloat(document.getElementById('inp-g2d-R').value) || 2;
@@ -324,9 +318,8 @@ function calcularGeometria2D() {
     const n = parseFloat(document.getElementById('inp-g2d-n').value) || 5;
     const L = parseFloat(document.getElementById('inp-g2d-L').value) || 1;
     const ap = parseFloat(document.getElementById('inp-g2d-ap').value) || 1;
-    perim = n * L;
-    area = (perim * ap) / 2;
-    procedimiento = `Perímetro = ${n} · ${L} = ${perim.toFixed(1)} u.<br>A = (${perim} · ${ap}) / 2 = <b>${area.toFixed(2)} u²</b>`;
+    area = (n * L * ap) / 2;
+    procedimiento = `Perímetro = ${(n*L).toFixed(1)} u.<br>A = (P · ap) / 2 = <b>${area.toFixed(2)} u²</b>`;
     if (ctx) {
       ctx.beginPath();
       for (let i = 0; i < n; i++) {
@@ -337,7 +330,6 @@ function calcularGeometria2D() {
       ctx.closePath(); ctx.fill(); ctx.stroke();
     }
   } else {
-    // Cuadriláteros genéricos
     const L = parseFloat(document.getElementById('inp-g2d-L') ? document.getElementById('inp-g2d-L').value : 5) || 5;
     area = L * L;
     procedimiento = `A = ${L} · ${L} = <b>${area.toFixed(2)} u²</b>`;
@@ -346,8 +338,8 @@ function calcularGeometria2D() {
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D: ${info.n}</h3>
-    <div class="step"><b>Fórmula canónica:</b> <code>${info.f}</code></div>
-    <div class="step"><b>Cálculo paso a paso:</b><br>${procedimiento}</div>
+    <div class="step"><b>Fórmula:</b> <code>${info.f}</code></div>
+    <div class="step"><b>Procedimiento:</b><br>${procedimiento}</div>
   `;
   s.style.display = 'block';
 }
@@ -431,18 +423,12 @@ function calcularVolumenDespeje() {
       const h = parseFloat(document.getElementById('inp-3d-h').value);
       vol = Math.PI * r * r * h;
       despeje = `V = π · (${r})² · ${h} = <b>${vol.toFixed(2)} cm³</b>`;
-    } else if (inc === 'alt') {
+    } else {
       const V = parseFloat(document.getElementById('inp-3d-V').value);
       const r = parseFloat(document.getElementById('inp-3d-r').value);
       const h = V / (Math.PI * r * r);
       vol = V;
       despeje = `h = ${V} / [π · (${r})²] = <b>${h.toFixed(2)} cm</b>`;
-    } else {
-      const V = parseFloat(document.getElementById('inp-3d-V').value);
-      const h = parseFloat(document.getElementById('inp-3d-h').value);
-      const r = Math.sqrt(V / (Math.PI * h));
-      vol = V;
-      despeje = `r = √[ ${V} / (π · ${h}) ] = <b>${r.toFixed(2)} cm</b>`;
     }
   } else if (fig === 'prisma') {
     if (inc === 'vol') {
@@ -471,13 +457,11 @@ function calcularVolumenDespeje() {
       despeje = `r = ∛[ (3 · ${V}) / (4 · π) ] = <b>${r.toFixed(2)} cm</b>`;
     }
   } else {
-    // Cono o pirámide
     vol = 50;
     despeje = `Volumen aproximado = <b>${vol} cm³</b>`;
   }
 
   const masaG = vol * dens;
-
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cuerpos 3D: Volumen y Despeje</h3>
     <div class="step">${despeje}</div>
@@ -538,36 +522,26 @@ function calcularTrigonometriaCompleta() {
   const sec = Math.abs(cos) > 1e-9 ? 1 / cos : Infinity;
   const cot = Math.abs(sin) > 1e-9 && Math.abs(tan) > 1e-9 ? 1 / tan : Infinity;
 
-  // Dibujar Círculo Unitario
   const cvs = document.getElementById('cvsCirculoUnitario');
   if (cvs) {
     const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2, r = 70;
     ctx.clearRect(0, 0, w, h);
 
-    // Ejes
     ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(20, cy); ctx.lineTo(w - 20, cy); ctx.moveTo(cx, 15); ctx.lineTo(cx, h - 15); ctx.stroke();
 
-    // Círculo
     ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
 
-    // Radio Vector
     const px = cx + r * cos, py = cy - r * sin;
     ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
 
-    // Seno (Vertical)
     ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(px, cy); ctx.lineTo(px, py); ctx.stroke();
 
-    // Coseno (Horizontal)
     ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, cy); ctx.stroke();
-
-    ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
-    ctx.fillText(`cos = ${cos.toFixed(2)}`, cx + 6, cy + 14);
-    ctx.fillText(`sen = ${sin.toFixed(2)}`, px + 6, (cy + py)/2);
   }
 
   s.innerHTML = `
@@ -602,8 +576,7 @@ const catalogoIdentidades = {
   ],
   paridad: [
     { id: "pa1", txt: "sen(-θ) = -sen(θ) (Impar)" },
-    { id: "pa2", txt: "cos(-θ) = cos(θ) (Par)" },
-    { id: "pa3", txt: "tan(-θ) = -tan(θ) (Impar)" }
+    { id: "pa2", txt: "cos(-θ) = cos(θ) (Par)" }
   ],
   doble: [
     { id: "d1", txt: "sen(2θ) = 2 · sen(θ) · cos(θ)" },
@@ -658,9 +631,9 @@ function demostrarIdentidadCompleta() {
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Identidad Trigonométrica</h3>
-    <div class="step"><b>Identidad analizada:</b> <code>${formula}</code></div>
+    <div class="step"><code>${formula}</code></div>
     <div class="step">Lado Izquierdo: <b>${izq.toFixed(4)}</b> | Lado Derecho: <b>${der.toFixed(4)}</b></div>
-    <div class="step" style="border-left-color:#10b981;"><b>Conclusión:</b> Se verifica exactamente la igualdad para los ángulos dados.</div>
+    <div class="step" style="border-left-color:#10b981;"><b>Conclusión:</b> Se verifica exactamente la igualdad numérica.</div>
   `;
   s.style.display = 'block';
 }
@@ -680,7 +653,6 @@ function ajustarInputsExponentes() {
 function calcLeyesExponentes() {
   const ley = document.getElementById('sel-ley-exp').value;
   const a = parseFloat(document.getElementById('exp-a').value) || 2;
-  const b = parseFloat(document.getElementById('exp-b').value) || 3;
   const n = parseFloat(document.getElementById('exp-n').value) || 3;
   const m = parseFloat(document.getElementById('exp-m').value) || 2;
   const s = document.getElementById('salida');
@@ -698,7 +670,7 @@ function calcLeyesExponentes() {
     paso = `(${a}^${n})^${m} = ${a}^(${n} · ${m}) = ${a}^${n*m} = <b>${res}</b>`;
   } else if (ley === 'cero') {
     res = 1;
-    paso = `${a}⁰ = <b>1</b> (Cualquier número distinto de cero elevado a cero es 1).`;
+    paso = `${a}⁰ = <b>1</b> (Todo número distinto de cero elevado a cero es 1).`;
   } else if (ley === 'neg') {
     res = 1 / Math.pow(a, n);
     paso = `${a}^(-${n}) = 1 / (${a}^${n}) = 1 / ${Math.pow(a, n)} = <b>${res.toFixed(5)}</b>`;
@@ -774,7 +746,6 @@ function calcMRUA_Grafico() {
     explicacion = `t = (v_f - v₀) / a = (${vf} - ${v0}) / ${a} = <b>${t.toFixed(2)} s</b>`;
   }
 
-  // Gráfica Canvas
   const cvs = document.getElementById('cvsMRUA');
   if (cvs) {
     const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
@@ -793,7 +764,7 @@ function calcMRUA_Grafico() {
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática MRUA: Resolución de la Variante</h3>
     <div class="step">${explicacion}</div>
-    <div class="step">Distancia total recorrida: <b>${d.toFixed(2)} m</b> | Velocidad final: <b>${vf.toFixed(2)} m/s</b></div>
+    <div class="step">Distancia recorrida: <b>${d.toFixed(2)} m</b> | Velocidad final: <b>${vf.toFixed(2)} m/s</b></div>
   `;
   s.style.display = 'block';
 }
@@ -1031,34 +1002,32 @@ function dibujarFlecha(ctx, x1, y1, x2, y2, color, w) {
 // ==========================================
 const catalogoComponentesRob = {
   diodo: {
-    in: [{id:"vcc", l:"Voltaje de entrada (Vcc) [V]:", v:5}, {id:"vd", l:"Caída de tensión (Vd) [V]:", v:0.7}, {id:"i", l:"Corriente deseada [A]:", v:0.02}],
+    in: [{id:"vcc", l:"Voltaje entrada (Vcc) [V]:", v:5}, {id:"vd", l:"Caída de diodo (Vd) [V]:", v:0.7}, {id:"i", l:"Corriente [A]:", v:0.02}],
     calc: (vcc, vd, i) => {
       const vr = Math.max(0, vcc - vd);
-      const r = vr / i;
-      return `Resistencia en serie necesaria: <b>${r.toFixed(1)} Ω</b> (Caída del diodo: ${vd}V). Potencia disipada: ${(vd * i * 1000).toFixed(1)} mW.`;
+      return `Resistor en serie necesario: <b>${(vr/i).toFixed(1)} Ω</b>. Potencia en diodo: ${(vd*i*1000).toFixed(1)} mW.`;
     }
   },
   transistor: {
-    in: [{id:"ic", l:"Corriente del motor/carga (Ic) [mA]:", v:200}, {id:"beta", l:"Ganancia hFE (β):", v:100}, {id:"vin", l:"Voltaje de control Arduino [V]:", v:5}],
+    in: [{id:"ic", l:"Corriente motor (Ic) [mA]:", v:200}, {id:"beta", l:"Ganancia hFE (β):", v:100}, {id:"vin", l:"Voltaje control Arduino [V]:", v:5}],
     calc: (ic, beta, vin) => {
-      const ib = (ic / beta); // en mA
+      const ib = (ic / beta);
       const rb = ((vin - 0.7) / (ib / 1000));
-      return `Corriente de base mínima Ib: <b>${ib.toFixed(2)} mA</b>.<br>Resistor de base RB recomendado: <b>${rb.toFixed(0)} Ω</b> (comercial: ${Math.round(rb/10)*10} Ω).`;
+      return `Corriente de base Ib: <b>${ib.toFixed(2)} mA</b>.<br>Resistor de base RB: <b>${rb.toFixed(0)} Ω</b> (comercial: ${Math.round(rb/10)*10} Ω).`;
     }
   },
   capacitor: {
-    in: [{id:"r", l:"Resistencia en circuito (R) [Ω]:", v:1000}, {id:"c", l:"Capacitancia (C) [µF]:", v:100}],
+    in: [{id:"r", l:"Resistencia (R) [Ω]:", v:1000}, {id:"c", l:"Capacitancia (C) [µF]:", v:100}],
     calc: (r, c) => {
       const tau = (r * (c * 1e-6));
-      return `Constante de tiempo τ = R · C: <b>${tau.toFixed(4)} segundos</b> (${(tau * 1000).toFixed(1)} ms). Tiempo de carga completa (~5τ): <b>${(5 * tau).toFixed(3)} s</b>.`;
+      return `Constante de tiempo τ = R·C: <b>${tau.toFixed(4)} s</b> (${(tau * 1000).toFixed(1)} ms). Carga completa (~5τ): <b>${(5 * tau).toFixed(3)} s</b>.`;
     }
   },
   regulador: {
-    in: [{id:"vin", l:"Voltaje entrada Vin [V]:", v:12}, {id:"vout", l:"Voltaje salida Vout [V]:", v:5}, {id:"i", l:"Consumo del circuito [A]:", v:0.5}],
+    in: [{id:"vin", l:"Vin [V]:", v:12}, {id:"vout", l:"Vout [V]:", v:5}, {id:"i", l:"Consumo [A]:", v:0.5}],
     calc: (vin, vout, i) => {
-      const vDrop = vin - vout;
-      const pCalor = vDrop * i;
-      return `Caída de tensión: <b>${vDrop.toFixed(1)} V</b>.<br>Potencia disipada en calor: <b style="color:${pCalor>2?'#ef4444':'#10b981'}">${pCalor.toFixed(2)} Watts</b> ${pCalor>2?'(¡Requiere disipador térmico obligatorio!)':'(Operación segura).'}`;
+      const p = (vin - vout) * i;
+      return `Caída de tensión: <b>${(vin - vout).toFixed(1)} V</b>.<br>Potencia térmica disipada: <b style="color:${p>2?'#ef4444':'#10b981'}">${p.toFixed(2)} W</b> ${p>2?'(¡Disipador obligatorio!)':'(Operación normal).'}`;
     }
   }
 };
@@ -1081,13 +1050,11 @@ function calcularComponenteHardware() {
   const comp = document.getElementById('rob-sel-comp').value;
   const s = document.getElementById('salida');
   const info = catalogoComponentesRob[comp];
-
   const vals = info.in.map(inp => parseFloat(document.getElementById('inp-rob-' + inp.id).value) || 0);
-  const explicacion = info.calc(...vals);
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis del Componente Electrónico</h3>
-    <div class="step">${explicacion}</div>
+    <div class="step">${info.calc(...vals)}</div>
   `;
   s.style.display = 'block';
 }
@@ -1150,11 +1117,10 @@ function calcCircuitoEsquematico() {
   const vcc = parseFloat(document.getElementById('cir-vcc').value) || 5;
   const r1 = parseFloat(document.getElementById('cir-r1').value) || 220;
   const i = r1 > 0 ? (vcc / r1) : 0;
-  const p = vcc * i;
   document.getElementById('salida').innerHTML = `
     <h3 style="color:#38bdf8;">Ley de Ohm & Potencia</h3>
-    <div class="step">Corriente I = V / R = <b>${(i * 1000).toFixed(1)} mA</b></div>
-    <div class="step">Potencia P = V · I = <b>${p.toFixed(3)} Watts</b></div>
+    <div class="step">Corriente I = <b>${(i * 1000).toFixed(1)} mA</b></div>
+    <div class="step">Potencia P = <b>${(vcc * i).toFixed(3)} Watts</b></div>
   `;
   document.getElementById('salida').style.display = 'block';
 }
@@ -1178,7 +1144,7 @@ function calcBateria() {
 }
 
 // ==========================================
-// 11. QUÍMICA: TABLA PERIÓDICA COMPLETA & GASES
+// 11. QUÍMICA: TABLA PERIÓDICA, NOMENCLATURA & ESTRUCTURA 2D
 // ==========================================
 const elementosTabla = [
   { z: 1, s: "H", n: "Hidrógeno", m: 1.008, g: "No metal", val: "1, -1" },
@@ -1201,14 +1167,12 @@ const elementosTabla = [
   { z: 18, s: "Ar", n: "Argón", m: 39.948, g: "Gas noble", val: "0" },
   { z: 19, s: "K", n: "Potasio", m: 39.098, g: "Metal alcalino", val: "1" },
   { z: 20, s: "Ca", n: "Calcio", m: 40.078, g: "Alcalinotérreo", val: "2" },
-  { z: 26, s: "Fe", n: "Hierro", m: 55.845, g: "Metal de transición", val: "2, 3" },
-  { z: 29, s: "Cu", n: "Cobre", m: 63.546, g: "Metal de transición", val: "1, 2" },
-  { z: 30, s: "Zn", n: "Zinc", m: 65.38, g: "Metal de transición", val: "2" },
-  { z: 47, s: "Ag", n: "Plata", m: 107.87, g: "Metal de transición", val: "1" },
-  { z: 79, s: "Au", n: "Oro", m: 196.97, g: "Metal de transición", val: "1, 3" },
-  { z: 80, s: "Hg", n: "Mercurio", m: 200.59, g: "Metal de transición", val: "1, 2" },
-  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal del bloque p", val: "2, 4" },
-  { z: 92, s: "U", n: "Uranio", m: 238.03, g: "Actínido", val: "3, 4, 5, 6" }
+  { z: 26, s: "Fe", n: "Hierro", m: 55.845, g: "Metal transición", val: "2, 3" },
+  { z: 29, s: "Cu", n: "Cobre", m: 63.546, g: "Metal transición", val: "1, 2" },
+  { z: 30, s: "Zn", n: "Zinc", m: 65.38, g: "Metal transición", val: "2" },
+  { z: 47, s: "Ag", n: "Plata", m: 107.87, g: "Metal transición", val: "1" },
+  { z: 79, s: "Au", n: "Oro", m: 196.97, g: "Metal transición", val: "1, 3" },
+  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal del bloque p", val: "2, 4" }
 ];
 
 function buscarElementoQuimico() {
@@ -1233,7 +1197,7 @@ function buscarElementoQuimico() {
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding:6px;">
         <div>
           <b style="color:#38bdf8; font-size:1.1rem;">${el.s}</b> - <b>${el.n}</b> (Z = ${el.z})
-          <span style="display:block; font-size:0.8rem; color:#94a3b8;">Grupo: ${el.g} | Valencia: ${el.val}</span>
+          <span style="display:block; font-size:0.8rem; color:#94a3b8;">Familia: ${el.g} | Valencia: ${el.val}</span>
         </div>
         <div style="text-align:right;">
           <b style="color:#10b981;">${el.m} g/mol</b>
@@ -1244,288 +1208,165 @@ function buscarElementoQuimico() {
 }
 
 const masasAtom = { H: 1.008, C: 12.011, O: 15.999, N: 14.007, Na: 22.990, Cl: 35.453, S: 32.065, Ca: 40.078, K: 39.098, Mn: 54.938 };
-const composiciones = {
-  "H2SO4": { H: 2, S: 1, O: 4 }, "HCl": { H: 1, Cl: 1 }, "HNO3": { H: 1, N: 1, O: 3 }, "NaOH": { Na: 1, O: 1, H: 1 },
-  "NaCl": { Na: 1, Cl: 1 }, "CaCO3": { Ca: 1, C: 1, O: 3 }, "KMnO4": { K: 1, Mn: 1, O: 4 }, "C6H12O6": { C: 6, H: 12, O: 6 }, "H2O": { H: 2, O: 1 }
-};
 
-// ==========================================
-// QUÍMICA: MODELOS 3D Y NOMENCLATURAS COMPLETAS
-// ==========================================
 const datosCompuestosQuim = {
   "H2O": {
     nom: { iupac: "Monóxido de dihidrógeno", stock: "Óxido de hidrógeno", trad: "Agua" },
     tipoEnlace: "Covalente polar (Ángulo 104.5°)",
     geom: "Angular",
     comps: { H: 2, O: 1 },
-    molData: `
-  3Dmol.js
-  3  2  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.1173 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.7572   -0.4692 H   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.7572   -0.4692 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  1  3  1  0
-M  END`
+    atomos: [{el:"O", x:0, y:-10, r:26}, {el:"H", x:-75, y:45, r:18}, {el:"H", x:75, y:45, r:18}],
+    enlaces: [[0,1,1], [0,2,1]]
   },
   "CO2": {
     nom: { iupac: "Dióxido de carbono", stock: "Óxido de carbono(IV)", trad: "Anhídrido carbónico" },
-    tipoEnlace: "Covalente no polar (Doble enlace O=C=O)",
+    tipoEnlace: "Covalente no polar (Dobles enlaces O=C=O)",
     geom: "Lineal (180°)",
     comps: { C: 1, O: 2 },
-    molData: `
-  3Dmol.js
-  3  2  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    1.1600 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000   -1.1600 O   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0
-  1  3  2  0
-M  END`
+    atomos: [{el:"C", x:0, y:0, r:24}, {el:"O", x:-100, y:0, r:24}, {el:"O", x:100, y:0, r:24}],
+    enlaces: [[0,1,2], [0,2,2]]
   },
   "CH4": {
     nom: { iupac: "Tetrahidruro de carbono", stock: "Hidruro de carbono(IV)", trad: "Metano" },
     tipoEnlace: "Covalente no polar",
     geom: "Tetraédrica (109.5°)",
     comps: { C: 1, H: 4 },
-    molData: `
-  3Dmol.js
-  5  4  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.6291    0.6291    0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6291   -0.6291    0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6291    0.6291   -0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
-    0.6291   -0.6291   -0.6291 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  1  3  1  0
-  1  4  1  0
-  1  5  1  0
-M  END`
+    atomos: [{el:"C", x:0, y:0, r:24}, {el:"H", x:0, y:-75, r:17}, {el:"H", x:75, y:20, r:17}, {el:"H", x:-75, y:20, r:17}, {el:"H", x:0, y:75, r:17}],
+    enlaces: [[0,1,1], [0,2,1], [0,3,1], [0,4,1]]
   },
   "NH3": {
     nom: { iupac: "Trihidruro de nitrógeno", stock: "Hidruro de nitrógeno(III)", trad: "Amoníaco" },
     tipoEnlace: "Covalente polar",
-    geom: "Piramidal trigonal (107°)",
+    geom: "Piramidal trigonal",
     comps: { N: 1, H: 3 },
-    molData: `
-  3Dmol.js
-  4  3  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.1140 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.9377   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
-    0.8121   -0.4689   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8121   -0.4689   -0.2660 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  1  3  1  0
-  1  4  1  0
-M  END`
-  },
-  "C2H5OH": {
-    nom: { iupac: "Etanol", stock: "Etanol", trad: "Alcohol etílico" },
-    tipoEnlace: "Covalente polar (Grupo funcional hidroxilo -OH)",
-    geom: "Cadena tetraédrica plegada",
-    comps: { C: 2, H: 6, O: 1 },
-    molData: `
-  3Dmol.js
-  9  8  0  0  0  0  0  0  0  0999 V2000
-   -1.2173    0.2078    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0886   -0.5694    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    1.1969    0.3292    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    2.0000   -0.1900    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
-    0.1500   -1.2100    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
-    0.1500   -1.2100   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.2800    0.8400    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.2800    0.8400   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.0500   -0.5000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  2  3  1  0
-  3  4  1  0
-  2  5  1  0
-  2  6  1  0
-  1  7  1  0
-  1  8  1  0
-  1  9  1  0
-M  END`
+    atomos: [{el:"N", x:0, y:-20, r:24}, {el:"H", x:-65, y:45, r:17}, {el:"H", x:65, y:45, r:17}, {el:"H", x:0, y:65, r:17}],
+    enlaces: [[0,1,1], [0,2,1], [0,3,1]]
   },
   "HCl": {
-    nom: { iupac: "Cloruro de hidrógeno", stock: "Cloruro de hidrógeno", trad: "Ácido clorhídrico (en disolución)" },
+    nom: { iupac: "Cloruro de hidrógeno", stock: "Cloruro de hidrógeno", trad: "Ácido clorhídrico" },
     tipoEnlace: "Covalente muy polar",
     geom: "Lineal",
     comps: { H: 1, Cl: 1 },
-    molData: `
-  3Dmol.js
-  2  1  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    1.2700 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-M  END`
+    atomos: [{el:"Cl", x:-45, y:0, r:28}, {el:"H", x:55, y:0, r:18}],
+    enlaces: [[0,1,1]]
+  },
+  "NaCl": {
+    nom: { iupac: "Monocloruro de sodio", stock: "Cloruro de sodio", trad: "Sal común" },
+    tipoEnlace: "Iónico (Na⁺ Cl⁻)",
+    geom: "Red cristalina iónica",
+    comps: { Na: 1, Cl: 1 },
+    atomos: [{el:"Na", x:-55, y:0, r:22}, {el:"Cl", x:55, y:0, r:28}],
+    enlaces: [[0,1,1]]
+  },
+  "C2H5OH": {
+    nom: { iupac: "Etanol", stock: "Etanol", trad: "Alcohol etílico" },
+    tipoEnlace: "Covalente polar (Grupo -OH)",
+    geom: "Cadena tetraédrica",
+    comps: { C: 2, H: 6, O: 1 },
+    atomos: [{el:"C", x:-70, y:0, r:22}, {el:"C", x:0, y:0, r:22}, {el:"O", x:65, y:0, r:24}, {el:"H", x:115, y:0, r:16}],
+    enlaces: [[0,1,1], [1,2,1], [2,3,1]]
   },
   "H2SO4": {
     nom: { iupac: "Tetraoxosulfato(VI) de hidrógeno", stock: "Sulfato(VI) de hidrógeno", trad: "Ácido sulfúrico" },
-    tipoEnlace: "Covalente polar coordinado / dador",
-    geom: "Tetraédrica alrededor del Azufre",
+    tipoEnlace: "Covalente polar coordinado",
+    geom: "Tetraédrica en S",
     comps: { H: 2, S: 1, O: 4 },
-    molData: `
-  3Dmol.js
-  7  6  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    1.4300    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -1.4300    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    1.2500    0.0000    0.8000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.2500    0.0000    0.8000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    1.9000    0.0000    0.1000 H   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.9000    0.0000    0.1000 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0
-  1  3  2  0
-  1  4  1  0
-  1  5  1  0
-  4  6  1  0
-  5  7  1  0
-M  END`
+    atomos: [{el:"S", x:0, y:0, r:25}, {el:"O", x:0, y:-65, r:22}, {el:"O", x:0, y:65, r:22}, {el:"O", x:-65, y:0, r:22}, {el:"O", x:65, y:0, r:22}],
+    enlaces: [[0,1,2], [0,2,2], [0,3,1], [0,4,1]]
   },
   "HNO3": {
     nom: { iupac: "Trioxonitrato(V) de hidrógeno", stock: "Nitrato(V) de hidrógeno", trad: "Ácido nítrico" },
-    tipoEnlace: "Covalente polar con resonancia",
-    geom: "Trigonal plana en Nitrógeno",
+    tipoEnlace: "Covalente polar resonante",
+    geom: "Trigonal plana",
     comps: { H: 1, N: 1, O: 3 },
-    molData: `
-  3Dmol.js
-  5  4  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    1.2100    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    1.0800   -0.6500    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.1500   -0.6800    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.8500   -0.0500    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0
-  1  3  2  0
-  1  4  1  0
-  4  5  1  0
-M  END`
+    atomos: [{el:"N", x:0, y:0, r:24}, {el:"O", x:0, y:-60, r:22}, {el:"O", x:60, y:30, r:22}, {el:"O", x:-60, y:30, r:22}],
+    enlaces: [[0,1,2], [0,2,1], [0,3,1]]
   },
   "NaOH": {
-    nom: { iupac: "Hidróxido de sodio", stock: "Hidróxido de sodio", trad: "Sosa cáustica / Hidróxido sódico" },
-    tipoEnlace: "Iónico (Na⁺ y OH⁻)",
-    geom: "Red cristalina iónica",
+    nom: { iupac: "Hidróxido de sodio", stock: "Hidróxido de sodio", trad: "Sosa cáustica" },
+    tipoEnlace: "Iónico Na⁺ y (OH)⁻",
+    geom: "Lineal iónica",
     comps: { Na: 1, O: 1, H: 1 },
-    molData: `
-  3Dmol.js
-  3  2  0  0  0  0  0  0  0  0999 V2000
-   -1.5000    0.0000    0.0000 Na  0  0  0  0  0  0  0  0  0  0  0  0
-    0.8000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    1.7500    0.0000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  2  3  1  0
-M  END`
-  },
-  "NaCl": {
-    nom: { iupac: "Monocloruro de sodio", stock: "Cloruro de sodio", trad: "Sal común / Sal gema" },
-    tipoEnlace: "Iónico (Atracción electrostática Na⁺ Cl⁻)",
-    geom: "Red cúbica centrada en las caras",
-    comps: { Na: 1, Cl: 1 },
-    molData: `
-  3Dmol.js
-  2  1  0  0  0  0  0  0  0  0999 V2000
-   -1.1800    0.0000    0.0000 Na  0  0  0  0  0  0  0  0  0  0  0  0
-    1.1800    0.0000    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-M  END`
+    atomos: [{el:"Na", x:-70, y:0, r:22}, {el:"O", x:10, y:0, r:24}, {el:"H", x:70, y:0, r:17}],
+    enlaces: [[0,1,1], [1,2,1]]
   },
   "CaCO3": {
-    nom: { iupac: "Trioxocarbonato de calcio", stock: "Carbonato de calcio", trad: "Carbonato cálcico / Caliza" },
-    tipoEnlace: "Iónico entre Ca²⁺ y (CO₃)²⁻ (covalente en anión)",
-    geom: "Trigonal plana en el ión carbonato",
+    nom: { iupac: "Trioxocarbonato de calcio", stock: "Carbonato de calcio", trad: "Caliza" },
+    tipoEnlace: "Iónico Ca²⁺ y (CO₃)²⁻",
+    geom: "Trigonal plana en anión",
     comps: { Ca: 1, C: 1, O: 3 },
-    molData: `
-  3Dmol.js
-  5  4  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    1.2800    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    1.1100   -0.6400    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.1100   -0.6400    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    2.3000 Ca  0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0
-  1  3  1  0
-  1  4  1  0
-  1  5  1  0
-M  END`
+    atomos: [{el:"Ca", x:-80, y:0, r:26}, {el:"C", x:20, y:0, r:22}, {el:"O", x:20, y:-55, r:20}, {el:"O", x:80, y:0, r:20}, {el:"O", x:20, y:55, r:20}],
+    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,1]]
   },
   "KMnO4": {
     nom: { iupac: "Tetraoxomanganato(VII) de potasio", stock: "Permanganato de potasio", trad: "Permanganato potásico" },
-    tipoEnlace: "Iónico K⁺ y anión tetraédrico (MnO₄)⁻",
+    tipoEnlace: "Iónico K⁺ y (MnO₄)⁻",
     geom: "Tetraédrica en Mn",
     comps: { K: 1, Mn: 1, O: 4 },
-    molData: `
-  3Dmol.js
-  6  5  0  0  0  0  0  0  0  0999 V2000
-    0.0000    0.0000    0.0000 Mn  0  0  0  0  0  0  0  0  0  0  0  0
-    0.9500    0.9500    0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.9500   -0.9500    0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.9500    0.9500   -0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.9500   -0.9500   -0.9500 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    2.5000 K   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0
-  1  3  2  0
-  1  4  1  0
-  1  5  1  0
-  1  6  1  0
-M  END`
+    atomos: [{el:"K", x:-85, y:0, r:24}, {el:"Mn", x:15, y:0, r:25}, {el:"O", x:15, y:-60, r:20}, {el:"O", x:75, y:0, r:20}, {el:"O", x:15, y:60, r:20}],
+    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,2]]
   },
   "C6H12O6": {
-    nom: { iupac: "(2R,3S,4R,5R)-2,3,4,5,6-pentahidroxihexanal", stock: "D-Glucosa", trad: "Glucosa / Dextrosa" },
-    tipoEnlace: "Covalente polar (Glúcido monosacárido)",
-    geom: "Cadena/Anillo piranósico tetraédrico",
+    nom: { iupac: "2,3,4,5,6-pentahidroxihexanal", stock: "D-Glucosa", trad: "Glucosa / Dextrosa" },
+    tipoEnlace: "Covalente polar",
+    geom: "Anillo piranósico",
     comps: { C: 6, H: 12, O: 6 },
-    molData: `
-  3Dmol.js
- 12 11  0  0  0  0  0  0  0  0999 V2000
-   -1.3000   -0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.3000    0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    1.3000    0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    1.3000   -0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -1.5000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.4000   -1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.4000    1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    2.7000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    2.4000    1.3000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    2.4000   -1.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    3.4000   -0.6000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  2  3  1  0
-  3  4  1  0
-  4  5  1  0
-  5  6  1  0
-  6  1  1  0
-  1  7  1  0
-  2  8  1  0
-  3  9  1  0
-  4 10  1  0
-  5 11  1  0
- 11 12  1  0
-M  END`
+    atomos: [{el:"C", x:-50, y:-30, r:18}, {el:"C", x:0, y:-50, r:18}, {el:"C", x:50, y:-30, r:18}, {el:"C", x:50, y:30, r:18}, {el:"C", x:0, y:50, r:18}, {el:"O", x:-50, y:30, r:20}],
+    enlaces: [[0,1,1], [1,2,1], [2,3,1], [3,4,1], [4,5,1], [5,0,1]]
   }
 };
 
-let visor3DQuimica = null;
+const coloresCPK = {
+  H: "#f8fafc", C: "#334155", O: "#ef4444", N: "#3b82f6", S: "#eab308",
+  Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea"
+};
 
-function renderizarMolecula3D(compKey) {
-  const cont = document.getElementById('mol-3d-viewer');
-  if (!cont || typeof $3Dmol === 'undefined') return;
+function dibujarEstructura2DMolecula(compKey) {
+  const cvs = document.getElementById('cvsMol2D');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
+  ctx.clearRect(0, 0, w, h);
 
-  cont.innerHTML = "";
-  visor3DQuimica = $3Dmol.createViewer(cont, { defaultcolors: $3Dmol.rasmolElementColors });
+  const mol = datosCompuestosQuim[compKey];
+  if (!mol || !mol.atomos) return;
 
-  const compData = datosCompuestosQuim[compKey];
-  if (!compData || !compData.molData) return;
+  // Dibujar Enlaces (Líneas simples y dobles)
+  mol.enlaces.forEach(enl => {
+    const a1 = mol.atomos[enl[0]], a2 = mol.atomos[enl[1]], orden = enl[2] || 1;
+    const x1 = cx + a1.x, y1 = cy + a1.y, x2 = cx + a2.x, y2 = cy + a2.y;
 
-  visor3DQuimica.addModel(compData.molData, "sdf");
-  // Estilo químico: Esferas y Varillas (Ball & Stick) con colores estándar CPK
-  visor3DQuimica.setStyle({}, {
-    stick: { radius: 0.15, colorscheme: "Jmol" },
-    sphere: { scale: 0.32, colorscheme: "Jmol" }
+    ctx.strokeStyle = '#64748b';
+    if (orden === 1) {
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    } else {
+      // Doble enlace paralelo
+      ctx.lineWidth = 3;
+      const dx = y2 - y1, dy = -(x2 - x1);
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const ox = (dx / len) * 4, oy = (dy / len) * 4;
+      ctx.beginPath(); ctx.moveTo(x1 + ox, y1 + oy); ctx.lineTo(x2 + ox, y2 + oy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1 - ox, y1 - oy); ctx.lineTo(x2 - ox, y2 - oy); ctx.stroke();
+    }
   });
-  visor3DQuimica.zoomTo();
-  visor3DQuimica.render();
-  visor3DQuimica.spin("y", 1.2); // Rotación suave automática mientras no se toque
+
+  // Dibujar Átomos (Esferas con degradado)
+  mol.atomos.forEach(at => {
+    const px = cx + at.x, py = cy + at.y, col = coloresCPK[at.el] || "#cbd5e1";
+    let grad = ctx.createRadialGradient(px - at.r * 0.3, py - at.r * 0.3, at.r * 0.1, px, py, at.r);
+    grad.addColorStop(0, "#ffffff");
+    grad.addColorStop(0.4, col);
+    grad.addColorStop(1, "#090d16");
+
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(px, py, at.r, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = at.el === "H" ? "#0f172a" : "#f8fafc";
+    ctx.font = `bold ${Math.round(at.r * 0.9)}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(at.el, px, py);
+  });
 }
 
 function calcMasaMolarExtendida() {
@@ -1545,12 +1386,10 @@ function calcMasaMolarExtendida() {
     desglose += `<li><b>${el}:</b> ${comps[el]} átomo(s) × ${masasAtom[el]} g/mol = <code>${sub.toFixed(2)} g/mol</code> (<b>${pct.toFixed(1)}%</b>)</li>`;
   }
 
-  // Renderizar modelo 3D
-  renderizarMolecula3D(f);
+  dibujarEstructura2DMolecula(f);
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estructura y Masa Molar: ${f}</h3>
-    
     <div class="step" style="border-left-color:#10b981;">
       <b>Nomenclaturas Químicas:</b>
       <table class="didact-table" style="margin-top:6px;">
@@ -1566,7 +1405,6 @@ function calcMasaMolarExtendida() {
         • <b>Geometría Molecular:</b> ${compInfo.geom}
       </div>
     </div>
-
     <div class="step">
       <b>Composición Porcentual en Masa:</b>
       <ul style="margin:4px 0; padding-left:18px;">${desglose}</ul>
@@ -1593,19 +1431,19 @@ function calcMolaridad() {
 // ==========================================
 const bancoTrivia = {
   facil: [
-    { q: "Identidad Pitagórica", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto es sen²(θ) + cos²(θ)?", ans: 1, tol: 0.05, pista: "La suma de los cuadrados de sen y cos de un mismo ángulo siempre es igual a 1." },
+    { q: "Identidad Pitagórica", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta sen²(θ) + cos²(θ)?", ans: 1, tol: 0.05, pista: "La suma de sen² y cos² siempre es igual a 1." },
     { q: "Exponente Cero", desc: "¿Cuánto es 999⁰?", ans: 1, tol: 0.01, pista: "Cualquier número distinto de cero elevado a cero es 1." },
-    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono en la tabla periódica?", ans: 6, tol: 0.1, pista: "Búscalo en la pestaña de Química: C tiene Z = 6." }
+    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono en la tabla periódica?", ans: 6, tol: 0.1, pista: "Búscalo en Química: el Carbono tiene Z = 6." }
   ],
   medio: [
-    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "Multiplica D por d y divide entre 2: (8 · 5) / 2." },
-    { q: "Fuerza Resultante Unidimensional", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Magnitud neta?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
-    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "Hidrógeno = 1.008 (x2) + Oxígeno = 15.999." }
+    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "A = (D · d) / 2 = (8 · 5) / 2." },
+    { q: "Fuerza Resultante", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Magnitud neta en Newtons?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
+    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar aproximada del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "Dos hidrógenos (2) más un oxígeno (16)." }
   ],
   dificil: [
-    { q: "Equilibrio Rotacional (Torque)", desc: "Carga izquierda = 30 N a 2 m del eje (+60 N·m). ¿A cuántos metros a la derecha debe colocarse una carga de 40 N para equilibrar?", ans: 1.5, tol: 0.05, pista: "Iguala momentos: 60 = 40 · d. Despeja d dividiendo 60 entre 40." },
-    { q: "Derivada por Regla de la Cadena", desc: "Si f(x) = 5 · sen(4x), su derivada es k · cos(4x). ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica la constante externa (5) por la interna (4)." },
-    { q: "Resistencia de Base de Transistor", desc: "Con corriente Ic = 200 mA y β = 100, la corriente Ib es 2 mA. Con Vin = 5V y Vbe = 0.7V, ¿cuántos Ohms necesita RB?", ans: 2150, tol: 50, pista: "Aplica Ley de Ohm: RB = (5 - 0.7) / 0.002." }
+    { q: "Equilibrio Rotacional (Torque)", desc: "Carga izquierda = 30 N a 2 m (+60 N·m). ¿A qué distancia a la derecha debe colocarse una carga de 40 N para equilibrar?", ans: 1.5, tol: 0.05, pista: "Iguala momentos: 60 = 40 · d. Divide 60 entre 40." },
+    { q: "Derivada por Regla de la Cadena", desc: "Si f(x) = 5 · sen(4x), su derivada es k · cos(4x). ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica la constante de afuera (5) por la de adentro (4)." },
+    { q: "Resistencia de Base de Transistor", desc: "Con Ic = 200 mA y β = 100, la corriente Ib es 2 mA (0.002 A). Con Vin = 5V y Vbe = 0.7V, ¿cuántos Ohms necesita RB?", ans: 2150, tol: 50, pista: "Aplica Ley de Ohm: RB = (5 - 0.7) / 0.002." }
   ]
 };
 
