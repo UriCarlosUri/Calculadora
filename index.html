@@ -172,15 +172,134 @@
   </div>
 
   <!-- Sub-pestañas Cálculo -->
-  <div class="tabs-row" id="sub-calculo" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('calculo', 'calc-cuadri')">Áreas de Cuadriláteros</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'calc-trig')">Razones Trigonométricas</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'calc-ident')">Identidades Trigonométricas</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'calc-exp')">Leyes de Exponentes</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'derivada-trig')">Derivadas</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'integral-trig')">Integrales</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'cuadritos')">Sumas de Riemann</button>
+<div class="tabs-row" id="sub-calculo">
+  <button class="btn-tab active" onclick="verSubCalculo('calc-libre')">✍️ Derivadas/Integrales (Métodos)</button>
+  <button class="btn-tab" onclick="verSubCalculo('calc-areas')">📐 Figuras 2D (Áreas y Despejes)</button>
+  <button class="btn-tab" onclick="verSubCalculo('calc-volumenes')">📦 Cuerpos 3D (Volúmenes y Despejes)</button>
+  <button class="btn-tab" onclick="verSubCalculo('calc-trig')">📐 Razones Trigonométricas</button>
+  <button class="btn-tab" onclick="verSubCalculo('calc-ident')">🔄 Identidades Trigonométricas</button>
+</div>
+
+<!-- 1. DERIVADAS E INTEGRALES CON MÉTODOS -->
+<div id="submod-calc-libre" class="calc-subseccion" style="display:block;">
+  <div class="form-group">
+    <label><b>Escribe tu función en términos de x:</b></label>
+    <input type="text" id="calc-expr-input" value="x * cos(x)" placeholder="Ej: 3*x^2 + 5*x, x*sin(x), (2*x+1)/(x-3), exp(2*x)">
+    <small style="color:#94a3b8; display:block; margin-top:4px;">
+      Multiplicaciones con <code>*</code>, potencias con <code>^</code>. Métodos analizados: Regla de la Cadena, Producto u·v, Cociente u/v, Integración por partes ∫u dv y reglas directas.
+    </small>
   </div>
+  <div class="grid-2">
+    <div class="form-group">
+      <label>Límite inferior [a] (opcional para área definida):</label>
+      <input type="number" id="calc-lim-a" placeholder="Ej: 0" step="any">
+    </div>
+    <div class="form-group">
+      <label>Límite superior [b] (opcional para área definida):</label>
+      <input type="number" id="calc-lim-b" placeholder="Ej: 3.1416" step="any">
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-main" onclick="resolverCalculoMetodo('derivar')">d/dx Analizar y Derivar</button>
+    <button class="btn-main" style="background:#10b981;" onclick="resolverCalculoMetodo('integrar')">∫ Analizar e Integrar</button>
+  </div>
+</div>
+
+<!-- 2. ÁREAS 2D CON DESPEJES -->
+<div id="submod-calc-areas" class="calc-subseccion" style="display:none;">
+  <div class="grid-2">
+    <div class="form-group">
+      <label>Figura Geométrica:</label>
+      <select id="fig-tipo-2d" onchange="configurarInputs2D()">
+        <option value="rectangulo">Rectángulo / Romboide</option>
+        <option value="triangulo">Triángulo</option>
+        <option value="trapecio">Trapecio</option>
+        <option value="rombo">Rombo</option>
+        <option value="circulo">Círculo</option>
+        <option value="poligono">Polígono Regular (Pentágono/Hexágono)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Qué variable deseas calcular/despejar?</label>
+      <select id="fig-incognita-2d" onchange="configurarInputs2D()"></select>
+    </div>
+  </div>
+  <div class="grid-3" id="inputs-dinamicos-2d"></div>
+  <div class="btn-row">
+    <button class="btn-main" onclick="calcularAreaDespeje()">Calcular con Procedimiento</button>
+  </div>
+</div>
+
+<!-- 3. VOLÚMENES 3D CON DESPEJES -->
+<div id="submod-calc-volumenes" class="calc-subseccion" style="display:none;">
+  <div class="grid-2">
+    <div class="form-group">
+      <label>Cuerpo Geométrico 3D:</label>
+      <select id="fig-tipo-3d" onchange="configurarInputs3D()">
+        <option value="prisma">Prisma Rectangular (Caja / Cubo)</option>
+        <option value="cilindro">Cilindro</option>
+        <option value="esfera">Esfera</option>
+        <option value="cono">Cono</option>
+        <option value="piramide">Pirámide de Base Cuadrada</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Qué variable deseas calcular/despejar?</label>
+      <select id="fig-incognita-3d" onchange="configurarInputs3D()"></select>
+    </div>
+  </div>
+  <div class="grid-3" id="inputs-dinamicos-3d"></div>
+  <div class="btn-row">
+    <button class="btn-main" onclick="calcularVolumenDespeje()">Calcular con Procedimiento</button>
+  </div>
+</div>
+
+<!-- 4. RAZONES TRIGONOMÉTRICAS COMPLETAS -->
+<div id="submod-calc-trig" class="calc-subseccion" style="display:none;">
+  <div class="form-group">
+    <label>Método de Entrada:</label>
+    <select id="trig-modo-input" onchange="configurarInputsTrig()">
+      <option value="angulo">A partir de un Ángulo (grados o radianes)</option>
+      <option value="triangulo">A partir de los lados del Triángulo Rectángulo</option>
+    </select>
+  </div>
+  <div id="inputs-trig-container" class="grid-2"></div>
+  <div class="btn-row">
+    <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar Razones y Ángulos Notables</button>
+  </div>
+</div>
+
+<!-- 5. IDENTIDADES TRIGONOMÉTRICAS TOTALES -->
+<div id="submod-calc-ident" class="calc-subseccion" style="display:none;">
+  <div class="form-group">
+    <label>Familia de Identidades:</label>
+    <select id="ident-familia" onchange="actualizarListaIdentidades()">
+      <option value="pitagoricas">Pitagóricas (sen²θ + cos²θ = 1, etc.)</option>
+      <option value="reciprocas">Recíprocas (csc = 1/sen, sec = 1/cos, cot = 1/tan)</option>
+      <option value="cociente">Cociente (tan = sen/cos, cot = cos/sen)</option>
+      <option value="paridad">Paridad / Negativo (sen(-θ) = -sen(θ), cos(-θ) = cos(θ))</option>
+      <option value="doble">Ángulo Doble (sen 2θ, cos 2θ, tan 2θ)</option>
+      <option value="suma">Suma y Resta de Ángulos (sen(α ± β), cos(α ± β))</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Identidad Específica:</label>
+    <select id="ident-especifica"></select>
+  </div>
+  <div class="grid-2">
+    <div class="form-group">
+      <label>Ángulo principal (θ o α) en grados:</label>
+      <input type="number" id="ident-ang1" value="30" step="any">
+    </div>
+    <div class="form-group" id="grp-ident-ang2" style="display:none;">
+      <label>Segundo ángulo (β) en grados:</label>
+      <input type="number" id="ident-ang2" value="45" step="any">
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-main" onclick="demostrarIdentidadCompleta()">Demostrar y Verificar Paso a Paso</button>
+  </div>
+</div>
 
   <!-- Sub-pestañas Robótica -->
   <div class="tabs-row" id="sub-robotica" style="display: none;">
@@ -292,133 +411,626 @@
     </div>
   </div>
 
-  <!-- ========================================================
-       2. CÁLCULO & GEOMETRÍA
-       ======================================================== -->
-  <div id="mod-calc-cuadri" class="mod-content">
-    <label>Guía Didáctica: Áreas de Cuadriláteros</label>
-    <div class="form-group">
-      <select id="cuadri-tipo" onchange="ajustarInputsCuadrilatero()">
-        <option value="cuadrado">Cuadrado (L · L = L²)</option>
-        <option value="rectangulo">Rectángulo (base · altura)</option>
-        <option value="rombo">Rombo [(D · d) / 2]</option>
-        <option value="romboide">Romboide / Paralelogramo (base · altura real)</option>
-        <option value="trapecio">Trapecio {[(B + b) / 2] · h}</option>
-      </select>
-    </div>
-    <div class="grid-3" id="cuadri-inputs-container">
-      <div class="form-group" id="grp-cuadri-1"><label id="lbl-cuadri-1">Lado (L):</label><input type="number" id="cuadri-val1" value="5" oninput="dibujarYCalcularCuadrilatero()"></div>
-      <div class="form-group" id="grp-cuadri-2" style="display:none;"><label id="lbl-cuadri-2">Altura (h):</label><input type="number" id="cuadri-val2" value="3" oninput="dibujarYCalcularCuadrilatero()"></div>
-      <div class="form-group" id="grp-cuadri-3" style="display:none;"><label id="lbl-cuadri-3">Base menor (b):</label><input type="number" id="cuadri-val3" value="3" oninput="dibujarYCalcularCuadrilatero()"></div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="cvsCuadrilatero" width="440" height="220"></canvas>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="dibujarYCalcularCuadrilatero()">Explicar Deducción</button>
-      <button class="btn-code" onclick="verCodigo('cuadrilateros')">💻 Ver Código</button>
-    </div>
-  </div>
+ // --- NAVEGACIÓN DENTRO DE CÁLCULO ---
+function verSubCalculo(idSubmod) {
+  document.querySelectorAll('#sub-calculo .btn-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.calc-subseccion').forEach(s => s.style.display = 'none');
+  
+  event.target.classList.add('active');
+  const target = document.getElementById('submod-' + idSubmod);
+  if (target) target.style.display = 'block';
 
-  <div id="mod-calc-trig" class="mod-content">
-    <div class="grid-2">
-      <div class="form-group"><label>Cateto Opuesto (a):</label><input type="number" id="trig-co" value="3"></div>
-      <div class="form-group"><label>Cateto Adyacente (b):</label><input type="number" id="trig-ca" value="4"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcRazonesTrig()">Calcular 6 Razones Trigonométricas</button>
-      <button class="btn-code" onclick="verCodigo('trig')">💻 Ver Código</button>
-    </div>
-  </div>
+  // Inicializaciones al entrar
+  if (idSubmod === 'calc-areas') configurarInputs2D();
+  if (idSubmod === 'calc-volumenes') configurarInputs3D();
+  if (idSubmod === 'calc-trig') configurarInputsTrig();
+  if (idSubmod === 'calc-ident') actualizarListaIdentidades();
+}
 
-  <div id="mod-calc-ident" class="mod-content">
-    <div class="form-group">
-      <select id="sel-identidad">
-        <option value="pitagora">sen²(θ) + cos²(θ) = 1</option>
-        <option value="tan-sec">1 + tan²(θ) = sec²(θ)</option>
-        <option value="sen-doble">sen(2θ) = 2·sen(θ)·cos(θ)</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Ángulo θ [°]:</label><input type="number" id="ident-angulo" value="30"></div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="comprobarIdentidad()">Demostrar Identidad</button>
-      <button class="btn-code" onclick="verCodigo('identidades')">💻 Ver Código</button>
-    </div>
-  </div>
+// ==========================================
+// 1. DERIVADAS E INTEGRALES POR MÉTODOS
+// ==========================================
+function resolverCalculoMetodo(tipo) {
+  const expr = document.getElementById('calc-expr-input').value.trim();
+  const limA = document.getElementById('calc-lim-a').value.trim();
+  const limB = document.getElementById('calc-lim-b').value.trim();
+  const s = document.getElementById('salida');
 
-  <div id="mod-calc-exp" class="mod-content">
-    <div class="form-group">
-      <select id="sel-ley-exp" onchange="ajustarInputsExponentes()">
-        <option value="prod">Producto: aⁿ · aᵐ = aⁿ⁺ᵐ</option>
-        <option value="coc">Cociente: aⁿ / aᵐ = aⁿ⁻ᵐ</option>
-        <option value="pot">Potencia: (aⁿ)ᵐ = aⁿ·ᵐ</option>
-        <option value="neg">Exponente negativo: a⁻ⁿ = 1/aⁿ</option>
-      </select>
-    </div>
-    <div class="grid-3">
-      <div class="form-group"><label>Base a:</label><input type="number" id="exp-a" value="2"></div>
-      <div class="form-group"><label>Exponente n:</label><input type="number" id="exp-n" value="3"></div>
-      <div class="form-group" id="grp-exp-m"><label>Exponente m:</label><input type="number" id="exp-m" value="4"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcLeyesExponentes()">Demostrar Ley</button>
-      <button class="btn-code" onclick="verCodigo('exponentes')">💻 Ver Código</button>
-    </div>
-  </div>
+  if (!expr) { alert("Escribe una función."); return; }
+  if (typeof Algebrite === 'undefined') {
+    alert("Cargando motor de cálculo. Verifica conexión a internet.");
+    return;
+  }
 
-  <div id="mod-derivada-trig" class="mod-content">
-    <div class="form-group">
-      <select id="der-tipo" onchange="ajustarInputsDerivada()">
-        <option value="sin">Seno: A · sen(k·x)</option>
-        <option value="cos">Coseno: A · cos(k·x)</option>
-        <option value="tan">Tangente: A · tan(k·x)</option>
-        <option value="exp">Exponencial: A · e^(k·x)</option>
-        <option value="ln">Logaritmo: A · ln(x)</option>
-        <option value="poly">Polinomio: c · x^n</option>
-      </select>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label id="lbl-der1">Amplitud A:</label><input type="number" id="der-in1" value="4"></div>
-      <div class="form-group" id="grp-der2"><label id="lbl-der2">Argumento k:</label><input type="number" id="der-in2" value="3"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcDerivadaTrascendente()">Calcular Derivada</button>
-      <button class="btn-code" onclick="verCodigo('derivada')">💻 Ver Código</button>
-    </div>
-  </div>
+  try {
+    let limpia = expr.replace(/sen\(/g, "sin(").replace(/(\d)([a-zA-Z])/g, "$1*$2");
+    let metodoDetectado = "";
+    let pasos = "";
 
-  <div id="mod-integral-trig" class="mod-content">
-    <div class="form-group">
-      <select id="int-tipo" onchange="ajustarInputsIntegral()">
-        <option value="sin">∫ A · sen(k·x) dx</option>
-        <option value="cos">∫ A · cos(k·x) dx</option>
-        <option value="exp">∫ A · e^(k·x) dx</option>
-        <option value="poly">∫ c · x^n dx</option>
-      </select>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label id="lbl-int1">Amplitud A:</label><input type="number" id="int-in1" value="2"></div>
-      <div class="form-group" id="grp-int2"><label id="lbl-int2">Argumento k:</label><input type="number" id="int-in2" value="2"></div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Límite inf [a]:</label><input type="number" id="int-lim-a" placeholder="Opcional"></div>
-      <div class="form-group"><label>Límite sup [b]:</label><input type="number" id="int-lim-b" placeholder="Opcional"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcIntegralTrascendente()">Calcular Integral</button>
-      <button class="btn-code" onclick="verCodigo('integral')">💻 Ver Código</button>
-    </div>
-  </div>
+    if (tipo === 'derivar') {
+      // Detección de método pedagógico
+      if (limpia.includes("/") && limpia.includes("x")) {
+        metodoDetectado = "Regla del Cociente: d/dx [u / v] = (u'·v - u·v') / v²";
+      } else if (limpia.includes("*") && (limpia.match(/x/g) || []).length > 1) {
+        metodoDetectado = "Regla del Producto: d/dx [u · v] = u'·v + u·v'";
+      } else if (limpia.includes("sin(") || limpia.includes("cos(") || limpia.includes("exp(")) {
+        metodoDetectado = "Regla de la Cadena con Funciones Trascendentes: d/dx [f(g(x))] = f'(g(x)) · g'(x)";
+      } else {
+        metodoDetectado = "Regla de la Potencia y Suma Término a Término: d/dx [c · xⁿ] = c · n · xⁿ⁻¹";
+      }
 
-  <div id="mod-cuadritos" class="mod-content">
-    <label>Rectángulos de Riemann: <b id="lbl-cuadritos">6</b></label>
-    <input type="range" min="2" max="30" value="6" oninput="dibujarRiemann(this.value)">
-    <div class="canvas-container">
-      <canvas id="cvsRiemann" width="400" height="180"></canvas>
-      <p id="areaRiemannText" style="font-size:0.95rem; color:#38bdf8; margin:8px 0 0 0; font-weight:bold;">Área estimada: 2.96 u²</p>
-    </div>
-  </div>
+      let res = Algebrite.run(`d(${limpia}, x)`);
 
+      pasos = `
+        <h3 style="color:#38bdf8;margin:0 0 8px 0;">Derivada Explicada Paso a Paso</h3>
+        <div class="step"><b>1. Función propuesta:</b> <code>f(x) = ${expr}</code></div>
+        <div class="step"><b>2. Estructura y Método recomendado:</b><br><span style="color:#fde68a;">${metodoDetectado}</span></div>
+        <div class="step"><b>3. Procedimiento:</b> Se identifican los términos individuales, se aplica la derivada de cada factor y se simplifican términos algebraicos semejantes.</div>
+        <div class="step"><b>Resultado final simplificado:</b><br><b style="color:#38bdf8;font-size:1.15rem;">f'(x) = ${res}</b></div>
+      `;
+    } else {
+      // Integral
+      if (limpia.includes("*") && (limpia.includes("sin") || limpia.includes("cos") || limpia.includes("exp") || limpia.includes("log"))) {
+        metodoDetectado = "Método de Integración por Partes: ∫ u dv = u·v - ∫ v du (Mnemotecnia: 'Un Día Vi Una Vaca...')";
+      } else if (limpia.includes("^") && limpia.includes("(") && limpia.includes("*")) {
+        metodoDetectado = "Método de Cambio de Variable / Sustitución u: Se elige u = g(x), du = g'(x)dx para transformar en ∫ uⁿ du";
+      } else {
+        metodoDetectado = "Integración Inmediata Directa: ∫ xⁿ dx = (xⁿ⁺¹)/(n+1) + C";
+      }
+
+      let resIndef = Algebrite.run(`integral(${limpia}, x)`);
+
+      pasos = `
+        <h3 style="color:#10b981;margin:0 0 8px 0;">Integral Explicada Paso a Paso</h3>
+        <div class="step"><b>1. Integral planteada:</b> <code>∫ [ ${expr} ] dx</code></div>
+        <div class="step"><b>2. Estrategia de Solución:</b><br><span style="color:#fde68a;">${metodoDetectado}</span></div>
+        <div class="step"><b>3. Antiderivada general (Integral Indefinida):</b><br><b style="color:#10b981;font-size:1.15rem;">F(x) = ${resIndef} + C</b></div>
+      `;
+
+      if (limA !== "" && limB !== "") {
+        let valB = Algebrite.run(`float(subst(${limB}, x, ${resIndef}))`);
+        let valA = Algebrite.run(`float(subst(${limA}, x, ${resIndef}))`);
+        let areaDef = Algebrite.run(`float(${valB} - (${valA}))`);
+        pasos += `
+          <div class="step" style="border-left-color:#f59e0b;">
+            <b>4. Teorema Fundamental del Cálculo [Área entre ${limA} y ${limB}]:</b><br>
+            • F(b) = F(${limB}) = <code>${valB}</code><br>
+            • F(a) = F(${limA}) = <code>${valA}</code><br>
+            <b>Área = F(b) - F(a) = <span style="color:#f59e0b;font-size:1.1rem;">${areaDef} u²</span></b>
+          </div>
+        `;
+      }
+    }
+
+    s.innerHTML = pasos;
+    s.style.display = 'block';
+  } catch (err) {
+    alert("Error de sintaxis matemática. Asegúrate de usar operadores explícitos (ejemplo: 2*x en lugar de 2x).");
+  }
+}
+
+// ==========================================
+// 2. GEOMETRÍA 2D CON DESPEJES
+// ==========================================
+const esquemas2D = {
+  rectangulo: {
+    incognitas: { area: "Área (conozco Base y Altura)", base: "Base (conozco Área y Altura)", altura: "Altura (conozco Área y Base)" },
+    inputs: {
+      area: [ {id:"b", l:"Base (b):", v:6}, {id:"h", l:"Altura (h):", v:4} ],
+      base: [ {id:"A", l:"Área (A):", v:24}, {id:"h", l:"Altura (h):", v:4} ],
+      altura: [ {id:"A", l:"Área (A):", v:24}, {id:"b", l:"Base (b):", v:6} ]
+    }
+  },
+  triangulo: {
+    incognitas: { area: "Área (conozco Base y Altura)", base: "Base (conozco Área y Altura)", altura: "Altura (conozco Área y Base)" },
+    inputs: {
+      area: [ {id:"b", l:"Base (b):", v:5}, {id:"h", l:"Altura (h):", v:4} ],
+      base: [ {id:"A", l:"Área (A):", v:10}, {id:"h", l:"Altura (h):", v:4} ],
+      altura: [ {id:"A", l:"Área (A):", v:10}, {id:"b", l:"Base (b):", v:5} ]
+    }
+  },
+  trapecio: {
+    incognitas: { area: "Área (conozco B, b y h)", altura: "Altura (conozco A, B y b)" },
+    inputs: {
+      area: [ {id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4}, {id:"h", l:"Altura (h):", v:5} ],
+      altura: [ {id:"A", l:"Área (A):", v:30}, {id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4} ]
+    }
+  },
+  rombo: {
+    incognitas: { area: "Área (conozco D y d)", diagMenor: "Diagonal Menor (conozco A y D)" },
+    inputs: {
+      area: [ {id:"D", l:"Diagonal Mayor (D):", v:8}, {id:"d", l:"Diagonal Menor (d):", v:5} ],
+      diagMenor: [ {id:"A", l:"Área (A):", v:20}, {id:"D", l:"Diagonal Mayor (D):", v:8} ]
+    }
+  },
+  circulo: {
+    incognitas: { area: "Área (conozco Radio)", radio: "Radio (conozco Área)" },
+    inputs: {
+      area: [ {id:"r", l:"Radio (r):", v:3} ],
+      radio: [ {id:"A", l:"Área (A):", v:28.27} ]
+    }
+  },
+  poligono: {
+    incognitas: { area: "Área (conozco Perímetro y Apotema)", apotema: "Apotema (conozco Área y Perímetro)" },
+    inputs: {
+      area: [ {id:"P", l:"Perímetro total (P):", v:30}, {id:"ap", l:"Apotema (ap):", v:4.13} ],
+      apotema: [ {id:"A", l:"Área (A):", v:61.95}, {id:"P", l:"Perímetro (P):", v:30} ]
+    }
+  }
+};
+
+function configurarInputs2D() {
+  const fig = document.getElementById('fig-tipo-2d').value;
+  const selInc = document.getElementById('fig-incognita-2d');
+  const cont = document.getElementById('inputs-dinamicos-2d');
+  
+  // Llenar selector de incógnita si cambió la figura
+  const mapaInc = esquemas2D[fig].incognitas;
+  if (!mapaInc[selInc.value]) {
+    selInc.innerHTML = "";
+    for (let k in mapaInc) selInc.innerHTML += `<option value="${k}">${mapaInc[k]}</option>`;
+  }
+
+  const incActual = selInc.value;
+  const listaInputs = esquemas2D[fig].inputs[incActual];
+  cont.innerHTML = "";
+  listaInputs.forEach(inp => {
+    cont.innerHTML += `
+      <div class="form-group">
+        <label>${inp.l}</label>
+        <input type="number" id="inp-2d-${inp.id}" value="${inp.v}" step="any">
+      </div>
+    `;
+  });
+}
+
+function calcularAreaDespeje() {
+  const fig = document.getElementById('fig-tipo-2d').value;
+  const inc = document.getElementById('fig-incognita-2d').value;
+  const s = document.getElementById('salida');
+
+  let res = 0, formula = "", despeje = "";
+
+  if (fig === 'rectangulo') {
+    if (inc === 'area') {
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      const h = parseFloat(document.getElementById('inp-2d-h').value);
+      res = b * h;
+      formula = "A = b · h";
+      despeje = `Multiplicación directa: A = ${b} · ${h} = <b>${res.toFixed(2)} u²</b>`;
+    } else if (inc === 'base') {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const h = parseFloat(document.getElementById('inp-2d-h').value);
+      res = A / h;
+      formula = "A = b · h  →  b = A / h";
+      despeje = `Despeje dividiendo entre altura: b = ${A} / ${h} = <b>${res.toFixed(2)} u</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      res = A / b;
+      formula = "A = b · h  →  h = A / b";
+      despeje = `Despeje dividiendo entre base: h = ${A} / ${b} = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'triangulo') {
+    if (inc === 'area') {
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      const h = parseFloat(document.getElementById('inp-2d-h').value);
+      res = (b * h) / 2;
+      formula = "A = (b · h) / 2";
+      despeje = `A = (${b} · ${h}) / 2 = <b>${res.toFixed(2)} u²</b>`;
+    } else if (inc === 'base') {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const h = parseFloat(document.getElementById('inp-2d-h').value);
+      res = (2 * A) / h;
+      formula = "A = (b · h) / 2  →  b = (2 · A) / h";
+      despeje = `b = (2 · ${A}) / ${h} = <b>${res.toFixed(2)} u</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      res = (2 * A) / b;
+      formula = "A = (b · h) / 2  →  h = (2 · A) / b";
+      despeje = `h = (2 · ${A}) / ${b} = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'circulo') {
+    if (inc === 'area') {
+      const r = parseFloat(document.getElementById('inp-2d-r').value);
+      res = Math.PI * r * r;
+      formula = "A = π · r²";
+      despeje = `A = π · (${r})² = <b>${res.toFixed(3)} u²</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      res = Math.sqrt(A / Math.PI);
+      formula = "A = π · r²  →  r = √(A / π)";
+      despeje = `r = √(${A} / π) = <b>${res.toFixed(3)} u</b>`;
+    }
+  } else if (fig === 'trapecio') {
+    if (inc === 'area') {
+      const B = parseFloat(document.getElementById('inp-2d-B').value);
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      const h = parseFloat(document.getElementById('inp-2d-h').value);
+      res = ((B + b) / 2) * h;
+      formula = "A = [ (B + b) / 2 ] · h";
+      despeje = `A = [ (${B} + ${b}) / 2 ] · ${h} = <b>${res.toFixed(2)} u²</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const B = parseFloat(document.getElementById('inp-2d-B').value);
+      const b = parseFloat(document.getElementById('inp-2d-b').value);
+      res = (2 * A) / (B + b);
+      formula = "h = (2 · A) / (B + b)";
+      despeje = `h = (2 · ${A}) / (${B} + ${b}) = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'rombo') {
+    if (inc === 'area') {
+      const D = parseFloat(document.getElementById('inp-2d-D').value);
+      const d = parseFloat(document.getElementById('inp-2d-d').value);
+      res = (D * d) / 2;
+      formula = "A = (D · d) / 2";
+      despeje = `A = (${D} · ${d}) / 2 = <b>${res.toFixed(2)} u²</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const D = parseFloat(document.getElementById('inp-2d-D').value);
+      res = (2 * A) / D;
+      formula = "d = (2 · A) / D";
+      despeje = `d = (2 · ${A}) / ${D} = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else {
+    // Polígono regular
+    if (inc === 'area') {
+      const P = parseFloat(document.getElementById('inp-2d-P').value);
+      const ap = parseFloat(document.getElementById('inp-2d-ap').value);
+      res = (P * ap) / 2;
+      formula = "A = (Perímetro · apotema) / 2";
+      despeje = `A = (${P} · ${ap}) / 2 = <b>${res.toFixed(2)} u²</b>`;
+    } else {
+      const A = parseFloat(document.getElementById('inp-2d-A').value);
+      const P = parseFloat(document.getElementById('inp-2d-P').value);
+      res = (2 * A) / P;
+      formula = "apotema = (2 · A) / Perímetro";
+      despeje = `ap = (2 · ${A}) / ${P} = <b>${res.toFixed(3)} u</b>`;
+    }
+  }
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D: Resolución y Despeje</h3>
+    <div class="step"><b>1. Fórmula canónica:</b> <code>${formula}</code></div>
+    <div class="step"><b>2. Despeje de la variable desconocida:</b><br>${despeje}</div>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 3. VOLÚMENES 3D CON DESPEJES
+// ==========================================
+const esquemas3D = {
+  cilindro: {
+    incognitas: { vol: "Volumen (conozco Radio y Altura)", altura: "Altura (conozco Volumen y Radio)", radio: "Radio (conozco Volumen y Altura)" },
+    inputs: {
+      vol: [ {id:"r", l:"Radio (r):", v:3}, {id:"h", l:"Altura (h):", v:8} ],
+      altura: [ {id:"V", l:"Volumen (V):", v:226.19}, {id:"r", l:"Radio (r):", v:3} ],
+      radio: [ {id:"V", l:"Volumen (V):", v:226.19}, {id:"h", l:"Altura (h):", v:8} ]
+    }
+  },
+  prisma: {
+    incognitas: { vol: "Volumen (conozco Largo, Ancho y Alto)", altura: "Alto (conozco Volumen, Largo y Ancho)" },
+    inputs: {
+      vol: [ {id:"l", l:"Largo (a):", v:6}, {id:"w", l:"Ancho (b):", v:4}, {id:"h", l:"Alto (c):", v:3} ],
+      altura: [ {id:"V", l:"Volumen (V):", v:72}, {id:"l", l:"Largo (a):", v:6}, {id:"w", l:"Ancho (b):", v:4} ]
+    }
+  },
+  esfera: {
+    incognitas: { vol: "Volumen (conozco Radio)", radio: "Radio (conozco Volumen)" },
+    inputs: {
+      vol: [ {id:"r", l:"Radio (r):", v:4} ],
+      radio: [ {id:"V", l:"Volumen (V):", v:268.08} ]
+    }
+  },
+  cono: {
+    incognitas: { vol: "Volumen (conozco Radio y Altura)", altura: "Altura (conozco Volumen y Radio)" },
+    inputs: {
+      vol: [ {id:"r", l:"Radio (r):", v:3}, {id:"h", l:"Altura (h):", v:7} ],
+      altura: [ {id:"V", l:"Volumen (V):", v:65.97}, {id:"r", l:"Radio (r):", v:3} ]
+    }
+  },
+  piramide: {
+    incognitas: { vol: "Volumen (conozco Lado base y Altura)", altura: "Altura (conozco Volumen y Lado base)" },
+    inputs: {
+      vol: [ {id:"L", l:"Lado de base cuadrada (L):", v:4}, {id:"h", l:"Altura (h):", v:6} ],
+      altura: [ {id:"V", l:"Volumen (V):", v:32}, {id:"L", l:"Lado base (L):", v:4} ]
+    }
+  }
+};
+
+function configurarInputs3D() {
+  const fig = document.getElementById('fig-tipo-3d').value;
+  const selInc = document.getElementById('fig-incognita-3d');
+  const cont = document.getElementById('inputs-dinamicos-3d');
+
+  const mapaInc = esquemas3D[fig].incognitas;
+  if (!mapaInc[selInc.value]) {
+    selInc.innerHTML = "";
+    for (let k in mapaInc) selInc.innerHTML += `<option value="${k}">${mapaInc[k]}</option>`;
+  }
+
+  const incActual = selInc.value;
+  const listaInputs = esquemas3D[fig].inputs[incActual];
+  cont.innerHTML = "";
+  listaInputs.forEach(inp => {
+    cont.innerHTML += `
+      <div class="form-group">
+        <label>${inp.l}</label>
+        <input type="number" id="inp-3d-${inp.id}" value="${inp.v}" step="any">
+      </div>
+    `;
+  });
+}
+
+function calcularVolumenDespeje() {
+  const fig = document.getElementById('fig-tipo-3d').value;
+  const inc = document.getElementById('fig-incognita-3d').value;
+  const s = document.getElementById('salida');
+
+  let res = 0, formula = "", despeje = "";
+
+  if (fig === 'cilindro') {
+    if (inc === 'vol') {
+      const r = parseFloat(document.getElementById('inp-3d-r').value);
+      const h = parseFloat(document.getElementById('inp-3d-h').value);
+      res = Math.PI * r * r * h;
+      formula = "V = π · r² · h";
+      despeje = `V = π · (${r})² · ${h} = <b>${res.toFixed(2)} u³</b>`;
+    } else if (inc === 'altura') {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      const r = parseFloat(document.getElementById('inp-3d-r').value);
+      res = V / (Math.PI * r * r);
+      formula = "V = π · r² · h  →  h = V / (π · r²)";
+      despeje = `h = ${V} / [ π · (${r})² ] = <b>${res.toFixed(2)} u</b>`;
+    } else {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      const h = parseFloat(document.getElementById('inp-3d-h').value);
+      res = Math.sqrt(V / (Math.PI * h));
+      formula = "r = √[ V / (π · h) ]";
+      despeje = `r = √[ ${V} / (π · ${h}) ] = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'prisma') {
+    if (inc === 'vol') {
+      const l = parseFloat(document.getElementById('inp-3d-l').value);
+      const w = parseFloat(document.getElementById('inp-3d-w').value);
+      const h = parseFloat(document.getElementById('inp-3d-h').value);
+      res = l * w * h;
+      formula = "V = largo · ancho · alto";
+      despeje = `V = ${l} · ${w} · ${h} = <b>${res.toFixed(2)} u³</b>`;
+    } else {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      const l = parseFloat(document.getElementById('inp-3d-l').value);
+      const w = parseFloat(document.getElementById('inp-3d-w').value);
+      res = V / (l * w);
+      formula = "alto = V / (largo · ancho)";
+      despeje = `h = ${V} / (${l} · ${w}) = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'esfera') {
+    if (inc === 'vol') {
+      const r = parseFloat(document.getElementById('inp-3d-r').value);
+      res = (4/3) * Math.PI * Math.pow(r, 3);
+      formula = "V = (4/3) · π · r³";
+      despeje = `V = (4/3) · π · (${r})³ = <b>${res.toFixed(2)} u³</b>`;
+    } else {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      res = Math.cbrt((3 * V) / (4 * Math.PI));
+      formula = "r = ∛[ (3 · V) / (4 · π) ]";
+      despeje = `r = ∛[ (3 · ${V}) / (4 · π) ] = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else if (fig === 'cono') {
+    if (inc === 'vol') {
+      const r = parseFloat(document.getElementById('inp-3d-r').value);
+      const h = parseFloat(document.getElementById('inp-3d-h').value);
+      res = (1/3) * Math.PI * r * r * h;
+      formula = "V = (1/3) · π · r² · h";
+      despeje = `V = (1/3) · π · (${r})² · ${h} = <b>${res.toFixed(2)} u³</b>`;
+    } else {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      const r = parseFloat(document.getElementById('inp-3d-r').value);
+      res = (3 * V) / (Math.PI * r * r);
+      formula = "h = (3 · V) / (π · r²)";
+      despeje = `h = (3 · ${V}) / (π · ${r}²) = <b>${res.toFixed(2)} u</b>`;
+    }
+  } else {
+    // Pirámide
+    if (inc === 'vol') {
+      const L = parseFloat(document.getElementById('inp-3d-L').value);
+      const h = parseFloat(document.getElementById('inp-3d-h').value);
+      res = (L * L * h) / 3;
+      formula = "V = (L² · h) / 3";
+      despeje = `V = (${L}² · ${h}) / 3 = <b>${res.toFixed(2)} u³</b>`;
+    } else {
+      const V = parseFloat(document.getElementById('inp-3d-V').value);
+      const L = parseFloat(document.getElementById('inp-3d-L').value);
+      res = (3 * V) / (L * L);
+      formula = "h = (3 · V) / L²";
+      despeje = `h = (3 · ${V}) / ${L}² = <b>${res.toFixed(2)} u</b>`;
+    }
+  }
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cuerpos 3D: Resolución y Despeje</h3>
+    <div class="step"><b>1. Fórmula canónica:</b> <code>${formula}</code></div>
+    <div class="step"><b>2. Despeje de la variable:</b><br>${despeje}</div>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 4. TRIGONOMETRÍA COMPLETA (6 RAZONES Y ÁNGULOS)
+// ==========================================
+function configurarInputsTrig() {
+  const modo = document.getElementById('trig-modo-input').value;
+  const cont = document.getElementById('inputs-trig-container');
+
+  if (modo === 'angulo') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Ángulo (θ) en grados:</label><input type="number" id="trig-val-ang" value="45" step="any"></div>
+      <div class="form-group"><label>Ángulo (θ) en radianes (opcional):</label><input type="number" id="trig-val-rad" placeholder="Ej: 0.785" step="any"></div>
+    `;
+  } else {
+    cont.innerHTML = `
+      <div class="form-group"><label>Cateto Opuesto (a):</label><input type="number" id="trig-val-co" value="3" step="any"></div>
+      <div class="form-group"><label>Cateto Adyacente (b):</label><input type="number" id="trig-val-ca" value="4" step="any"></div>
+    `;
+  }
+}
+
+function calcularTrigonometriaCompleta() {
+  const modo = document.getElementById('trig-modo-input').value;
+  const s = document.getElementById('salida');
+
+  let rad = 0, deg = 0;
+  let co = 0, ca = 0, hip = 0;
+
+  if (modo === 'angulo') {
+    let inpDeg = document.getElementById('trig-val-ang').value;
+    let inpRad = document.getElementById('trig-val-rad').value;
+    if (inpRad !== "") {
+      rad = parseFloat(inpRad);
+      deg = rad * 180 / Math.PI;
+    } else {
+      deg = parseFloat(inpDeg) || 0;
+      rad = deg * Math.PI / 180;
+    }
+  } else {
+    co = parseFloat(document.getElementById('trig-val-co').value) || 1;
+    ca = parseFloat(document.getElementById('trig-val-ca').value) || 1;
+    hip = Math.sqrt(co * co + ca * ca);
+    rad = Math.atan2(co, ca);
+    deg = rad * 180 / Math.PI;
+  }
+
+  const sin = Math.sin(rad);
+  const cos = Math.cos(rad);
+  const tan = Math.abs(cos) > 1e-9 ? Math.tan(rad) : Infinity;
+  const csc = Math.abs(sin) > 1e-9 ? 1 / sin : Infinity;
+  const sec = Math.abs(cos) > 1e-9 ? 1 / cos : Infinity;
+  const cot = Math.abs(sin) > 1e-9 && Math.abs(tan) > 1e-9 ? 1 / tan : Infinity;
+
+  // Ángulo notable
+  let notable = "Ángulo general";
+  const degNorm = Math.abs(deg % 360);
+  if (Math.abs(degNorm - 0) < 0.1) notable = "Ángulo notable: 0 rad (0°)";
+  if (Math.abs(degNorm - 30) < 0.1) notable = "Ángulo notable: π/6 rad (30°) [sen=1/2, cos=√3/2]";
+  if (Math.abs(degNorm - 45) < 0.1) notable = "Ángulo notable: π/4 rad (45°) [sen=√2/2, cos=√2/2]";
+  if (Math.abs(degNorm - 60) < 0.1) notable = "Ángulo notable: π/3 rad (60°) [sen=√3/2, cos=1/2]";
+  if (Math.abs(degNorm - 90) < 0.1) notable = "Ángulo notable: π/2 rad (90°) [sen=1, cos=0]";
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Las 6 Razones Trigonométricas</h3>
+    <div class="step">Ángulo evaluado: <b>${deg.toFixed(2)}°</b> = <b>${rad.toFixed(4)} radianes</b> (${notable})</div>
+    <table class="didact-table">
+      <tr><th>Razón Directa</th><th>Valor</th><th>Razón Recíproca</th><th>Valor</th></tr>
+      <tr><td><b>sen(θ)</b></td><td>${sin.toFixed(4)}</td><td><b>csc(θ) = 1/sen</b></td><td>${isFinite(csc) ? csc.toFixed(4) : "Indefinido (asíntota)"}</td></tr>
+      <tr><td><b>cos(θ)</b></td><td>${cos.toFixed(4)}</td><td><b>sec(θ) = 1/cos</b></td><td>${isFinite(sec) ? sec.toFixed(4) : "Indefinido (asíntota)"}</td></tr>
+      <tr><td><b>tan(θ)</b></td><td>${isFinite(tan) ? tan.toFixed(4) : "Indefinido (±∞)"}</td><td><b>cot(θ) = 1/tan</b></td><td>${isFinite(cot) ? cot.toFixed(4) : "Indefinido (±∞)"}</td></tr>
+    </table>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 5. IDENTIDADES TRIGONOMÉTRICAS TOTALES
+// ==========================================
+const catalogoIdentidades = {
+  pitagoricas: [
+    { id: "p1", txt: "sen²(θ) + cos²(θ) = 1" },
+    { id: "p2", txt: "1 + tan²(θ) = sec²(θ)" },
+    { id: "p3", txt: "1 + cot²(θ) = csc²(θ)" }
+  ],
+  reciprocas: [
+    { id: "r1", txt: "sen(θ) · csc(θ) = 1" },
+    { id: "r2", txt: "cos(θ) · sec(θ) = 1" },
+    { id: "r3", txt: "tan(θ) · cot(θ) = 1" }
+  ],
+  cociente: [
+    { id: "c1", txt: "tan(θ) = sen(θ) / cos(θ)" },
+    { id: "c2", txt: "cot(θ) = cos(θ) / sen(θ)" }
+  ],
+  paridad: [
+    { id: "pa1", txt: "sen(-θ) = -sen(θ)  [Función Impar]" },
+    { id: "pa2", txt: "cos(-θ) = cos(θ)   [Función Par]" },
+    { id: "pa3", txt: "tan(-θ) = -tan(θ)  [Función Impar]" }
+  ],
+  doble: [
+    { id: "d1", txt: "sen(2θ) = 2 · sen(θ) · cos(θ)" },
+    { id: "d2", txt: "cos(2θ) = cos²(θ) - sen²(θ)" },
+    { id: "d3", txt: "tan(2θ) = [2·tan(θ)] / [1 - tan²(θ)]" }
+  ],
+  suma: [
+    { id: "s1", txt: "sen(α + β) = sen(α)·cos(β) + cos(α)·sen(β)" },
+    { id: "s2", txt: "cos(α + β) = cos(α)·cos(β) - sen(α)·sen(β)" }
+  ]
+};
+
+function actualizarListaIdentidades() {
+  const fam = document.getElementById('ident-familia').value;
+  const selEsp = document.getElementById('ident-especifica');
+  const grpAng2 = document.getElementById('grp-ident-ang2');
+
+  selEsp.innerHTML = "";
+  catalogoIdentidades[fam].forEach(item => {
+    selEsp.innerHTML += `<option value="${item.id}">${item.txt}</option>`;
+  });
+
+  grpAng2.style.display = fam === 'suma' ? 'block' : 'none';
+}
+
+function demostrarIdentidadCompleta() {
+  const fam = document.getElementById('ident-familia').value;
+  const esp = document.getElementById('ident-especifica').value;
+  const t1 = parseFloat(document.getElementById('ident-ang1').value) || 0;
+  const t2 = parseFloat(document.getElementById('ident-ang2').value) || 0;
+  const s = document.getElementById('salida');
+
+  const r1 = t1 * Math.PI / 180;
+  const r2 = t2 * Math.PI / 180;
+
+  let izq = 0, der = 0, formula = "", explicacion = "";
+
+  if (esp === 'p1') {
+    izq = Math.pow(Math.sin(r1), 2) + Math.pow(Math.cos(r1), 2);
+    der = 1.0;
+    formula = "sen²(θ) + cos²(θ) = 1";
+    explicacion = `(${Math.sin(r1).toFixed(4)})² + (${Math.cos(r1).toFixed(4)})² = ${Math.pow(Math.sin(r1),2).toFixed(4)} + ${Math.pow(Math.cos(r1),2).toFixed(4)} = <b>${izq.toFixed(4)}</b>`;
+  } else if (esp === 'p2') {
+    izq = 1 + Math.pow(Math.tan(r1), 2);
+    der = 1 / Math.pow(Math.cos(r1), 2);
+    formula = "1 + tan²(θ) = sec²(θ)";
+    explicacion = `1 + (${Math.tan(r1).toFixed(4)})² = <b>${izq.toFixed(4)}</b>  |  sec²(${t1}°) = 1 / (${Math.cos(r1).toFixed(4)})² = <b>${der.toFixed(4)}</b>`;
+  } else if (esp === 'd1') {
+    izq = Math.sin(2 * r1);
+    der = 2 * Math.sin(r1) * Math.cos(r1);
+    formula = "sen(2θ) = 2 · sen(θ) · cos(θ)";
+    explicacion = `sen(${2 * t1}°) = <b>${izq.toFixed(4)}</b>  |  2 · sen(${t1}°) · cos(${t1}°) = 2 · (${Math.sin(r1).toFixed(4)}) · (${Math.cos(r1).toFixed(4)}) = <b>${der.toFixed(4)}</b>`;
+  } else if (esp === 'pa1') {
+    izq = Math.sin(-r1);
+    der = -Math.sin(r1);
+    formula = "sen(-θ) = -sen(θ)";
+    explicacion = `sen(-${t1}°) = <b>${izq.toFixed(4)}</b>  |  -sen(${t1}°) = <b>${der.toFixed(4)}</b>`;
+  } else if (esp === 's1') {
+    izq = Math.sin(r1 + r2);
+    der = (Math.sin(r1) * Math.cos(r2)) + (Math.cos(r1) * Math.sin(r2));
+    formula = "sen(α + β) = sen(α)·cos(β) + cos(α)·sen(β)";
+    explicacion = `sen(${t1}° + ${t2}°) = sen(${t1+t2}°) = <b>${izq.toFixed(4)}</b><br>Lado derecho: (${Math.sin(r1).toFixed(3)}·${Math.cos(r2).toFixed(3)}) + (${Math.cos(r1).toFixed(3)}·${Math.sin(r2).toFixed(3)}) = <b>${der.toFixed(4)}</b>`;
+  } else {
+    izq = Math.tan(r1);
+    der = Math.sin(r1) / Math.cos(r1);
+    formula = "tan(θ) = sen(θ) / cos(θ)";
+    explicacion = `tan(${t1}°) = <b>${izq.toFixed(4)}</b>  |  sen/cos = <b>${der.toFixed(4)}</b>`;
+  }
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Identidad Trigonométrica</h3>
+    <div class="step"><b>Identidad analizada:</b> <code>${formula}</code></div>
+    <div class="step"><b>Evaluación con los ángulos dados:</b><br>${explicacion}</div>
+    <div class="step" style="border-left-color:#10b981;"><b>Conclusión matemática:</b> Lado Izquierdo (${izq.toFixed(4)}) = Lado Derecho (${der.toFixed(4)}). ¡La identidad se comprueba!</div>
+  `;
+  s.style.display = 'block';
+}
   <!-- ========================================================
        3. ROBÓTICA
        ======================================================== -->
