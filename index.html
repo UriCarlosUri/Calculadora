@@ -441,25 +441,49 @@
     </div>
 
     <!-- 4.2 Masa Molar con Visor 2D Nativo -->
+    <!-- 4.2 Masa Molar & Estructura con Entrada Libre -->
     <div id="submod-quim-molar" class="quim-subseccion" style="display:none;">
-      <div class="form-group">
-        <label><b>Selecciona un Compuesto Químico:</b></label>
-        <select id="chem-comp" onchange="calcMasaMolarExtendida()">
-          <option value="H2O">Agua (H₂O)</option>
-          <option value="CO2">Dióxido de Carbono (CO₂)</option>
-          <option value="CH4">Metano (CH₄)</option>
-          <option value="NH3">Amoníaco (NH₃)</option>
-          <option value="HCl">Ácido Clorhídrico (HCl)</option>
-          <option value="NaCl">Cloruro de Sodio (NaCl)</option>
-          <option value="C2H5OH">Etanol / Alcohol etílico (C₂H₅OH)</option>
-          <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
-          <option value="HNO3">Ácido Nítrico (HNO₃)</option>
-          <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
-          <option value="CaCO3">Carbonato de Calcio (CaCO₃)</option>
-          <option value="KMnO4">Permanganato de Potasio (KMnO₄)</option>
-          <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
-        </select>
+      <div class="grid-2">
+        <div class="form-group">
+          <label><b>Escribe cualquier fórmula química:</b></label>
+          <input type="text" id="chem-custom-input" value="Al2(SO4)3" placeholder="Ej: Fe2O3, Ca(OH)2, H3PO4, C6H12O6" oninput="limpiarSelectorPredefinido()">
+          <small style="color:#94a3b8; display:block; margin-top:2px;">
+            Respeta mayúsculas y minúsculas (ej: <code>NaCl</code>, <code>Ca(OH)2</code>).
+          </small>
+        </div>
+        <div class="form-group">
+          <label>O elige un compuesto predefinido:</label>
+          <select id="chem-comp" onchange="cargarCompuestoPredefinido()">
+            <option value="">Personalizado (escribir fórmula)...</option>
+            <option value="H2O">Agua (H₂O)</option>
+            <option value="CO2">Dióxido de Carbono (CO₂)</option>
+            <option value="CH4">Metano (CH₄)</option>
+            <option value="NH3">Amoníaco (NH₃)</option>
+            <option value="HCl">Ácido Clorhídrico (HCl)</option>
+            <option value="NaCl">Cloruro de Sodio (NaCl)</option>
+            <option value="C2H5OH">Etanol (C₂H₅OH)</option>
+            <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
+            <option value="HNO3">Ácido Nítrico (HNO₃)</option>
+            <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
+            <option value="CaCO3">Carbonato de Calcio (CaCO₃)</option>
+            <option value="KMnO4">Permanganato de Potasio (KMnO₄)</option>
+            <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
+          </select>
+        </div>
       </div>
+
+      <!-- Lienzo 2D Nativo -->
+      <div class="canvas-container" style="padding: 6px;">
+        <canvas id="cvsMol2D" width="480" height="240" style="background:#050811; border-radius:8px;"></canvas>
+        <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
+          🔬 Estructura química generada dinámicamente con radios atómicos y colores CPK
+        </span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-main" onclick="calcMasaMolarExtendida()">Desglosar Masa Molar y Estructura</button>
+      </div>
+    </div>
 
       <!-- Lienzo 2D Nativo de Estructura Molecular -->
       <div class="canvas-container" style="padding: 6px;">
