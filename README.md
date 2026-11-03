@@ -1,6 +1,6 @@
-# 🧮 Suite Científica, Cálculo & Robótica
+# 🧮 Suite Científica, Cálculo & Robótica Didáctica
 
-Plataforma educativa web diseñada como herramienta interactiva de apoyo para estudiantes de nivel **secundaria y preparatoria**. Combina cálculo simbólico, visualización física balística y vectorial, análisis de circuitos electrónicos y estequiometría química en un entorno interactivo y visual.
+Plataforma educativa web diseñada como una suite de herramientas interactivas para estudiantes de **secundaria y preparatoria**. Combina cálculo simbólico asistido por motor CAS, simulación gráfica de curvas e integrales, análisis balístico y de momentos en física, diseño de hardware electrónico para robótica y estequiometría química.
 
 🌐 **Sitio en vivo:** [https://UriCarlosUri.github.io/Calculadora/](https://UriCarlosUri.github.io/Calculadora/)
 
@@ -9,49 +9,64 @@ Plataforma educativa web diseñada como herramienta interactiva de apoyo para es
 ## 🚀 Módulos y Funcionalidades
 
 ### 📐 Cálculo & Geometría
-- **Cálculo Simbólico Abierto (CAS):** Entrada libre de funciones algebraicas y trascendentes para resolución simbólica de derivadas e integrales (indefinidas y definidas con límites).
-- **Guía de Cuadriláteros (Áreas 2D):** Análisis geométrico interactivo en Canvas (cuadrado, rectángulo, rombo, romboide y trapecio) con deducción de fórmulas y cotas visuales.
-- **Volúmenes 3D & Estimación de Peso:** Cálculo de capacidad volumétrica de cilindros, prismas, esferas y conos, con cálculo de masa según el material (PLA para impresión 3D, acrílico, aluminio, acero).
-- **Razones e Identidades Trigonométricas:** Estudio de las 6 razones trigonométricas en triángulos rectángulos y demostración analítica de identidades fundamentales (pitagóricas, cociente, ángulo doble y paridad).
-- **Leyes de los Exponentes & Sumas de Riemann:** Demostración de propiedades exponenciales y aproximación visual de áreas bajo la curva con rectángulos dinámicos.
+- **Derivadas por Métodos Analíticos:** Entrada libre de funciones $f(x)$ para obtener su derivada simbólica simplificada paso a paso, reconociendo Regla de la Cadena, Regla del Producto ($u \cdot v$), Regla del Cociente ($u/v$) y derivadas inmediatas.
+- **Integrales con Trazado Cartesiano:** Cálculo simbólico de antiderivadas (integrales indefinidas) y resolución definida mediante la Regla de Barrow $[a, b]$, graficando en tiempo real la función en Canvas y sombreando el área bajo la curva resultante.
+- **Geometría 2D Completa:** Catálogo de figuras planas con cálculo de área y despeje de incógnitas:
+  - *Triángulos:* Base y altura, fórmula de Herón (3 lados) y triángulo equilátero.
+  - *Círculos:* Círculo estándar, corona circular (anillo) y sector circular.
+  - *Cuadriláteros:* Cuadrado, rectángulo, rombo (diagonales) y trapecio con cotas gráficas.
+  - *Polígonos Regulares:* Pentágonos, hexágonos y polígonos de $n$ lados ($n \ge 5$) mediante perímetro y apotema.
+- **Volúmenes 3D & Estimación de Masa:** Cálculo de capacidad volumétrica y despeje de variables (cilindro, prisma rectangular, esfera, cono, pirámide) con cálculo automático de peso de la pieza según el material (filamento PLA para impresión 3D, acrílico, aluminio o acero).
+- **Razones Trigonométricas & Círculo Unitario:** Cálculo de las 6 razones trigonométricas directas y recíprocas ($\sin, \cos, \tan, \csc, \sec, \cot$), selector de ángulos notables en radianes y proyección animada en el círculo unitario.
+- **Compendio Total de Identidades Trigonométricas:** Demostración con comprobación de igualdad numérica para identidades pitagóricas, recíprocas, por cociente, paridad/negativos, ángulo doble, ángulo mitad y suma/resta de ángulos.
+- **Leyes de Exponentes y Radicales:** Demostración paso a paso de las 9 leyes algebraicas (producto, cociente, potencia de potencia, distributivas, exponente cero, negativos y exponentes fraccionarios/raíces).
+
+---
 
 ### 🚀 Física & Diagramas Interactivos
-- **Torque Multicomponente (Balancín):** Configuración de múltiples fuerzas en vigas con fulcro central para análisis de momentos horarios/antihorarios y condición de equilibrio rotacional ($\sum \tau = 0$).
-- **Plano Vectorial 2D Ampliado:** Sumatoria de fuerzas concurrentes con descomposición ortogonal en ejes $X/Y$ y cálculo del vector resultante en tiempo real.
-- **Cinemática MRUA:** Despeje de velocidad y posición con trazado de la curva parabólica posición-tiempo.
-- **Tiro Parabólico:** Simulación de trayectoria balística con cálculo de altura máxima ($H_{\max}$), tiempo de vuelo y alcance horizontal.
-- **Diagrama de Cuerpo Libre (DCL):** Análisis visual de fuerza motriz, normal, peso y fricción dinámica.
+- **Torque Multicomponente (Balancín):** Configuración dinámica de múltiples fuerzas y cargas a lo largo de una viga con fulcro central, calculando momentos horarios ($-$), antihorarios ($+$), torque neto ($\sum \tau$) y verificación de equilibrio rotacional.
+- **Plano Vectorial 2D Ampliado:** Sumatoria de fuerzas concurrentes con descomposición ortogonal en ejes $X/Y$, graficado a escala en Canvas y cálculo de la magnitud y dirección del vector resultante.
+- **Cinemática MRUA con Despeje de Variantes:** Resolución analítica seleccionando la incógnita requerida ($d, v_f, a, t$) con trazado simultáneo de la parábola de posición vs. tiempo.
+- **Tiro Parabólico Balístico:** Descomposición vectorial del disparo en $v_{0x}$ y $v_{0y}$, tiempo en el aire, altura máxima ($H_{\max}$) y alcance horizontal total con simulación de trayectoria.
+- **Diagrama de Cuerpo Libre (DCL):** Bloque interactivo con vectores ortogonales de Normal, Peso gravitatorio ($mg$), Fuerza motriz y Fuerza de fricción dinámica opuesta ($f_r = \mu \cdot N$).
 
-### 🤖 Robótica & Circuitos
-- **Decodificador de Resistencias (4 y 5 Bandas):** Lectura gráfica de código de colores tanto para resistores estándar de carbón (±5%) como de precisión en película metálica (±1%).
-- **Ley de Ohm con Esquema Circuital:** Simulación esquemática de caídas de tensión y corriente circulante en serie para LEDs y actuadores.
-- **Servomotores & Control PWM:** Mapeo de ángulos (0° a 180°) a anchos de pulso en microsegundos y código nativo para Arduino IDE.
-- **Autonomía de Batería:** Estimación de consumo en paralelo y tiempo de operación continuo para robots móviles.
+---
 
-### 🧪 Química
-- **Catálogo de Masa Molar:** Desglose atómico y porcentaje de masa elemental de más de 15 compuestos escolares comunes (ácidos, bases, sales y carbohidratos).
-- **Gases Ideales ($P \cdot V = n \cdot R \cdot T$):** Despeje de cantidad de sustancia y variables termodinámicas.
-- **Molaridad:** Relación de concentración molar para disoluciones en laboratorio.
+### 🤖 Robótica & Hardware
+- **Componentes Electrónicos Fundamentales:**
+  - *Diodos:* Cálculo de resistencia limitadora y caída de tensión.
+  - *Transistores BJT (NPN):* Cálculo de corriente de base $I_b$ y resistor $R_B$ para conmutación de motores.
+  - *Capacitores:* Constante de tiempo $\tau = R \cdot C$ y tiempo de carga de filtrado.
+  - *Reguladores de Voltaje (7805):* Caída de tensión y advertencia de potencia térmica disipada en Watts.
+- **Decodificador de Resistencias (4 y 5 Bandas):** Lectura gráfica de bandas de color con selector de modo para resistores de carbón al 5% o resistores de precisión azul al 1%.
+- **Ley de Ohm:** Cálculo de corriente circulante y potencia eléctrica ($P = V \cdot I$) en circuitos de corriente directa.
+- **Servomotores & PWM:** Conversión de grados (0° a 180°) a ancho de pulso en microsegundos ($\mu\text{s}$) y generación del código nativo en C++ para Arduino IDE (`Servo.h`).
+- **Autonomía de Batería:** Estimación de consumo en paralelo y tiempo de operación continuo del robot considerando un factor de descarga seguro del 70%.
+
+---
+
+### 🧪 Química & Elementos
+- **Buscador de la Tabla Periódica Completa:** Motor de búsqueda interactivo por nombre, símbolo o número atómico ($Z$), desplegando masa atómica, grupo/familia y números de valencia sin saturar la pantalla.
+- **Catálogo de Masa Molar:** Desglose atómico y porcentaje de masa elemental de compuestos comunes (ácidos, bases, sales, carbohidratos y solventes).
+- **Gases Ideales ($P \cdot V = n \cdot R \cdot T$):** Relación de variables termodinámicas de presión, volumen, temperatura y moles de gas.
+- **Molaridad & Disoluciones:** Relación de concentración molar ($M = n / V$) para reactivos de laboratorio.
+
+---
 
 ### 🏆 Desafíos Anti-Estrés
-- Minijuego interactivo con selección de dificultad (**Fácil**, **Medio**, **Difícil**), sistema de vidas y botón de pistas didácticas guiadas para evitar la frustración del estudiante.
+- Minijuego interactivo con preguntas generadas de todas las materias.
+- **Selector de dificultad:** *Fácil* (conceptos directos), *Medio* (un despeje algebraico) y *Difícil* (ejercicios avanzados de preparatoria).
+- **Botón de Pistas Didácticas:** Explicación conceptual guiada para desbloquear al estudiante sin regalarle la respuesta numérica.
+- Sistema de vidas y acumulador de experiencia (XP).
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 📂 Arquitectura del Proyecto
 
-- **HTML5:** Estructura semántica y componentes de interfaz.
-- **CSS3:** Diseño responsivo con paleta oscura optimizada para lectura en pantallas.
-- **JavaScript (ES6+):** Lógica matemática nativa, manipulación del DOM y renderizado gráfico sobre elementos `<canvas>`.
-- **Algebrite CAS:** Motor de álgebra computacional en cliente para cálculo simbólico.
-- **GitHub Pages:** Despliegue continuo y alojamiento web estático.
-
----
-
-## 📂 Estructura del Proyecto
+El desarrollo sigue una estructura modular limpia separada en tres archivos independientes para facilitar su mantenimiento:
 
 ```text
-├── index.html        # Estructura principal y maquetado de módulos
-├── style.css         # Hojas de estilo y diseño responsivo
-├── script.js         # Lógica matemática, motores de cálculo y gráficos en Canvas
-└── README.md         # Documentación general del repositorio
+├── index.html        # Estructura semántica, menús y formularios de entrada
+├── style.css         # Diseño visual responsivo y paleta oscura tipo consola
+├── script.js         # Lógica matemática, graficación en Canvas y motor Algebrite
+└── README.md         # Documentación técnica y guía de usuario
