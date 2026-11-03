@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <!-- Motor CAS para Derivadas e Integrales Simbólicas -->
   <script src="https://cdn.jsdelivr.net/npm/algebrite@1.4.0/dist/algebrite.bundle-for-browser.js"></script>
+  <!-- Visor 3D Interactivo para Química (3Dmol.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
 </head>
 <body>
 
@@ -440,27 +442,40 @@
       <div id="tabla-resultados-contenedor" style="max-height: 250px; overflow-y: auto; background: #070d19; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-bottom: 12px;"></div>
     </div>
 
-    <!-- 4.2 Masa Molar -->
+
+<!-- 4.2 Masa Molar con Visor 3D y Nomenclatura -->
     <div id="submod-quim-molar" class="quim-subseccion" style="display:none;">
       <div class="form-group">
-        <label>Compuesto Químico:</label>
-        <select id="chem-comp">
-          <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
+        <label><b>Selecciona un Compuesto Químico:</b></label>
+        <select id="chem-comp" onchange="calcMasaMolarExtendida()">
+          <option value="H2O">Agua (H₂O)</option>
+          <option value="CO2">Dióxido de Carbono (CO₂)</option>
+          <option value="CH4">Metano (CH₄)</option>
+          <option value="C2H5OH">Etanol / Alcohol etílico (C₂H₅OH)</option>
+          <option value="NH3">Amoníaco (NH₃)</option>
           <option value="HCl">Ácido Clorhídrico (HCl)</option>
+          <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
           <option value="HNO3">Ácido Nítrico (HNO₃)</option>
           <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
           <option value="NaCl">Cloruro de Sodio (NaCl)</option>
           <option value="CaCO3">Carbonato de Calcio (CaCO₃)</option>
           <option value="KMnO4">Permanganato de Potasio (KMnO₄)</option>
           <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
-          <option value="H2O">Agua Pura (H₂O)</option>
         </select>
       </div>
+
+      <!-- Contenedor del Visor 3D Interactivo -->
+      <div class="canvas-container" style="padding: 6px;">
+        <div id="mol-3d-viewer" style="width: 100%; height: 260px; position: relative; border-radius: 8px; overflow: hidden; background: #050811; border: 1px solid #1e293b;"></div>
+        <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
+          🖱️ <b>Arrastra para rotar en 3D</b> | Rueda para zoom | Modelo esferas y varillas (CPK)
+        </span>
+      </div>
+
       <div class="btn-row">
-        <button class="btn-main" onclick="calcMasaMolarExtendida()">Desglosar Masa Molar y % Elemental</button>
+        <button class="btn-main" onclick="calcMasaMolarExtendida()">Analizar Estructura 3D y Nomenclatura</button>
       </div>
     </div>
-
     <!-- 4.3 Gases -->
     <div id="submod-quim-gases" class="quim-subseccion" style="display:none;">
       <div class="grid-3">
