@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #0b1120;
       color: #f8fafc;
       margin: 0;
@@ -17,25 +17,25 @@
       min-height: 100vh;
     }
     .main-card {
-      max-width: 840px;
+      max-width: 900px;
       width: 100%;
       background: #1e293b;
       padding: 24px;
-      border-radius: 14px;
+      border-radius: 16px;
       border: 1px solid #334155;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.6);
       height: fit-content;
     }
-    h1 { color: #38bdf8; text-align: center; margin: 0 0 6px 0; font-size: 1.5rem; }
+    h1 { color: #38bdf8; text-align: center; margin: 0 0 6px 0; font-size: 1.6rem; }
     p.sub { text-align: center; color: #94a3b8; margin: 0 0 18px 0; font-size: 0.9rem; }
 
     /* Pestañas */
     .tabs-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
     .btn-tab {
-      flex: 1; min-width: 105px; padding: 10px 6px; background: #0f172a;
+      flex: 1; min-width: 105px; padding: 10px 8px; background: #0f172a;
       border: 1px solid #334155; color: #94a3b8;
       border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
-      user-select: none;
+      user-select: none; transition: 0.2s;
     }
     .btn-tab.active { background: #38bdf8; color: #0b1120; border-color: #38bdf8; }
     .btn-tab.challenge { border-color: #f59e0b; color: #fde68a; }
@@ -57,6 +57,7 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; }
 
     .btn-row { display: flex; gap: 8px; margin-top: 12px; }
     .btn-main {
@@ -70,65 +71,49 @@
       font-weight: 600; font-size: 0.82rem; cursor: pointer;
     }
 
-    /* Estilos Plano de Fuerzas */
-    .fuerza-item {
-      display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
-      background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid #334155;
-    }
-    .fuerza-color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .btn-del-fuerza {
-      background: #ef4444; color: white; border: none; border-radius: 6px;
-      padding: 8px 12px; cursor: pointer; font-weight: bold;
-    }
-    .btn-add-fuerza {
-      background: #10b981; color: #0b1120; border: none; border-radius: 6px;
-      padding: 8px 14px; cursor: pointer; font-weight: bold; margin-bottom: 12px;
-    }
+    /* Gráficos Canvas */
     .canvas-container {
-      display: flex; justify-content: center; align-items: center;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
       background: #070d19; border: 1px solid #334155; border-radius: 10px;
-      padding: 10px; margin: 12px 0;
+      padding: 12px; margin: 14px 0;
     }
+    canvas { background: #050811; border-radius: 8px; border: 1px solid #1e293b; max-width: 100%; }
 
-    /* Gráficos Resistencia & LED */
+    /* Resistencia Gráfica 4 y 5 bandas */
     .resistor-display {
-      background: #334155; padding: 14px; border-radius: 10px;
+      background: #334155; padding: 16px; border-radius: 10px;
       display: flex; justify-content: center; margin: 10px 0;
     }
     .resistor-body {
-      width: 220px; height: 40px; background: #d4a373;
-      border-radius: 20px; display: flex; justify-content: space-around;
-      align-items: center; padding: 0 16px;
+      width: 250px; height: 46px; background: #d4a373;
+      border-radius: 23px; display: flex; justify-content: space-around;
+      align-items: center; padding: 0 16px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
     }
-    .banda { width: 14px; height: 100%; }
-
-    .led-box {
-      background: #070d19; border: 1px solid #334155;
-      border-radius: 10px; padding: 16px; margin-top: 14px; text-align: center;
-    }
-    .led-bulb {
-      width: 40px; height: 46px; border-radius: 20px 20px 6px 6px;
-      background: #475569; margin: 0 auto; transition: all 0.2s;
-    }
-    .led-pins {
-      width: 14px; height: 25px; border-left: 3px solid #94a3b8;
-      border-right: 3px solid #94a3b8; margin: 0 auto;
-    }
+    .banda { width: 14px; height: 100%; box-shadow: 0 0 3px rgba(0,0,0,0.5); }
 
     /* Salidas de Procedimiento */
     #salida {
-      margin-top: 18px; background: #070d19; padding: 14px;
+      margin-top: 18px; background: #070d19; padding: 16px;
       border-radius: 10px; border: 1px solid #334155; display: none;
     }
     .step {
-      margin: 6px 0; padding-left: 8px; border-left: 3px solid #38bdf8;
-      font-size: 0.88rem; line-height: 1.4;
+      margin: 6px 0; padding-left: 10px; border-left: 3px solid #38bdf8;
+      font-size: 0.9rem; line-height: 1.45;
     }
     code {
       background: rgba(255, 255, 255, 0.08);
       padding: 2px 6px; border-radius: 4px;
       font-family: monospace; color: #38bdf8;
     }
+
+    /* Tablas Didácticas */
+    table.didact-table {
+      width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem;
+    }
+    table.didact-table th, table.didact-table td {
+      border: 1px solid #334155; padding: 8px; text-align: left;
+    }
+    table.didact-table th { background: #0f172a; color: #38bdf8; }
 
     /* Modal */
     .modal-bg {
@@ -138,7 +123,7 @@
     }
     .modal-box {
       background: #1e293b; border: 1px solid #38bdf8;
-      border-radius: 10px; max-width: 520px; width: 90%; padding: 18px;
+      border-radius: 10px; max-width: 540px; width: 90%; padding: 18px;
     }
     pre {
       background: #050811; color: #a7f3d0; padding: 10px;
@@ -150,47 +135,50 @@
 <body>
 
 <div class="main-card">
-  <h1>Suite Científica & Robótica</h1>
-  <p class="sub">Calculadora didáctica interactiva para secundaria y preparatoria.</p>
+  <h1>Suite Científica, Cálculo & Robótica</h1>
+  <p class="sub">Plataforma interactiva con visualización de trayectorias, diagramas de fuerzas y esquemas de circuitos.</p>
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
-    <button class="btn-tab active" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física</button>
-    <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica</button>
-    <button class="btn-tab" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo</button>
+    <button class="btn-tab active" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo & Trigonometría</button>
+    <button class="btn-tab" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física & Diagramas</button>
+    <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica & Circuitos</button>
     <button class="btn-tab" id="btn-tab-quimica" onclick="verMateria('quimica')">🧪 Química</button>
     <button class="btn-tab challenge" id="btn-tab-juego" onclick="verMateria('juego')">🏆 Desafíos</button>
   </div>
 
+  <!-- Sub-pestañas Cálculo -->
+  <div class="tabs-row" id="sub-calculo">
+    <button class="btn-tab active" onclick="verModulo('calculo', 'calc-trig')">Razones Trigonométricas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-ident')">Identidades Trigonométricas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'calc-exp')">Leyes de Exponentes</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'derivada-trig')">Derivadas Completas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'integral-trig')">Integrales Completas</button>
+    <button class="btn-tab" onclick="verModulo('calculo', 'cuadritos')">Sumas de Riemann</button>
+  </div>
+
   <!-- Sub-pestañas Física -->
-  <div class="tabs-row" id="sub-fisica">
-    <button class="btn-tab active" onclick="verModulo('fisica', 'plano-fuerzas')">🎯 Plano de Fuerzas</button>
-    <button class="btn-tab" onclick="verModulo('fisica', 'mrua')">MRUA</button>
-    <button class="btn-tab" onclick="verModulo('fisica', 'parabolico')">Tiro Parabólico</button>
-    <button class="btn-tab" onclick="verModulo('fisica', 'newton')">Fuerza & Fricción</button>
-    <button class="btn-tab" onclick="verModulo('fisica', 'torque')">Torque / Palanca</button>
+  <div class="tabs-row" id="sub-fisica" style="display: none;">
+    <button class="btn-tab active" onclick="verModulo('fisica', 'fis-mrua')">Trayecto MRUA (Gráfica)</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'fis-parabolico')">Tiro Parabólico (Trayectoria)</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'fis-friccion')">DCL: Fuerza & Fricción</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'fis-torque')">DCL: Torque & Palanca</button>
+    <button class="btn-tab" onclick="verModulo('fisica', 'plano-fuerzas')">Plano Vectorial 2D</button>
   </div>
 
   <!-- Sub-pestañas Robótica -->
   <div class="tabs-row" id="sub-robotica" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('robotica', 'colores')">Colores Resistencia</button>
-    <button class="btn-tab" onclick="verModulo('robotica', 'led')">Simulador LED</button>
-    <button class="btn-tab" onclick="verModulo('robotica', 'servo')">Servo & PWM</button>
-    <button class="btn-tab" onclick="verModulo('robotica', 'bateria')">Batería Robot</button>
-    <button class="btn-tab" onclick="verModulo('robotica', 'ohm')">Ley de Ohm</button>
-  </div>
-
-  <!-- Sub-pestañas Cálculo -->
-  <div class="tabs-row" id="sub-calculo" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('calculo', 'derivada-trig')">Derivadas (Trig & Exp)</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'integral-trig')">Integrales (Trig & Exp)</button>
-    <button class="btn-tab" onclick="verModulo('calculo', 'cuadritos')">Área con Cuadritos</button>
+    <button class="btn-tab active" onclick="verModulo('robotica', 'rob-resistor')">Resistencias (4 y 5 Bandas)</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'rob-esquematico')">Ley de Ohm & Esquema</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'rob-servo')">Servomotores & PWM</button>
+    <button class="btn-tab" onclick="verModulo('robotica', 'rob-bateria')">Autonomía de Batería</button>
   </div>
 
   <!-- Sub-pestañas Química -->
   <div class="tabs-row" id="sub-quimica" style="display: none;">
-    <button class="btn-tab active" onclick="verModulo('quimica', 'molar')">Masa Molar</button>
-    <button class="btn-tab" onclick="verModulo('quimica', 'gases')">Gases (PV=nRT)</button>
+    <button class="btn-tab active" onclick="verModulo('quimica', 'quim-molar')">Masa Molar (Catálogo Extenso)</button>
+    <button class="btn-tab" onclick="verModulo('quimica', 'quim-gases')">Gases Ideales (PV=nRT)</button>
+    <button class="btn-tab" onclick="verModulo('quimica', 'quim-soluciones')">Molaridad & Disoluciones</button>
   </div>
 
   <!-- Sub-pestañas Juego -->
@@ -198,250 +186,405 @@
     <button class="btn-tab active" onclick="verModulo('juego', 'trivia')">Cofre de Desafíos</button>
   </div>
 
-  <!-- ================= PLANO DE FUERZAS (DCL VECTORIAL) ================= -->
-  <div id="mod-plano-fuerzas" class="mod-content visible">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <label><b>Fuerzas Aplicadas sobre el cuerpo / robot:</b></label>
-      <button class="btn-add-fuerza" onclick="agregarFuerza()">+ Añadir Fuerza</button>
-    </div>
+  <!-- ========================================================
+       1. CÁLCULO & TRIGONOMETRÍA
+       ======================================================== -->
 
-    <!-- Contenedor dinámico de fuerzas -->
-    <div id="lista-fuerzas"></div>
-
-    <!-- Canvas del Plano Cartesiano -->
-    <div class="canvas-container">
-      <canvas id="cvsPlano" width="380" height="380" style="max-width:100%;"></canvas>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Fuerza Resultante</button>
-      <button class="btn-code" onclick="verCodigo('vectores')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <!-- ================= OTROS MÓDULOS DE FÍSICA ================= -->
-  <div id="mod-mrua" class="mod-content">
-    <div class="grid-3">
-      <div class="form-group"><label>v₀ [m/s]:</label><input type="number" id="cin-v0" value="0"></div>
-      <div class="form-group"><label>a [m/s²]:</label><input type="number" id="cin-a" value="2"></div>
-      <div class="form-group"><label>t [s]:</label><input type="number" id="cin-t" value="3"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcMRUA()">Calcular MRUA</button>
-      <button class="btn-code" onclick="verCodigo('mrua')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <div id="mod-parabolico" class="mod-content">
+  <!-- Razones Trigonométricas y sus Recíprocas -->
+  <div id="mod-calc-trig" class="mod-content visible">
+    <label>Razones Trigonométricas en el Triángulo Rectángulo:</label>
     <div class="grid-2">
-      <div class="form-group"><label>Velocidad de Disparo (v₀) [m/s]:</label><input type="number" id="tp-v0" value="25" step="any"></div>
-      <div class="form-group"><label>Ángulo (θ) [grados]:</label><input type="number" id="tp-ang" value="45" step="any"></div>
+      <div class="form-group"><label>Cateto Opuesto (a):</label><input type="number" id="trig-co" value="3" step="any"></div>
+      <div class="form-group"><label>Cateto Adyacente (b):</label><input type="number" id="trig-ca" value="4" step="any"></div>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcParabolico()">Calcular Trayectoria</button>
-      <button class="btn-code" onclick="verCodigo('parabolico')">💻 Ver Código</button>
+      <button class="btn-main" onclick="calcRazonesTrig()">Calcular las 6 Razones (Directas y Recíprocas)</button>
+      <button class="btn-code" onclick="verCodigo('trig')">💻 Ver Código</button>
     </div>
   </div>
 
-  <div id="mod-newton" class="mod-content">
-    <div class="grid-3">
-      <div class="form-group"><label>Masa [kg]:</label><input type="number" id="din-m" value="2" step="any"></div>
-      <div class="form-group"><label>Aceleración [m/s²]:</label><input type="number" id="din-a" value="3" step="any"></div>
-      <div class="form-group"><label>Coef. Fricción (μ):</label><input type="number" id="din-mu" value="0.2" step="any"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcNewtonFriccion()">Calcular Fuerza</button>
-      <button class="btn-code" onclick="verCodigo('newton')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <div id="mod-torque" class="mod-content">
-    <div class="grid-3">
-      <div class="form-group"><label>Fuerza [N]:</label><input type="number" id="tq-f" value="15" step="any"></div>
-      <div class="form-group"><label>Longitud [m]:</label><input type="number" id="tq-d" value="0.25" step="any"></div>
-      <div class="form-group"><label>Ángulo [°]:</label><input type="number" id="tq-ang" value="90" step="any"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcTorque()">Calcular Torque</button>
-      <button class="btn-code" onclick="verCodigo('torque')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <!-- ================= ROBÓTICA ================= -->
-  <div id="mod-colores" class="mod-content">
-    <div class="resistor-display">
-      <div class="resistor-body">
-        <div id="b1" class="banda" style="background:#ef4444;"></div>
-        <div id="b2" class="banda" style="background:#ef4444;"></div>
-        <div id="b3" class="banda" style="background:#a52a2a;"></div>
-        <div id="b4" class="banda" style="background:#ffd700;"></div>
-      </div>
-    </div>
-    <div class="grid-4">
-      <div class="form-group"><label>1ª Banda:</label><select id="c1" onchange="actualizarBandas()"><option value="1" data-c="#a52a2a">Marrón (1)</option><option value="2" data-c="#ef4444" selected>Rojo (2)</option><option value="3" data-c="#f97316">Naranja (3)</option><option value="4" data-c="#eab308">Amarillo (4)</option></select></div>
-      <div class="form-group"><label>2ª Banda:</label><select id="c2" onchange="actualizarBandas()"><option value="0" data-c="#000000">Negro (0)</option><option value="1" data-c="#a52a2a">Marrón (1)</option><option value="2" data-c="#ef4444" selected>Rojo (2)</option></select></div>
-      <div class="form-group"><label>Multiplicador:</label><select id="c3" onchange="actualizarBandas()"><option value="1" data-c="#000000">x1</option><option value="10" data-c="#a52a2a" selected>x10</option><option value="100" data-c="#ef4444">x100</option></select></div>
-      <div class="form-group"><label>Tolerancia:</label><select id="c4" onchange="actualizarBandas()"><option value="5" data-c="#ffd700" selected>±5% (Oro)</option><option value="10" data-c="#c0c0c0">±10% (Plata)</option></select></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcResistencia()">Calcular Resistencia</button>
-      <button class="btn-code" onclick="verCodigo('resistencia')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <div id="mod-led" class="mod-content">
-    <div class="grid-3">
-      <div class="form-group"><label>Fuente [V]:</label><input type="number" id="vcc" value="5"></div>
-      <div class="form-group"><label>Caída LED [V]:</label><input type="number" id="vled" value="2"></div>
-      <div class="form-group"><label>Resistencia [Ω]:</label><input type="number" id="rled" value="220"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="simularLED()">Simular Circuito</button>
-      <button class="btn-code" onclick="verCodigo('led')">💻 Ver Código</button>
-    </div>
-    <div class="led-box">
-      <div id="ledGraphic" class="led-bulb"></div>
-      <div class="led-pins"></div>
-      <p id="ledText" style="margin: 8px 0 0 0; font-weight: bold;">Listo para simular.</p>
-    </div>
-  </div>
-
-  <div id="mod-servo" class="mod-content">
+  <!-- Identidades Trigonométricas -->
+  <div id="mod-calc-ident" class="mod-content">
+    <label>Comprobador Didáctico de Identidades Trigonométricas:</label>
     <div class="form-group">
-      <label>Ángulo del Servo (0° a 180°):</label>
-      <input type="range" min="0" max="180" value="90" id="servoR" oninput="moverServo(this.value)">
-    </div>
-    <div class="grid-2">
-      <div>Ángulo: <b id="servoDegText">90°</b></div>
-      <div>Pulso: <b id="servoUsText">1500 µs</b></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="explicarServo()">Ver Código Arduino</button>
-      <button class="btn-code" onclick="verCodigo('servo')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <div id="mod-bateria" class="mod-content">
-    <div class="grid-2">
-      <div class="form-group"><label>Batería [mAh]:</label><input type="number" id="b-cap" value="2000"></div>
-      <div class="form-group"><label>Arduino [mA]:</label><input type="number" id="b-ard" value="50"></div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Sensores [mA]:</label><input type="number" id="b-sen" value="30"></div>
-      <div class="form-group"><label>Motores [mA]:</label><input type="number" id="b-mot" value="350"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-main" onclick="calcBateria()">Calcular Autonomía</button>
-      <button class="btn-code" onclick="verCodigo('bateria')">💻 Ver Código</button>
-    </div>
-  </div>
-
-  <div id="mod-ohm" class="mod-content">
-    <div class="form-group">
-      <label>Variable:</label>
-      <select id="ohm-mode" onchange="ajustarOhm()">
-        <option value="V">Voltaje (V = I · R)</option>
-        <option value="I">Corriente (I = V / R)</option>
-        <option value="R">Resistencia (R = V / I)</option>
+      <label>Selecciona la Identidad Fundamental a analizar:</label>
+      <select id="sel-identidad" onchange="explicarIdentidad()">
+        <option value="pitagora">Pitagórica: sen²(θ) + cos²(θ) = 1</option>
+        <option value="tan-sec">Pitagórica: 1 + tan²(θ) = sec²(θ)</option>
+        <option value="cot-csc">Pitagórica: 1 + cot²(θ) = csc²(θ)</option>
+        <option value="tangente">Cociente: tan(θ) = sen(θ) / cos(θ)</option>
+        <option value="cotangente">Cociente: cot(θ) = cos(θ) / sen(θ)</option>
+        <option value="sen-doble">Ángulo Doble: sen(2θ) = 2·sen(θ)·cos(θ)</option>
+        <option value="cos-doble">Ángulo Doble: cos(2θ) = cos²(θ) - sen²(θ)</option>
       </select>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label id="ohm-lbl1">Corriente (I) [A]:</label><input type="number" id="ohm-v1" value="0.02" step="any"></div>
-      <div class="form-group"><label id="ohm-lbl2">Resistencia (R) [Ω]:</label><input type="number" id="ohm-v2" value="220" step="any"></div>
+    <div class="form-group">
+      <label>Ángulo de prueba (θ) en grados:</label>
+      <input type="number" id="ident-angulo" value="30" step="any">
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcOhm()">Calcular Ley de Ohm</button>
-      <button class="btn-code" onclick="verCodigo('ohm')">💻 Ver Código</button>
+      <button class="btn-main" onclick="comprobarIdentidad()">Demostrar Identidad Paso a Paso</button>
+      <button class="btn-code" onclick="verCodigo('identidades')">💻 Ver Código</button>
     </div>
   </div>
 
-  <!-- ================= CÁLCULO ================= -->
+  <!-- Leyes de los Exponentes -->
+  <div id="mod-calc-exp" class="mod-content">
+    <label>Simulador y Calculadora de Leyes de Exponentes y Radicales:</label>
+    <div class="form-group">
+      <label>Selecciona la Ley:</label>
+      <select id="sel-ley-exp" onchange="ajustarInputsExponentes()">
+        <option value="prod">Producto de bases iguales: aⁿ · aᵐ = aⁿ⁺ᵐ</option>
+        <option value="coc">Cociente de bases iguales: aⁿ / aᵐ = aⁿ⁻ᵐ</option>
+        <option value="pot">Potencia de una potencia: (aⁿ)ᵐ = aⁿ·ᵐ</option>
+        <option value="neg">Exponente negativo: a⁻ⁿ = 1 / aⁿ</option>
+        <option value="cero">Exponente cero: a⁰ = 1 (a ≠ 0)</option>
+        <option value="frac">Exponente fraccionario / Raíz: a^(m/n) = ⁿ√(aᵐ)</option>
+      </select>
+    </div>
+    <div class="grid-3">
+      <div class="form-group"><label id="lbl-exp-a">Base (a):</label><input type="number" id="exp-a" value="2" step="any"></div>
+      <div class="form-group"><label id="lbl-exp-n">Exponente n:</label><input type="number" id="exp-n" value="3" step="any"></div>
+      <div class="form-group" id="grp-exp-m"><label id="lbl-exp-m">Exponente m:</label><input type="number" id="exp-m" value="4" step="any"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcLeyesExponentes()">Demostrar y Resolver Ley</button>
+      <button class="btn-code" onclick="verCodigo('exponentes')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Derivadas Trascendentes -->
   <div id="mod-derivada-trig" class="mod-content">
     <div class="form-group">
       <label>Función a derivar:</label>
       <select id="der-tipo" onchange="ajustarInputsDerivada()">
-        <option value="sin">Seno: f(x) = A · sen(k · x)</option>
-        <option value="cos">Coseno: f(x) = A · cos(k · x)</option>
-        <option value="poly">Potencia: f(x) = c · x^n</option>
+        <option value="sin">Seno: f(x) = A · sen(k·x)</option>
+        <option value="cos">Coseno: f(x) = A · cos(k·x)</option>
+        <option value="tan">Tangente: f(x) = A · tan(k·x)</option>
+        <option value="cot">Cotangente: f(x) = A · cot(k·x)</option>
+        <option value="sec">Secante: f(x) = A · sec(k·x)</option>
+        <option value="csc">Cosecante: f(x) = A · csc(k·x)</option>
+        <option value="exp">Exponencial natural: f(x) = A · e^(k·x)</option>
+        <option value="ln">Logaritmo natural: f(x) = A · ln(x)</option>
+        <option value="poly">Polinomio / Potencia: f(x) = c · x^n</option>
       </select>
     </div>
     <div class="grid-2">
-      <div class="form-group"><label id="lbl-der1">Amplitud / Coeficiente (A):</label><input type="number" id="der-in1" value="3" step="any"></div>
-      <div class="form-group" id="grp-der2"><label id="lbl-der2">Frecuencia / Argumento (k):</label><input type="number" id="der-in2" value="2" step="any"></div>
+      <div class="form-group"><label id="lbl-der1">Amplitud / Constante (A):</label><input type="number" id="der-in1" value="4" step="any"></div>
+      <div class="form-group" id="grp-der2"><label id="lbl-der2">Constante interna (k):</label><input type="number" id="der-in2" value="3" step="any"></div>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcDerivadaCompleta()">Calcular Derivada</button>
+      <button class="btn-main" onclick="calcDerivadaTrascendente()">Calcular Derivada Paso a Paso</button>
       <button class="btn-code" onclick="verCodigo('derivada')">💻 Ver Código</button>
     </div>
   </div>
 
+  <!-- Integrales Trascendentes -->
   <div id="mod-integral-trig" class="mod-content">
     <div class="form-group">
       <label>Función a integrar:</label>
-      <select id="int-tipo">
-        <option value="sin">Seno: ∫ A · sen(k · x) dx</option>
-        <option value="cos">Coseno: ∫ A · cos(k · x) dx</option>
+      <select id="int-tipo" onchange="ajustarInputsIntegral()">
+        <option value="sin">∫ A · sen(k·x) dx</option>
+        <option value="cos">∫ A · cos(k·x) dx</option>
+        <option value="sec2">∫ A · sec²(k·x) dx</option>
+        <option value="csc2">∫ A · csc²(k·x) dx</option>
+        <option value="exp">∫ A · e^(k·x) dx</option>
+        <option value="inv">∫ A · (1 / x) dx</option>
+        <option value="poly">∫ c · x^n dx</option>
       </select>
     </div>
     <div class="grid-2">
-      <div class="form-group"><label>Amplitud (A):</label><input type="number" id="int-in1" value="4" step="any"></div>
-      <div class="form-group"><label>Frecuencia (k):</label><input type="number" id="int-in2" value="2" step="any"></div>
+      <div class="form-group"><label id="lbl-int1">Amplitud (A):</label><input type="number" id="int-in1" value="2" step="any"></div>
+      <div class="form-group" id="grp-int2"><label id="lbl-int2">Frecuencia / Argumento (k):</label><input type="number" id="int-in2" value="2" step="any"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Límite inf [a] (opcional):</label><input type="number" id="int-lim-a" placeholder="Ej: 0" step="any"></div>
+      <div class="form-group"><label>Límite sup [b] (opcional):</label><input type="number" id="int-lim-b" placeholder="Ej: 3.1416" step="any"></div>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcIntegralCompleta()">Calcular Integral</button>
+      <button class="btn-main" onclick="calcIntegralTrascendente()">Calcular Integral</button>
       <button class="btn-code" onclick="verCodigo('integral')">💻 Ver Código</button>
     </div>
   </div>
 
+  <!-- Sumas de Riemann -->
   <div id="mod-cuadritos" class="mod-content">
-    <label>Sumas de Riemann: <b id="nCuadritos">4</b></label>
-    <input type="range" min="2" max="25" value="4" oninput="dibujarRiemann(this.value)">
-    <div style="text-align:center; margin: 12px 0;">
-      <canvas id="cvsRiemann" width="360" height="150" style="background:#070d19; border:1px solid #334155; border-radius:8px; max-width:100%;"></canvas>
+    <label>Sumas de Riemann (Aproximación por rectángulos bajo f(x) = x²): <b id="lbl-cuadritos">6</b></label>
+    <input type="range" min="2" max="30" value="6" oninput="dibujarRiemann(this.value)">
+    <div class="canvas-container">
+      <canvas id="cvsRiemann" width="400" height="180"></canvas>
+      <p id="areaRiemannText" style="font-size:0.95rem; color:#38bdf8; margin:8px 0 0 0; font-weight:bold;">Área estimada: 2.96 u²</p>
     </div>
-    <p id="areaRiemannText" style="font-size:0.95rem; color:#38bdf8; text-align:center; font-weight:bold; margin:0;">Área aproximada: 3.75 u²</p>
   </div>
 
-  <!-- ================= QUÍMICA & DESAFÍOS ================= -->
-  <div id="mod-molar" class="mod-content">
-    <div class="form-group"><label>Compuesto:</label>
+  <!-- ========================================================
+       2. FÍSICA & DIAGRAMAS VISUALES
+       ======================================================== -->
+
+  <!-- MRUA con Gráfica de Trayectoria -->
+  <div id="mod-fis-mrua" class="mod-content">
+    <div class="grid-3">
+      <div class="form-group"><label>Velocidad Inicial (v₀) [m/s]:</label><input type="number" id="mrua-v0" value="0"></div>
+      <div class="form-group"><label>Aceleración (a) [m/s²]:</label><input type="number" id="mrua-a" value="2.5"></div>
+      <div class="form-group"><label>Tiempo (t) [s]:</label><input type="number" id="mrua-t" value="4"></div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="cvsMRUA" width="420" height="180"></canvas>
+      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Gráfica de Posición vs Tiempo: d(t) = v₀·t + ½·a·t²</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcMRUA_Grafico()">Calcular y Trazar Trayectoria</button>
+      <button class="btn-code" onclick="verCodigo('mrua')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Tiro Parabólico con Trayectoria Balística -->
+  <div id="mod-fis-parabolico" class="mod-content">
+    <div class="grid-2">
+      <div class="form-group"><label>Velocidad de Disparo (v₀) [m/s]:</label><input type="number" id="par-v0" value="25" step="any"></div>
+      <div class="form-group"><label>Ángulo de Elevación (θ) [grados]:</label><input type="number" id="par-ang" value="45" step="any"></div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="cvsParabolico" width="450" height="200"></canvas>
+      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Trayectoria en el Plano (X vs Y) con Hmax y Alcance</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcParabolico_Grafico()">Simular Tiro Parabólico</button>
+      <button class="btn-code" onclick="verCodigo('parabolico')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- DCL: Fuerza y Fricción -->
+  <div id="mod-fis-friccion" class="mod-content">
+    <div class="grid-3">
+      <div class="form-group"><label>Masa del Bloque (m) [kg]:</label><input type="number" id="dcl-m" value="5" step="any"></div>
+      <div class="form-group"><label>Fuerza Aplicada (F) [N]:</label><input type="number" id="dcl-f" value="30" step="any"></div>
+      <div class="form-group"><label>Coeficiente de Fricción (μ):</label><input type="number" id="dcl-mu" value="0.25" step="any"></div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="cvsDCL" width="400" height="220"></canvas>
+      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Diagrama de Cuerpo Libre (DCL): Normal, Peso, F motriz y Fricción</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcDCL_Friccion()">Generar DCL y Aceleración Neta</button>
+      <button class="btn-code" onclick="verCodigo('dcl')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- DCL: Torque y Palanca -->
+  <div id="mod-fis-torque" class="mod-content">
+    <div class="grid-3">
+      <div class="form-group"><label>Fuerza Aplicada (F) [N]:</label><input type="number" id="tq-f" value="20" step="any"></div>
+      <div class="form-group"><label>Longitud del Brazo (d) [m]:</label><input type="number" id="tq-d" value="0.3" step="any"></div>
+      <div class="form-group"><label>Ángulo de Fuerza (θ) [°]:</label><input type="number" id="tq-ang" value="90" step="any"></div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="cvsTorque" width="400" height="180"></canvas>
+      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Brazo de Palanca, Fulcro / Eje y Vector de Torsión (τ)</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcDCL_Torque()">Dibujar Palanca y Calcular Torque</button>
+      <button class="btn-code" onclick="verCodigo('torque')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Plano Vectorial Dinámico -->
+  <div id="mod-plano-fuerzas" class="mod-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <label><b>Fuerzas Concurrentes en el Plano:</b></label>
+      <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer;" onclick="agregarFuerza()">+ Añadir Fuerza</button>
+    </div>
+    <div id="lista-fuerzas"></div>
+    <div class="canvas-container">
+      <canvas id="cvsPlano" width="380" height="380"></canvas>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Suma Vectorial</button>
+      <button class="btn-code" onclick="verCodigo('vectores')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       3. ROBÓTICA & CIRCUITOS
+       ======================================================== -->
+
+  <!-- Resistencias de 4 y 5 Colores -->
+  <div id="mod-rob-resistor" class="mod-content">
+    <div class="form-group">
+      <label>Tipo de Resistor a decodificar:</label>
+      <select id="sel-tipo-resistor" onchange="cambiarModoResistor()">
+        <option value="4">4 Bandas (Resistor Estándar de Carbón - Tolerancia ±5%)</option>
+        <option value="5">5 Bandas (Resistor de Precisión Película Metálica - Tolerancia ±1%)</option>
+      </select>
+    </div>
+
+    <div class="resistor-display">
+      <div id="resistor-visual" class="resistor-body">
+        <div id="b1" class="banda" style="background:#ef4444;"></div>
+        <div id="b2" class="banda" style="background:#ef4444;"></div>
+        <div id="b3-digito" class="banda" style="background:#000000; display:none;"></div>
+        <div id="b-mult" class="banda" style="background:#a52a2a;"></div>
+        <div id="b-tol" class="banda" style="background:#ffd700;"></div>
+      </div>
+    </div>
+
+    <!-- Selectores de color -->
+    <div class="grid-5" id="cont-selectores-bandas">
+      <div class="form-group"><label>1ª Banda:</label><select id="rc1" onchange="actualizarBandasColor()"></select></div>
+      <div class="form-group"><label>2ª Banda:</label><select id="rc2" onchange="actualizarBandasColor()"></select></div>
+      <div class="form-group" id="grp-rc3" style="display:none;"><label>3ª Banda (Dígito):</label><select id="rc3" onchange="actualizarBandasColor()"></select></div>
+      <div class="form-group"><label>Multiplicador:</label><select id="rc-mult" onchange="actualizarBandasColor()"></select></div>
+      <div class="form-group"><label>Tolerancia:</label><select id="rc-tol" onchange="actualizarBandasColor()"></select></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcResistorCompleto()">Calcular Valor en Ohms y Rango</button>
+      <button class="btn-code" onclick="verCodigo('resistor')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Ley de Ohm con Diagrama Esquemático -->
+  <div id="mod-rob-esquematico" class="mod-content">
+    <div class="grid-2">
+      <div class="form-group"><label>Voltaje de Fuente (Vcc) [V]:</label><input type="number" id="cir-vcc" value="9" step="any"></div>
+      <div class="form-group">
+        <label>Componente a Proteger / Alimentar:</label>
+        <select id="cir-comp" onchange="actualizarCircuitoEsquematico()">
+          <option value="led">Diodo LED Estándar (Caída 2.0V - 20mA)</option>
+          <option value="motor">Motor DC de Juguete / Motorreductor</option>
+          <option value="res-pura">Resistencias Puras en Serie</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group"><label>Resistencia R1 [Ω]:</label><input type="number" id="cir-r1" value="220" onchange="actualizarCircuitoEsquematico()"></div>
+      <div class="form-group"><label>Resistencia R2 en Serie (opcional) [Ω]:</label><input type="number" id="cir-r2" value="0" onchange="actualizarCircuitoEsquematico()"></div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="cvsEsquema" width="420" height="200"></canvas>
+      <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Diagrama Esquemático del Circuito Eléctrico</span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcCircuitoEsquematico()">Analizar Circuito (Ley de Ohm & Caídas)</button>
+      <button class="btn-code" onclick="verCodigo('esquema')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Servomotores & PWM -->
+  <div id="mod-rob-servo" class="mod-content">
+    <div class="form-group">
+      <label>Ángulo del Servomotor (0° a 180°):</label>
+      <input type="range" min="0" max="180" value="90" id="servoR" oninput="moverServo(this.value)">
+    </div>
+    <div class="grid-2">
+      <div>Ángulo: <b id="servoDegText">90°</b></div>
+      <div>Ancho de pulso: <b id="servoUsText">1500 µs</b></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="explicarServo()">Generar Código Arduino</button>
+      <button class="btn-code" onclick="verCodigo('servo')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- Batería -->
+  <div id="mod-rob-bateria" class="mod-content">
+    <div class="grid-2">
+      <div class="form-group"><label>Batería LiPo / Pila [mAh]:</label><input type="number" id="b-cap" value="2200"></div>
+      <div class="form-group"><label>Arduino / Microcontrolador [mA]:</label><input type="number" id="b-ard" value="50"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Sensores Totales [mA]:</label><input type="number" id="b-sen" value="60"></div>
+      <div class="form-group"><label>Motores Activos [mA]:</label><input type="number" id="b-mot" value="400"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcBateria()">Calcular Autonomía del Robot</button>
+      <button class="btn-code" onclick="verCodigo('bateria')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       4. QUÍMICA EXTENDIDA
+       ======================================================== -->
+
+  <!-- Masa Molar Extendida -->
+  <div id="mod-quim-molar" class="mod-content">
+    <div class="form-group">
+      <label>Selecciona un Compuesto Químico del Catálogo:</label>
       <select id="chem-comp">
-        <option value="H2O">Agua (H₂O)</option>
+        <!-- Ácidos y Bases -->
+        <option value="H2SO4">Ácido Sulfúrico (H₂SO₄)</option>
+        <option value="HCl">Ácido Clorhídrico (HCl)</option>
+        <option value="HNO3">Ácido Nítrico (HNO₃)</option>
+        <option value="H3PO4">Ácido Fosfórico (H₃PO₄)</option>
+        <option value="NaOH">Hidróxido de Sodio (NaOH)</option>
+        <option value="Ca(OH)2">Hidróxido de Calcio [Ca(OH)₂]</option>
+        <!-- Sales y Óxidos -->
+        <option value="NaCl">Cloruro de Sodio / Sal Común (NaCl)</option>
+        <option value="CaCO3">Carbonato de Calcio (CaCO₃)</option>
+        <option value="CuSO4">Sulfato de Cobre (CuSO₄)</option>
+        <option value="KMnO4">Permanganato de Potasio (KMnO₄)</option>
+        <option value="NaHCO3">Bicarbonato de Sodio (NaHCO₃)</option>
         <option value="CO2">Dióxido de Carbono (CO₂)</option>
-        <option value="NaCl">Sal común (NaCl)</option>
+        <option value="Fe2O3">Óxido Férrico (Fe₂O₃)</option>
+        <!-- Orgánicos y Azúcares -->
+        <option value="C6H12O6">Glucosa (C₆H₁₂O₆)</option>
+        <option value="C12H22O11">Sacarosa / Azúcar común (C₁₂H₂₂O₁₁)</option>
+        <option value="C2H5OH">Etanol / Alcohol etílico (C₂H₅OH)</option>
+        <option value="CH4">Metano (CH₄)</option>
+        <option value="C3H8">Propano (C₃H₈)</option>
+        <option value="H2O">Agua Pura (H₂O)</option>
       </select>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcMolar()">Calcular Masa Molar</button>
+      <button class="btn-main" onclick="calcMasaMolarExtendida()">Desglosar Masa Molar y % Elemental</button>
       <button class="btn-code" onclick="verCodigo('molar')">💻 Ver Código</button>
     </div>
   </div>
 
-  <div id="mod-gases" class="mod-content">
+  <!-- Gases Ideales -->
+  <div id="mod-quim-gases" class="mod-content">
     <div class="grid-3">
-      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1"></div>
-      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4"></div>
-      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0"></div>
+      <div class="form-group"><label>Presión (P) [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
+      <div class="form-group"><label>Volumen (V) [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+      <div class="form-group"><label>Temperatura (°C):</label><input type="number" id="g-t" value="0" step="any"></div>
     </div>
     <div class="btn-row">
-      <button class="btn-main" onclick="calcGases()">Calcular Moles</button>
+      <button class="btn-main" onclick="calcGases()">Calcular Moles (PV = nRT)</button>
       <button class="btn-code" onclick="verCodigo('gases')">💻 Ver Código</button>
     </div>
   </div>
 
+  <!-- Molaridad -->
+  <div id="mod-quim-soluciones" class="mod-content">
+    <div class="grid-2">
+      <div class="form-group"><label>Moles de Soluto (n) [mol]:</label><input type="number" id="sol-n" value="0.75" step="any"></div>
+      <div class="form-group"><label>Volumen de Disolución (V) [L]:</label><input type="number" id="sol-v" value="1.5" step="any"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-main" onclick="calcMolaridad()">Calcular Concentración Molar (M)</button>
+      <button class="btn-code" onclick="verCodigo('molaridad')">💻 Ver Código</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       5. COFRE DE DESAFÍOS (MINIJUEGO)
+       ======================================================== -->
   <div id="mod-trivia" class="mod-content">
-    <div style="background:#0f172a; border:2px dashed #f59e0b; border-radius:10px; padding:16px; text-align:center;">
-      <div style="display:flex; justify-content:space-around; color:#f59e0b; font-weight:bold; margin-bottom:12px;">
+    <div style="background:#0f172a; border:2px dashed #f59e0b; border-radius:12px; padding:20px; text-align:center;">
+      <div style="display:flex; justify-content:space-around; color:#f59e0b; font-weight:bold; margin-bottom:14px;">
         <span id="j-vidas">❤️❤️❤️</span>
         <span id="j-xp">0 XP</span>
       </div>
-      <h3 id="j-titulo" style="margin:0 0 6px 0; color:#38bdf8;">Misión: Equilibrio de Fuerzas</h3>
-      <p id="j-desc" style="font-size:0.88rem; margin-bottom:14px;">Si una fuerza tira con 10 N hacia la derecha (0°) y otra tira con 6 N hacia la izquierda (180°), ¿cuál es la Fuerza Resultante neta en Newtons?</p>
-      <div style="display:flex; justify-content:center; gap:8px; max-width:260px; margin:0 auto;">
-        <input type="number" id="j-input" placeholder="Tu respuesta">
+      <h3 id="j-titulo" style="margin:0 0 6px 0; color:#38bdf8;">Misión: Identidad Fundamental</h3>
+      <p id="j-desc" style="font-size:0.9rem; margin-bottom:14px;">Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto vale sen²(θ) + cos²(θ)?</p>
+      <div style="display:flex; justify-content:center; gap:8px; max-width:280px; margin:0 auto;">
+        <input type="number" id="j-input" placeholder="Tu respuesta numérica">
         <button class="btn-main" style="flex:1;" onclick="verificarJuego()">Comprobar</button>
       </div>
-      <p id="j-msg" style="margin:10px 0 0 0; font-weight:bold;"></p>
+      <p id="j-msg" style="margin:12px 0 0 0; font-weight:bold;"></p>
     </div>
   </div>
 
@@ -461,195 +604,9 @@
 </div>
 
 <script>
-  // Paleta de colores para fuerzas individuales
-  const paletaColores = ['#38bdf8', '#10b981', '#f59e0b', '#a855f7', '#ec4899', '#06b6d4'];
-  let fuerzasData = [
-    { f: 20, ang: 30, color: '#38bdf8' },
-    { f: 15, ang: 120, color: '#10b981' }
-  ];
-
-  function renderizarListaFuerzas() {
-    const contenedor = document.getElementById('lista-fuerzas');
-    if (!contenedor) return;
-    contenedor.innerHTML = "";
-
-    fuerzasData.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.className = 'fuerza-item';
-      div.innerHTML = `
-        <span class="fuerza-color-dot" style="background:${item.color};"></span>
-        <span style="font-weight:bold;font-size:0.85rem;min-width:30px;">F${index+1}:</span>
-        <input type="number" value="${item.f}" min="0" placeholder="Magnitud (N)" style="flex:1;padding:6px;" onchange="actualizarFuerza(${index}, 'f', this.value)">
-        <span style="font-size:0.8rem;color:#94a3b8;">N</span>
-        <input type="number" value="${item.ang}" placeholder="Ángulo (°)" style="flex:1;padding:6px;" onchange="actualizarFuerza(${index}, 'ang', this.value)">
-        <span style="font-size:0.8rem;color:#94a3b8;">°</span>
-        ${fuerzasData.length > 1 ? `<button class="btn-del-fuerza" onclick="eliminarFuerza(${index})">✖</button>` : ''}
-      `;
-      contenedor.appendChild(div);
-    });
-    dibujarPlano();
-  }
-
-  function agregarFuerza() {
-    if (fuerzasData.length >= 6) { alert("Máximo 6 fuerzas simultáneas."); return; }
-    const color = paletaColores[fuerzasData.length % paletaColores.length];
-    fuerzasData.push({ f: 10, ang: 0, color: color });
-    renderizarListaFuerzas();
-  }
-
-  function eliminarFuerza(idx) {
-    if (fuerzasData.length <= 1) return;
-    fuerzasData.splice(idx, 1);
-    renderizarListaFuerzas();
-  }
-
-  function actualizarFuerza(idx, campo, valor) {
-    fuerzasData[idx][campo] = parseFloat(valor) || 0;
-    dibujarPlano();
-  }
-
-  // Dibuja el Plano Cartesiano y los vectores
-  function dibujarPlano(resultante = null) {
-    const cvs = document.getElementById('cvsPlano');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d');
-    const w = cvs.width, h = cvs.height;
-    const cx = w / 2, cy = h / 2;
-
-    ctx.clearRect(0, 0, w, h);
-
-    // Rejilla de fondo
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 1;
-    for (let x = 30; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-    for (let y = 30; y < h; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-
-    // Ejes Cartesiano X e Y
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy); // Eje X
-    ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10); // Eje Y
-    ctx.stroke();
-
-    // Etiquetas de los ejes
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px monospace';
-    ctx.fillText('+X (0°)', w - 48, cy - 8);
-    ctx.fillText('-X (180°)', 10, cy - 8);
-    ctx.fillText('+Y (90°)', cx + 8, 20);
-    ctx.fillText('-Y (270°)', cx + 8, h - 12);
-
-    // Factor de escala dinámico para que no se salgan del canvas
-    let maxF = 1;
-    fuerzasData.forEach(item => { if (item.f > maxF) maxF = item.f; });
-    if (resultante && resultante.mag > maxF) maxF = resultante.mag;
-    const escala = (w / 2 - 40) / (maxF * 1.15);
-
-    // Dibujar cada fuerza individual
-    fuerzasData.forEach((item, index) => {
-      const rad = (item.ang * Math.PI) / 180;
-      const vx = item.f * Math.cos(rad);
-      const vy = item.f * Math.sin(rad);
-
-      const targetX = cx + (vx * escala);
-      const targetY = cy - (vy * escala); // Invertido porque en canvas Y crece hacia abajo
-
-      dibujarFlecha(ctx, cx, cy, targetX, targetY, item.color, 2.5);
-      ctx.fillStyle = item.color;
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText(`F${index+1} (${item.f}N)`, targetX + 5, targetY - 5);
-    });
-
-    // Dibujar la Fuerza Resultante si existe
-    if (resultante && resultante.mag > 0.01) {
-      const radR = (resultante.ang * Math.PI) / 180;
-      const rx = resultante.mag * Math.cos(radR);
-      const ry = resultante.mag * Math.sin(radR);
-      const targetRX = cx + (rx * escala);
-      const targetRY = cy - (ry * escala);
-
-      // Flecha Resultante en Rojo Brillante
-      dibujarFlecha(ctx, cx, cy, targetRX, targetRY, '#ef4444', 4);
-      ctx.fillStyle = '#ef4444';
-      ctx.font = 'bold 13px sans-serif';
-      ctx.fillText(`FR (${resultante.mag.toFixed(1)}N)`, targetRX + 8, targetRY - 8);
-    }
-  }
-
-  function dibujarFlecha(ctx, fromX, fromY, toX, toY, color, width) {
-    const headlen = 10;
-    const angle = Math.atan2(toY - fromY, toX - fromX);
-
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = width;
-
-    // Línea del vector
-    ctx.beginPath();
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
-    ctx.stroke();
-
-    // Cabeza de la flecha
-    ctx.beginPath();
-    ctx.moveTo(toX, toY);
-    ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function calcularPlanoFuerzas() {
-    let sumX = 0;
-    let sumY = 0;
-    let desgloseHtml = "";
-
-    fuerzasData.forEach((item, i) => {
-      const rad = (item.ang * Math.PI) / 180;
-      const fx = item.f * Math.cos(rad);
-      const fy = item.f * Math.sin(rad);
-      sumX += fx;
-      sumY += fy;
-
-      desgloseHtml += `
-        <li><b>F${i+1} (${item.f} N a ${item.ang}°):</b><br>
-        • Fx = ${item.f} · cos(${item.ang}°) = <code>${fx.toFixed(2)} N</code><br>
-        • Fy = ${item.f} · sen(${item.ang}°) = <code>${fy.toFixed(2)} N</code></li>
-      `;
-    });
-
-    const fResultante = Math.sqrt((sumX * sumX) + (sumY * sumY));
-    let anguloR = (Math.atan2(sumY, sumX) * 180) / Math.PI;
-    if (anguloR < 0) anguloR += 360; // Normalizar a 0-360°
-
-    const resObj = { mag: fResultante, ang: anguloR };
-    dibujarPlano(resObj);
-
-    const s = document.getElementById('salida');
-    s.innerHTML = `
-      <h3 style="color:#ef4444;margin:0 0 8px 0;">Fuerza Resultante (Suma de Vectores)</h3>
-      <div class="step"><b>1. Descomposición por componentes ortogonales:</b>
-        <ul style="margin:4px 0;padding-left:18px;">${desgloseHtml}</ul>
-      </div>
-      <div class="step"><b>2. Sumatorias Netas:</b><br>
-        • ΣFx = <b>${sumX.toFixed(2)} N</b><br>
-        • ΣFy = <b>${sumY.toFixed(2)} N</b>
-      </div>
-      <div class="step"><b>3. Teorema de Pitágoras (Magnitud):</b><br>
-        <code>F_R = √[(ΣFx)² + (ΣFy)²] = √[(${sumX.toFixed(2)})² + (${sumY.toFixed(2)})²] = <b style="color:#ef4444;font-size:1.05rem;">${fResultante.toFixed(2)} N</b></code>
-      </div>
-      <div class="step"><b>4. Dirección del Movimiento:</b><br>
-        <code>θ_R = arctan(ΣFy / ΣFx) = <b style="color:#ef4444;font-size:1.05rem;">${anguloR.toFixed(1)}°</b></code>
-      </div>
-      <div class="step" style="border-left-color:#f59e0b;color:#fde68a;">
-        🤖 <b>En Robótica y Drones:</b> Si los motores aplican estas fuerzas con estas direcciones, el robot se acelerará exactamente con una fuerza de <b>${fResultante.toFixed(2)} N</b> hacia los <b>${anguloR.toFixed(1)}°</b>.
-      </div>
-    `;
-    s.style.display = 'block';
-  }
-
-  // --- CONTROL GENERAL DE PESTAÑAS ---
+  // ==========================================
+  // NAVEGACIÓN GENERAL SEGURA
+  // ==========================================
   function verMateria(mat) {
     try {
       document.querySelectorAll('#tabs-nivel-1 .btn-tab').forEach(b => b.classList.remove('active'));
@@ -664,16 +621,14 @@
       if (sub) sub.style.display = 'flex';
 
       const porDefecto = {
-        fisica: 'plano-fuerzas',
-        robotica: 'colores',
-        calculo: 'derivada-trig',
-        quimica: 'molar',
+        calculo: 'calc-trig',
+        fisica: 'fis-mrua',
+        robotica: 'rob-resistor',
+        quimica: 'quim-molar',
         juego: 'trivia'
       };
       verModulo(mat, porDefecto[mat]);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
   function verModulo(materia, mod) {
@@ -694,196 +649,761 @@
       const target = document.getElementById('mod-' + mod);
       if (target) {
         target.classList.add('visible');
+        if (mod === 'calc-trig') calcRazonesTrig();
+        if (mod === 'fis-mrua') calcMRUA_Grafico();
+        if (mod === 'fis-parabolico') calcParabolico_Grafico();
+        if (mod === 'fis-friccion') calcDCL_Friccion();
+        if (mod === 'fis-torque') calcDCL_Torque();
         if (mod === 'plano-fuerzas') renderizarListaFuerzas();
-        if (mod === 'colores') actualizarBandas();
-        if (mod === 'cuadritos') {
-          const inp = document.querySelector('#mod-cuadritos input');
-          if (inp) dibujarRiemann(inp.value);
-        }
+        if (mod === 'rob-resistor') actualizarBandasColor();
+        if (mod === 'rob-esquematico') calcCircuitoEsquematico();
+        if (mod === 'cuadritos') dibujarRiemann(document.querySelector('#mod-cuadritos input').value);
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
-  // --- RESTO DE FUNCIONES ---
-  function calcMRUA() {
-    const v0 = parseFloat(document.getElementById('cin-v0').value) || 0;
-    const a = parseFloat(document.getElementById('cin-a').value) || 0;
-    const t = parseFloat(document.getElementById('cin-t').value) || 0;
+  // ==========================================
+  // 1. CÁLCULO & TRIGONOMETRÍA
+  // ==========================================
+
+  function calcRazonesTrig() {
+    const co = parseFloat(document.getElementById('trig-co').value) || 3;
+    const ca = parseFloat(document.getElementById('trig-ca').value) || 4;
+    const hip = Math.sqrt((co * co) + (ca * ca));
+
+    const sin = co / hip;
+    const cos = ca / hip;
+    const tan = co / ca;
+    const csc = hip / co;
+    const sec = hip / ca;
+    const cot = ca / co;
+
+    const deg = (Math.atan2(co, ca) * 180 / Math.PI).toFixed(2);
+
     const s = document.getElementById('salida');
-    s.innerHTML = `<h3 style="color:#38bdf8;">MRUA: Vf = ${(v0+a*t).toFixed(2)} m/s | Distancia = ${((v0*t)+0.5*a*t*t).toFixed(2)} m</h3>`;
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Razones Trigonométricas del Triángulo</h3>
+      <div class="step"><b>Hipotenusa (Pitágoras):</b> <code>c = √(${co}² + ${ca}²) = √${(co*co + ca*ca).toFixed(2)} = <b>${hip.toFixed(3)}</b></code></div>
+      <div class="step"><b>Ángulo agudo (θ):</b> <code>arctan(${co}/${ca}) = <b>${deg}°</b></code></div>
+      <table class="didact-table">
+        <tr><th>Razón Directa</th><th>Fórmula</th><th>Valor</th><th>Razón Recíproca</th><th>Fórmula</th><th>Valor</th></tr>
+        <tr><td><b>Seno (sen)</b></td><td>CO / HIP</td><td><b>${sin.toFixed(4)}</b></td><td><b>Cosecante (csc)</b></td><td>HIP / CO</td><td><b>${csc.toFixed(4)}</b></td></tr>
+        <tr><td><b>Coseno (cos)</b></td><td>CA / HIP</td><td><b>${cos.toFixed(4)}</b></td><td><b>Secante (sec)</b></td><td>HIP / CA</td><td><b>${sec.toFixed(4)}</b></td></tr>
+        <tr><td><b>Tangente (tan)</b></td><td>CO / CA</td><td><b>${tan.toFixed(4)}</b></td><td><b>Cotangente (cot)</b></td><td>CA / CO</td><td><b>${cot.toFixed(4)}</b></td></tr>
+      </table>
+    `;
     s.style.display = 'block';
   }
 
-  function calcParabolico() {
-    const v0 = parseFloat(document.getElementById('tp-v0').value) || 0;
-    const ang = parseFloat(document.getElementById('tp-ang').value) || 0;
-    const rad = (ang * Math.PI) / 180;
+  function comprobarIdentidad() {
+    const id = document.getElementById('sel-identidad').value;
+    const deg = parseFloat(document.getElementById('ident-angulo').value) || 30;
+    const rad = deg * Math.PI / 180;
+    const s = document.getElementById('salida');
+
+    const sVal = Math.sin(rad);
+    const cVal = Math.cos(rad);
+    const tVal = Math.tan(rad);
+
+    let html = "";
+
+    if (id === 'pitagora') {
+      const s2 = sVal * sVal;
+      const c2 = cVal * cVal;
+      const suma = s2 + c2;
+      html = `
+        <h3 style="color:#38bdf8;margin:0 0 8px 0;">Identidad Pitagórica: sen²(θ) + cos²(θ) = 1</h3>
+        <div class="step"><b>1. Ángulo analizado:</b> θ = ${deg}° (${rad.toFixed(4)} rad)</div>
+        <div class="step"><b>2. sen(${deg}°):</b> ${sVal.toFixed(4)} → <b>sen²(${deg}°):</b> (${sVal.toFixed(4)})² = <code>${s2.toFixed(4)}</code></div>
+        <div class="step"><b>3. cos(${deg}°):</b> ${cVal.toFixed(4)} → <b>cos²(${deg}°):</b> (${cVal.toFixed(4)})² = <code>${c2.toFixed(4)}</code></div>
+        <div class="step"><b>4. Suma:</b> ${s2.toFixed(4)} + ${c2.toFixed(4)} = <b>${suma.toFixed(4)} ≈ 1.000</b></div>
+        <div class="step" style="border-left-color:#10b981;"><b>Demostración:</b> ¡Se cumple para absolutamente cualquier ángulo real!</div>
+      `;
+    } else if (id === 'tan-sec') {
+      const t2 = tVal * tVal;
+      const sec2 = 1 / (cVal * cVal);
+      html = `
+        <h3 style="color:#38bdf8;margin:0 0 8px 0;">Identidad: 1 + tan²(θ) = sec²(θ)</h3>
+        <div class="step"><b>Lado izquierdo:</b> 1 + tan²(${deg}°) = 1 + (${tVal.toFixed(4)})² = <b>${(1 + t2).toFixed(4)}</b></div>
+        <div class="step"><b>Lado derecho:</b> sec²(${deg}°) = 1 / cos²(${deg}°) = <b>${sec2.toFixed(4)}</b></div>
+      `;
+    } else if (id === 'sen-doble') {
+      const sen2t = Math.sin(2 * rad);
+      const prod = 2 * sVal * cVal;
+      html = `
+        <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ángulo Doble: sen(2θ) = 2 · sen(θ) · cos(θ)</h3>
+        <div class="step"><b>Lado izquierdo:</b> sen(2·${deg}°) = sen(${2*deg}°) = <b>${sen2t.toFixed(4)}</b></div>
+        <div class="step"><b>Lado derecho:</b> 2 · sen(${deg}°) · cos(${deg}°) = 2 · (${sVal.toFixed(4)}) · (${cVal.toFixed(4)}) = <b>${prod.toFixed(4)}</b></div>
+      `;
+    } else {
+      html = `<h3 style="color:#38bdf8;">Identidad: tan(θ) = sen(θ) / cos(θ)</h3><div class="step">tan(${deg}°) = ${tVal.toFixed(4)} | sen/cos = ${(sVal/cVal).toFixed(4)}</div>`;
+    }
+    s.innerHTML = html;
+    s.style.display = 'block';
+  }
+
+  function ajustarInputsExponentes() {
+    const l = document.getElementById('sel-ley-exp').value;
+    const gm = document.getElementById('grp-exp-m');
+    const lm = document.getElementById('lbl-exp-m');
+    if (l === 'neg' || l === 'cero') gm.style.display = 'none';
+    else {
+      gm.style.display = 'block';
+      lm.innerText = l === 'frac' ? "Índice de la raíz (n):" : "Exponente m:";
+    }
+  }
+
+  function calcLeyesExponentes() {
+    const ley = document.getElementById('sel-ley-exp').value;
+    const a = parseFloat(document.getElementById('exp-a').value) || 2;
+    const n = parseFloat(document.getElementById('exp-n').value) || 3;
+    const m = parseFloat(document.getElementById('exp-m').value) || 2;
+    const s = document.getElementById('salida');
+
+    let expl = "", res = 0;
+
+    if (ley === 'prod') {
+      res = Math.pow(a, n + m);
+      expl = `<b>Producto:</b> ${a}^${n} · ${a}^${m} = ${a}^(${n} + ${m}) = ${a}^${n+m} = <b>${res}</b>`;
+    } else if (ley === 'coc') {
+      res = Math.pow(a, n - m);
+      expl = `<b>Cociente:</b> ${a}^${n} / ${a}^${m} = ${a}^(${n} - ${m}) = ${a}^${n-m} = <b>${res}</b>`;
+    } else if (ley === 'pot') {
+      res = Math.pow(a, n * m);
+      expl = `<b>Potencia de potencia:</b> (${a}^${n})^${m} = ${a}^(${n} · ${m}) = ${a}^${n*m} = <b>${res}</b>`;
+    } else if (ley === 'neg') {
+      res = 1 / Math.pow(a, n);
+      expl = `<b>Exponente negativo:</b> ${a}^(-${n}) = 1 / (${a}^${n}) = 1 / ${Math.pow(a, n)} = <b>${res.toFixed(5)}</b>`;
+    } else if (ley === 'cero') {
+      expl = `<b>Exponente cero:</b> ${a}⁰ = <b>1</b> (Cualquier número distinto de cero elevado a cero es 1).`;
+    } else {
+      res = Math.pow(Math.pow(a, n), 1 / m);
+      expl = `<b>Exponente Fraccionario:</b> ${a}^(${n}/${m}) = ⁿ√(${a}^${n}) = <b>${res.toFixed(4)}</b>`;
+    }
+
+    s.innerHTML = `<h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Ley de Exponentes</h3><div class="step">${expl}</div>`;
+    s.style.display = 'block';
+  }
+
+  function ajustarInputsDerivada() {
+    const t = document.getElementById('der-tipo').value;
+    const l1 = document.getElementById('lbl-der1');
+    const l2 = document.getElementById('lbl-der2');
+    const g2 = document.getElementById('grp-der2');
+    if (t === 'poly') { l1.innerText = "Coeficiente (c):"; l2.innerText = "Exponente (n):"; g2.style.display = "block"; }
+    else if (t === 'ln') { l1.innerText = "Constante (A):"; g2.style.display = "none"; }
+    else { l1.innerText = "Amplitud (A):"; l2.innerText = "Constante interna (k):"; g2.style.display = "block"; }
+  }
+
+  function calcDerivadaTrascendente() {
+    const t = document.getElementById('der-tipo').value;
+    const a = parseFloat(document.getElementById('der-in1').value) || 1;
+    const k = parseFloat(document.getElementById('der-in2').value) || 1;
+    const s = document.getElementById('salida');
+
+    let f = "", d = "";
+    if (t === 'sin') { f = `${a}·sen(${k}x)`; d = `${a*k} · cos(${k}x)`; }
+    else if (t === 'cos') { f = `${a}·cos(${k}x)`; d = `${-(a*k)} · sen(${k}x)`; }
+    else if (t === 'tan') { f = `${a}·tan(${k}x)`; d = `${a*k} · sec²(${k}x)`; }
+    else if (t === 'cot') { f = `${a}·cot(${k}x)`; d = `${-(a*k)} · csc²(${k}x)`; }
+    else if (t === 'sec') { f = `${a}·sec(${k}x)`; d = `${a*k} · sec(${k}x)·tan(${k}x)`; }
+    else if (t === 'csc') { f = `${a}·csc(${k}x)`; d = `${-(a*k)} · csc(${k}x)·cot(${k}x)`; }
+    else if (t === 'exp') { f = `${a}·e^(${k}x)`; d = `${a*k} · e^(${k}x)`; }
+    else if (t === 'ln') { f = `${a}·ln(x)`; d = `${a} / x`; }
+    else { f = `${a}x^${k}`; d = `${a*k}x^${k-1}`; }
+
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Derivada Resuelta</h3>
+      <div class="step">Función: <code>f(x) = ${f}</code></div>
+      <div class="step">Derivada: <code>f'(x) = <b>${d}</b></code></div>
+    `;
+    s.style.display = 'block';
+  }
+
+  function ajustarInputsIntegral() {
+    const t = document.getElementById('int-tipo').value;
+    const g2 = document.getElementById('grp-int2');
+    if (t === 'inv') g2.style.display = 'none';
+    else g2.style.display = 'block';
+  }
+
+  function calcIntegralTrascendente() {
+    const t = document.getElementById('int-tipo').value;
+    const a = parseFloat(document.getElementById('int-in1').value) || 1;
+    const k = parseFloat(document.getElementById('int-in2').value) || 1;
+    const limA = document.getElementById('int-lim-a').value;
+    const limB = document.getElementById('int-lim-b').value;
+    const s = document.getElementById('salida');
+
+    let resIndef = "", funcF = null;
+    if (t === 'sin') { resIndef = `${(-a/k).toFixed(3)}·cos(${k}x) + C`; funcF = x => (-a/k)*Math.cos(k*x); }
+    else if (t === 'cos') { resIndef = `${(a/k).toFixed(3)}·sen(${k}x) + C`; funcF = x => (a/k)*Math.sin(k*x); }
+    else if (t === 'sec2') { resIndef = `${(a/k).toFixed(3)}·tan(${k}x) + C`; funcF = x => (a/k)*Math.tan(k*x); }
+    else if (t === 'csc2') { resIndef = `${(-a/k).toFixed(3)}·cot(${k}x) + C`; funcF = x => (-a/k)*(1/Math.tan(k*x)); }
+    else if (t === 'exp') { resIndef = `${(a/k).toFixed(3)}·e^(${k}x) + C`; funcF = x => (a/k)*Math.exp(k*x); }
+    else if (t === 'inv') { resIndef = `${a}·ln|x| + C`; funcF = x => a*Math.log(Math.abs(x)); }
+    else { const exp = k + 1; resIndef = `${(a/exp).toFixed(3)}·x^${exp} + C`; funcF = x => (a/exp)*Math.pow(x, exp); }
+
+    let html = `<h3 style="color:#38bdf8;margin:0 0 8px 0;">Integral Resuelta</h3><div class="step">Indefinida: <b>∫ f(x) dx = ${resIndef}</b></div>`;
+    if (limA !== "" && limB !== "") {
+      const nA = parseFloat(limA), nB = parseFloat(limB);
+      if (!isNaN(nA) && !isNaN(nB) && funcF) {
+        html += `<div class="step" style="border-left-color:#10b981;">Definida [${nA}, ${nB}]: F(b) - F(a) = <b>${(funcF(nB) - funcF(nA)).toFixed(4)} u²</b></div>`;
+      }
+    }
+    s.innerHTML = html;
+    s.style.display = 'block';
+  }
+
+  function dibujarRiemann(n) {
+    document.getElementById('lbl-cuadritos').innerText = n;
+    const cvs = document.getElementById('cvsRiemann');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const dx = 2 / n;
+    let suma = 0;
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.strokeStyle = '#38bdf8';
+
+    for (let i = 0; i < n; i++) {
+      let x = i * dx;
+      let y = (x + dx) * (x + dx);
+      suma += y * dx;
+      let rx = 30 + (x * 160);
+      let ry = (h - 25) - (y * 32);
+      ctx.fillRect(rx, ry, dx * 160, y * 32);
+      ctx.strokeRect(rx, ry, dx * 160, y * 32);
+    }
+    document.getElementById('areaRiemannText').innerText = `Área acumulada aproximada: ${suma.toFixed(3)} u² (Real exacta: 2.667 u²)`;
+  }
+
+  // ==========================================
+  // 2. FÍSICA & DIAGRAMAS
+  // ==========================================
+
+  function calcMRUA_Grafico() {
+    const v0 = parseFloat(document.getElementById('mrua-v0').value) || 0;
+    const a = parseFloat(document.getElementById('mrua-a').value) || 0;
+    const t = parseFloat(document.getElementById('mrua-t').value) || 0;
+    const vf = v0 + (a * t);
+    const d = (v0 * t) + (0.5 * a * t * t);
+
+    // Trazar en Canvas
+    const cvs = document.getElementById('cvsMRUA');
+    if (cvs) {
+      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Ejes
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(35, 15); ctx.lineTo(35, h - 25); ctx.lineTo(w - 15, h - 25);
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px sans-serif';
+      ctx.fillText("d (m)", 8, 20);
+      ctx.fillText("t (s)", w - 25, h - 10);
+
+      // Curva parábola
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      const puntos = 40;
+      for (let i = 0; i <= puntos; i++) {
+        let tCur = (t / puntos) * i;
+        let dCur = (v0 * tCur) + (0.5 * a * tCur * tCur);
+        let px = 35 + (tCur / (t || 1)) * (w - 60);
+        let py = (h - 25) - (dCur / (d || 1)) * (h - 50);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática MRUA</h3>
+      <div class="step">Velocidad final alcanzada: <code>v_f = v_0 + a·t = <b>${vf.toFixed(2)} m/s</b></code></div>
+      <div class="step">Distancia recorrida: <code>d = v_0·t + ½·a·t² = <b>${d.toFixed(2)} metros</b></code></div>
+    `;
+    s.style.display = 'block';
+  }
+
+  function calcParabolico_Grafico() {
+    const v0 = parseFloat(document.getElementById('par-v0').value) || 20;
+    const ang = parseFloat(document.getElementById('par-ang').value) || 45;
+    const g = 9.81;
+    const rad = ang * Math.PI / 180;
     const voy = v0 * Math.sin(rad);
     const vox = v0 * Math.cos(rad);
-    const tv = (2 * voy) / 9.81;
-    const h = (voy * voy) / (2 * 9.81);
-    const x = vox * tv;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Tiro Parabólico</h3><div class="step">Hmax: ${h.toFixed(2)} m | Tiempo: ${tv.toFixed(2)} s | Alcance: ${x.toFixed(2)} m</div>`;
-    document.getElementById('salida').style.display = 'block';
+    const tv = (2 * voy) / g;
+    const hmax = (voy * voy) / (2 * g);
+    const xmax = vox * tv;
+
+    const cvs = document.getElementById('cvsParabolico');
+    if (cvs) {
+      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#475569';
+      ctx.beginPath();
+      ctx.moveTo(30, 20); ctx.lineTo(30, h - 25); ctx.lineTo(w - 20, h - 25);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let px = 0; px <= w - 60; px += 4) {
+        let xReal = (px / (w - 60)) * xmax;
+        let tCur = xReal / (vox || 1);
+        let yReal = (voy * tCur) - (0.5 * g * tCur * tCur);
+        if (yReal < 0) yReal = 0;
+        let cy = (h - 25) - (yReal / (hmax || 1)) * (h - 60);
+        if (px === 0) ctx.moveTo(30 + px, cy);
+        else ctx.lineTo(30 + px, cy);
+      }
+      ctx.stroke();
+
+      // Punto Hmax
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(30 + (w - 60)/2, (h - 25) - (h - 60), 4, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillText(`Hmax: ${hmax.toFixed(1)}m`, 30 + (w - 60)/2 - 25, 20);
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#f59e0b;margin:0 0 8px 0;">Tiro Parabólico</h3>
+      <div class="step">Altura Máxima: <b>${hmax.toFixed(2)} m</b> | Tiempo de vuelo: <b>${tv.toFixed(2)} s</b></div>
+      <div class="step">Alcance Horizontal Total: <b>${xmax.toFixed(2)} metros</b></div>
+    `;
+    s.style.display = 'block';
   }
 
-  function calcNewtonFriccion() {
-    const m = parseFloat(document.getElementById('din-m').value) || 0;
-    const a = parseFloat(document.getElementById('din-a').value) || 0;
-    const mu = parseFloat(document.getElementById('din-mu').value) || 0;
-    const fTot = (m * a) + (mu * m * 9.81);
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Dinámica</h3><div class="step">Fuerza requerida del motor: <b>${fTot.toFixed(2)} N</b></div>`;
-    document.getElementById('salida').style.display = 'block';
+  function calcDCL_Friccion() {
+    const m = parseFloat(document.getElementById('dcl-m').value) || 1;
+    const f = parseFloat(document.getElementById('dcl-f').value) || 0;
+    const mu = parseFloat(document.getElementById('dcl-mu').value) || 0;
+    const g = 9.81;
+
+    const peso = m * g;
+    const normal = peso;
+    const fric = mu * normal;
+    const fNeta = f - fric;
+    const a = fNeta > 0 ? fNeta / m : 0;
+
+    // Dibujar DCL
+    const cvs = document.getElementById('cvsDCL');
+    if (cvs) {
+      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2, cy = h / 2;
+
+      // Suelo
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(40, cy + 30); ctx.lineTo(w - 40, cy + 30); ctx.stroke();
+
+      // Bloque
+      ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+      ctx.fillRect(cx - 30, cy - 30, 60, 60);
+      ctx.strokeRect(cx - 30, cy - 30, 60, 60);
+
+      // Flechas
+      dibujarFlecha(ctx, cx + 30, cy, cx + 90, cy, '#38bdf8', 2.5); // F motriz
+      ctx.fillText(`F = ${f}N`, cx + 95, cy + 4);
+
+      dibujarFlecha(ctx, cx - 30, cy, cx - 80, cy, '#ef4444', 2.5); // Fricción
+      ctx.fillText(`fr = ${fric.toFixed(1)}N`, cx - 130, cy + 4);
+
+      dibujarFlecha(ctx, cx, cy - 30, cx, cy - 80, '#10b981', 2.5); // Normal
+      ctx.fillText(`N = ${normal.toFixed(1)}N`, cx + 6, cy - 70);
+
+      dibujarFlecha(ctx, cx, cy + 30, cx, cy + 80, '#f59e0b', 2.5); // Peso
+      ctx.fillText(`P = ${peso.toFixed(1)}N`, cx + 6, cy + 75);
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">DCL: Segunda Ley de Newton con Fricción</h3>
+      <div class="step">Peso (P = m·g): <b>${peso.toFixed(2)} N</b> | Fuerza Normal: <b>${normal.toFixed(2)} N</b></div>
+      <div class="step">Fuerza de Fricción opuesta (fr = μ·N): <b>${fric.toFixed(2)} N</b></div>
+      <div class="step"><b>Fuerza Neta:</b> ${f}N - ${fric.toFixed(2)}N = <b>${fNeta.toFixed(2)} N</b></div>
+      <div class="step" style="border-left-color:#10b981;"><b>Aceleración resultante:</b> a = F_neta / m = <b>${a.toFixed(2)} m/s²</b></div>
+    `;
+    s.style.display = 'block';
   }
 
-  function calcTorque() {
-    const f = parseFloat(document.getElementById('tq-f').value) || 0;
-    const d = parseFloat(document.getElementById('tq-d').value) || 0;
-    const a = parseFloat(document.getElementById('tq-ang').value) || 0;
-    const tq = f * d * Math.sin((a * Math.PI) / 180);
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Torque: ${tq.toFixed(2)} N·m (${(tq*10.197).toFixed(1)} kg·cm)</h3>`;
-    document.getElementById('salida').style.display = 'block';
+  function calcDCL_Torque() {
+    const f = parseFloat(document.getElementById('tq-f').value) || 10;
+    const d = parseFloat(document.getElementById('tq-d').value) || 0.2;
+    const ang = parseFloat(document.getElementById('tq-ang').value) || 90;
+    const rad = ang * Math.PI / 180;
+    const tau = f * d * Math.sin(rad);
+
+    const cvs = document.getElementById('cvsTorque');
+    if (cvs) {
+      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+      const cx = 80, cy = h / 2;
+
+      // Eje pivote
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI*2); ctx.fill();
+
+      // Brazo
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 200, cy); ctx.stroke();
+
+      // Flecha de fuerza con ángulo
+      const fx = cx + 200 - (60 * Math.cos(rad));
+      const fy = cy - (60 * Math.sin(rad));
+      dibujarFlecha(ctx, cx + 200, cy, fx, fy, '#38bdf8', 3);
+      ctx.fillText(`F = ${f}N (θ=${ang}°)`, cx + 180, fy - 8);
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Torque / Momento de Torsión (τ = F·d·senθ)</h3>
+      <div class="step">Torque resultante: <code>${f}N · ${d}m · sen(${ang}°) = <b>${tau.toFixed(2)} N·m</b></code></div>
+      <div class="step">Equivalente comercial para servos: <b>${(tau * 10.197).toFixed(1)} kg·cm</b></div>
+    `;
+    s.style.display = 'block';
   }
 
-  function actualizarBandas() {
-    const s1 = document.getElementById('c1'), s2 = document.getElementById('c2'), s3 = document.getElementById('c3'), s4 = document.getElementById('c4');
-    const b1 = document.getElementById('b1'), b2 = document.getElementById('b2'), b3 = document.getElementById('b3'), b4 = document.getElementById('b4');
-    if (!s1 || !s2 || !s3 || !s4 || !b1 || !b2 || !b3 || !b4) return;
-    b1.style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
-    b2.style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
-    b3.style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
-    b4.style.background = s4.options[s4.selectedIndex].getAttribute('data-c');
+  // --- PLANO VECTORIAL ---
+  const paleta = ['#38bdf8', '#10b981', '#f59e0b', '#a855f7', '#ec4899'];
+  let fuerzasData = [{ f: 20, ang: 30, color: '#38bdf8' }, { f: 15, ang: 120, color: '#10b981' }];
+
+  function renderizarListaFuerzas() {
+    const cont = document.getElementById('lista-fuerzas');
+    if (!cont) return;
+    cont.innerHTML = "";
+    fuerzasData.forEach((item, i) => {
+      cont.innerHTML += `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;background:#0f172a;padding:6px;border-radius:6px;">
+          <span style="width:12px;height:12px;border-radius:50%;background:${item.color};"></span>
+          <b>F${i+1}:</b>
+          <input type="number" value="${item.f}" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].f=parseFloat(this.value);dibujarPlano();"> N
+          <input type="number" value="${item.ang}" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].ang=parseFloat(this.value);dibujarPlano();"> °
+        </div>
+      `;
+    });
+    dibujarPlano();
   }
 
-  function calcResistencia() {
-    const d1 = parseInt(document.getElementById('c1').value);
-    const d2 = parseInt(document.getElementById('c2').value);
-    const m = parseFloat(document.getElementById('c3').value);
-    const val = ((d1 * 10) + d2) * m;
-    let txt = val >= 1000 ? (val/1000) + " kΩ" : val + " Ω";
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Resistencia: ${txt}</h3>`;
-    document.getElementById('salida').style.display = 'block';
+  function agregarFuerza() {
+    if (fuerzasData.length >= 5) return;
+    fuerzasData.push({ f: 10, ang: 0, color: paleta[fuerzasData.length] });
+    renderizarListaFuerzas();
   }
 
-  function simularLED() {
-    const vcc = parseFloat(document.getElementById('vcc').value) || 0;
-    const vled = parseFloat(document.getElementById('vled').value) || 0;
-    const r = parseFloat(document.getElementById('rled').value) || 1;
-    const bulb = document.getElementById('ledGraphic'), txt = document.getElementById('ledText');
-    const ma = ((vcc - vled) / r) * 1000;
-    if (ma > 30) { bulb.style.background = "#18181b"; txt.innerHTML = `💥 <span style='color:#ef4444;'>LED Quemado (${ma.toFixed(1)} mA).</span>`; }
-    else if (ma >= 5) { bulb.style.background = "#38bdf8"; bulb.style.boxShadow = "0 0 20px #38bdf8"; txt.innerHTML = `✨ <span style='color:#10b981;'>Brillo Seguro (${ma.toFixed(1)} mA).</span>`; }
-    else { bulb.style.background = "#1e3a5f"; txt.innerHTML = `⚠️ <span style='color:#f59e0b;'>Muy tenue (${ma.toFixed(2)} mA).</span>`; }
+  function dibujarPlano(res = null) {
+    const cvs = document.getElementById('cvsPlano');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
+    ctx.clearRect(0,0,w,h);
+
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(10, cy); ctx.lineTo(w-10, cy); ctx.moveTo(cx, 10); ctx.lineTo(cx, h-10); ctx.stroke();
+
+    fuerzasData.forEach((it, i) => {
+      const r = it.ang * Math.PI / 180;
+      dibujarFlecha(ctx, cx, cy, cx + it.f*Math.cos(r)*3, cy - it.f*Math.sin(r)*3, it.color, 2);
+    });
+
+    if (res) {
+      const r = res.ang * Math.PI / 180;
+      dibujarFlecha(ctx, cx, cy, cx + res.mag*Math.cos(r)*3, cy - res.mag*Math.sin(r)*3, '#ef4444', 3.5);
+    }
   }
 
-  function moverServo(val) {
-    document.getElementById('servoDegText').innerText = val + "°";
-    document.getElementById('servoUsText').innerText = Math.round(1000 + (val/180)*1000) + " µs";
+  function calcularPlanoFuerzas() {
+    let sx = 0, sy = 0;
+    fuerzasData.forEach(it => {
+      const r = it.ang * Math.PI / 180;
+      sx += it.f * Math.cos(r);
+      sy += it.f * Math.sin(r);
+    });
+    const mag = Math.sqrt(sx*sx + sy*sy);
+    let ang = Math.atan2(sy, sx) * 180 / Math.PI;
+    if (ang < 0) ang += 360;
+    dibujarPlano({ mag, ang });
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `<h3 style="color:#ef4444;">Fuerza Neta Resultante: ${mag.toFixed(2)} N a ${ang.toFixed(1)}°</h3>`;
+    s.style.display = 'block';
+  }
+
+  function dibujarFlecha(ctx, x1, y1, x2, y2, color, w) {
+    const head = 8, a = Math.atan2(y2 - y1, x2 - x1);
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - head * Math.cos(a - Math.PI/6), y2 - head * Math.sin(a - Math.PI/6));
+    ctx.lineTo(x2 - head * Math.cos(a + Math.PI/6), y2 - head * Math.sin(a + Math.PI/6));
+    ctx.fill();
+  }
+
+  // ==========================================
+  // 3. ROBÓTICA & CIRCUITOS
+  // ==========================================
+
+  const coloresRes = [
+    { n: "Negro", v: 0, m: 1, c: "#000000" },
+    { n: "Marrón", v: 1, m: 10, c: "#a52a2a", t: 1 },
+    { n: "Rojo", v: 2, m: 100, c: "#ef4444", t: 2 },
+    { n: "Naranja", v: 3, m: 1000, c: "#f97316" },
+    { n: "Amarillo", v: 4, m: 10000, c: "#eab308" },
+    { n: "Verde", v: 5, m: 100000, c: "#22c55e", t: 0.5 },
+    { n: "Azul", v: 6, m: 1000000, c: "#3b82f6" },
+    { n: "Violeta", v: 7, m: 10000000, c: "#a855f7" },
+    { n: "Gris", v: 8, m: 100000000, c: "#6b7280" },
+    { n: "Blanco", v: 9, m: 1000000000, c: "#ffffff" },
+    { n: "Oro", m: 0.1, c: "#ffd700", t: 5 },
+    { n: "Plata", m: 0.01, c: "#c0c0c0", t: 10 }
+  ];
+
+  function poblarSelectoresResistor() {
+    const s1 = document.getElementById('rc1'), s2 = document.getElementById('rc2'), s3 = document.getElementById('rc3');
+    const sm = document.getElementById('rc-mult'), st = document.getElementById('rc-tol');
+    if (!s1) return;
+
+    s1.innerHTML = ""; s2.innerHTML = ""; s3.innerHTML = ""; sm.innerHTML = ""; st.innerHTML = "";
+
+    coloresRes.forEach(c => {
+      if (c.v !== undefined) {
+        s1.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
+        s2.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
+        s3.innerHTML += `<option value="${c.v}" data-c="${c.c}">${c.n} (${c.v})</option>`;
+      }
+      if (c.m !== undefined) sm.innerHTML += `<option value="${c.m}" data-c="${c.c}">${c.n} (x${c.m})</option>`;
+      if (c.t !== undefined) st.innerHTML += `<option value="${c.t}" data-c="${c.c}">${c.n} (±${c.t}%)</option>`;
+    });
+
+    s1.selectedIndex = 2; // Rojo
+    s2.selectedIndex = 2; // Rojo
+    s3.selectedIndex = 0; // Negro
+    sm.selectedIndex = 1; // x10
+    st.selectedIndex = 2; // Oro ±5%
+  }
+
+  function cambiarModoResistor() {
+    const modo = document.getElementById('sel-tipo-resistor').value;
+    const grp3 = document.getElementById('grp-rc3');
+    const b3 = document.getElementById('b3-digito');
+    const body = document.getElementById('resistor-visual');
+
+    if (modo === "5") {
+      grp3.style.display = "block";
+      b3.style.display = "block";
+      body.style.background = "#60a5fa"; // Azul precisión
+    } else {
+      grp3.style.display = "none";
+      b3.style.display = "none";
+      body.style.background = "#d4a373"; // Carbón estándar
+    }
+    actualizarBandasColor();
+  }
+
+  function actualizarBandasColor() {
+    const s1 = document.getElementById('rc1'), s2 = document.getElementById('rc2'), s3 = document.getElementById('rc3');
+    const sm = document.getElementById('rc-mult'), st = document.getElementById('rc-tol');
+    if (!s1 || !s1.options[s1.selectedIndex]) return;
+
+    document.getElementById('b1').style.background = s1.options[s1.selectedIndex].getAttribute('data-c');
+    document.getElementById('b2').style.background = s2.options[s2.selectedIndex].getAttribute('data-c');
+    document.getElementById('b3-digito').style.background = s3.options[s3.selectedIndex].getAttribute('data-c');
+    document.getElementById('b-mult').style.background = sm.options[sm.selectedIndex].getAttribute('data-c');
+    document.getElementById('b-tol').style.background = st.options[st.selectedIndex].getAttribute('data-c');
+  }
+
+  function calcResistorCompleto() {
+    const modo = document.getElementById('sel-tipo-resistor').value;
+    const d1 = parseInt(document.getElementById('rc1').value);
+    const d2 = parseInt(document.getElementById('rc2').value);
+    const d3 = parseInt(document.getElementById('rc3').value);
+    const m = parseFloat(document.getElementById('rc-mult').value);
+    const tol = parseFloat(document.getElementById('rc-tol').value);
+
+    let base = (modo === "5") ? (d1 * 100) + (d2 * 10) + d3 : (d1 * 10) + d2;
+    let ohms = base * m;
+    let txt = ohms >= 1e6 ? (ohms/1e6).toFixed(2) + " MΩ" : ohms >= 1e3 ? (ohms/1e3).toFixed(2) + " kΩ" : ohms.toFixed(1) + " Ω";
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Resistencia Decodificada (${modo} Bandas)</h3>
+      <div class="step">Dígitos unidos: <b>${base}</b> | Multiplicador: <b>x${m}</b></div>
+      <div class="step"><b>Valor Nominal:</b> <b style="color:#38bdf8;font-size:1.1rem;">${txt}</b> (Tolerancia: ±${tol}%)</div>
+      <div class="step">Rango real permisible: <b>${(ohms*(1-tol/100)).toFixed(1)} Ω</b> a <b>${(ohms*(1+tol/100)).toFixed(1)} Ω</b></div>
+    `;
+    s.style.display = 'block';
+  }
+
+  function calcCircuitoEsquematico() {
+    const vcc = parseFloat(document.getElementById('cir-vcc').value) || 5;
+    const tipoComp = document.getElementById('cir-comp').value;
+    const r1 = parseFloat(document.getElementById('cir-r1').value) || 0;
+    const r2 = parseFloat(document.getElementById('cir-r2').value) || 0;
+    const rTot = r1 + r2;
+
+    let vCaidaComp = 0;
+    if (tipoComp === 'led') vCaidaComp = 2.0;
+    else if (tipoComp === 'motor') vCaidaComp = 1.5;
+
+    const vEnResistencias = Math.max(0, vcc - vCaidaComp);
+    const corrienteA = rTot > 0 ? (vEnResistencias / rTot) : 0;
+    const corrienteMA = corrienteA * 1000;
+
+    // Dibujar Esquema
+    const cvs = document.getElementById('cvsEsquema');
+    if (cvs) {
+      const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
+      ctx.clearRect(0,0,w,h);
+
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
+
+      // Línea circuito cerrado
+      ctx.strokeRect(50, 40, w - 100, h - 80);
+
+      // Batería
+      ctx.fillStyle = '#050811'; ctx.fillRect(40, h/2 - 20, 20, 40);
+      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(40, h/2 - 12); ctx.lineTo(60, h/2 - 12); ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(46, h/2 + 12); ctx.lineTo(54, h/2 + 12); ctx.stroke();
+      ctx.fillStyle = '#10b981'; ctx.fillText(`Vcc: ${vcc}V`, 10, h/2 - 25);
+
+      // R1 arriba
+      ctx.fillStyle = '#050811'; ctx.fillRect(w/2 - 30, 30, 60, 20);
+      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2;
+      ctx.strokeRect(w/2 - 25, 32, 50, 16);
+      ctx.fillStyle = '#f59e0b'; ctx.fillText(`R1: ${r1}Ω`, w/2 - 20, 24);
+
+      // Componente abajo
+      ctx.fillStyle = '#050811'; ctx.fillRect(w/2 - 25, h - 50, 50, 20);
+      ctx.strokeStyle = '#ec4899';
+      ctx.strokeRect(w/2 - 20, h - 48, 40, 16);
+      ctx.fillStyle = '#ec4899';
+      ctx.fillText(tipoComp.toUpperCase(), w/2 - 15, h - 18);
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis del Circuito Esquemático</h3>
+      <div class="step">Resistencia Total en Serie: <code>R1 + R2 = ${r1} + ${r2} = <b>${rTot} Ω</b></code></div>
+      <div class="step">Voltaje absorbido por las resistencias: <code>${vcc}V - ${vCaidaComp}V = <b>${vEnResistencias.toFixed(2)} V</b></code></div>
+      <div class="step">Corriente circulante (I = V/R): <b>${corrienteA.toFixed(4)} A (${corrienteMA.toFixed(1)} mA)</b></div>
+    `;
+    s.style.display = 'block';
+  }
+
+  function moverServo(v) {
+    document.getElementById('servoDegText').innerText = v + "°";
+    document.getElementById('servoUsText').innerText = Math.round(1000 + (v/180)*1000) + " µs";
   }
 
   function explicarServo() {
-    const val = document.getElementById('servoR') ? document.getElementById('servoR').value : 90;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Código Arduino:</h3><pre>#include &lt;Servo.h&gt;\nServo s;\nvoid setup(){ s.attach(9); }\nvoid loop(){ s.write(${val}); }</pre>`;
+    const v = document.getElementById('servoR').value;
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Código Arduino:</h3><pre>#include &lt;Servo.h&gt;\nServo miservo;\nvoid setup() { miservo.attach(9); }\nvoid loop() { miservo.write(${v}); }</pre>`;
     document.getElementById('salida').style.display = 'block';
   }
 
   function calcBateria() {
-    const cap = parseFloat(document.getElementById('b-cap').value) || 0;
-    const tot = (parseFloat(document.getElementById('b-ard').value) || 0) + 
-                (parseFloat(document.getElementById('b-sen').value) || 0) + 
-                (parseFloat(document.getElementById('b-mot').value) || 0);
+    const cap = parseFloat(document.getElementById('b-cap').value) || 2000;
+    const tot = (parseFloat(document.getElementById('b-ard').value)||0) + (parseFloat(document.getElementById('b-sen').value)||0) + (parseFloat(document.getElementById('b-mot').value)||0);
     const h = tot > 0 ? (cap * 0.70) / tot : 0;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Autonomía: ${h.toFixed(1)} horas (~${Math.round(h*60)} min)</h3>`;
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Autonomía del Robot: <b>${h.toFixed(1)} horas</b> (~${Math.round(h*60)} minutos continuos)</h3>`;
     document.getElementById('salida').style.display = 'block';
   }
 
-  function ajustarOhm() {
-    const m = document.getElementById('ohm-mode').value;
-    document.getElementById('ohm-lbl1').innerText = m === 'V' ? "Corriente [A]:" : "Voltaje [V]:";
-    document.getElementById('ohm-lbl2').innerText = m === 'R' ? "Corriente [A]:" : "Resistencia [Ω]:";
-  }
+  // ==========================================
+  // 4. QUÍMICA EXTENDIDA
+  // ==========================================
 
-  function calcOhm() {
-    const m = document.getElementById('ohm-mode').value;
-    const v1 = parseFloat(document.getElementById('ohm-v1').value) || 0;
-    const v2 = parseFloat(document.getElementById('ohm-v2').value) || 1;
-    let r = m === 'V' ? `${(v1*v2).toFixed(2)} V` : m === 'I' ? `${(v1/v2).toFixed(4)} A` : `${(v1/v2).toFixed(1)} Ω`;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Resultado: ${r}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
+  const masasAtom = { H: 1.008, C: 12.011, O: 15.999, N: 14.007, Na: 22.990, Cl: 35.453, S: 32.065, Ca: 40.078, P: 30.974, K: 39.098, Mn: 54.938, Cu: 63.546, Fe: 55.845 };
+  const composiciones = {
+    "H2SO4": { H: 2, S: 1, O: 4 },
+    "HCl": { H: 1, Cl: 1 },
+    "HNO3": { H: 1, N: 1, O: 3 },
+    "H3PO4": { H: 3, P: 1, O: 4 },
+    "NaOH": { Na: 1, O: 1, H: 1 },
+    "Ca(OH)2": { Ca: 1, O: 2, H: 2 },
+    "NaCl": { Na: 1, Cl: 1 },
+    "CaCO3": { Ca: 1, C: 1, O: 3 },
+    "CuSO4": { Cu: 1, S: 1, O: 4 },
+    "KMnO4": { K: 1, Mn: 1, O: 4 },
+    "NaHCO3": { Na: 1, H: 1, C: 1, O: 3 },
+    "CO2": { C: 1, O: 2 },
+    "Fe2O3": { Fe: 2, O: 3 },
+    "C6H12O6": { C: 6, H: 12, O: 6 },
+    "C12H22O11": { C: 12, H: 22, O: 11 },
+    "C2H5OH": { C: 2, H: 6, O: 1 },
+    "CH4": { C: 1, H: 4 },
+    "C3H8": { C: 3, H: 8 },
+    "H2O": { H: 2, O: 1 }
+  };
 
-  function ajustarInputsDerivada() {
-    const tipo = document.getElementById('der-tipo').value;
-    const l1 = document.getElementById('lbl-der1');
-    const l2 = document.getElementById('lbl-der2');
-    const grp2 = document.getElementById('grp-der2');
-    if (!l1 || !l2 || !grp2) return;
-    if (tipo === 'poly') { l1.innerText = "Coeficiente (c):"; l2.innerText = "Exponente (n):"; grp2.style.display = "block"; }
-    else { l1.innerText = "Amplitud (A):"; l2.innerText = "Frecuencia (k):"; grp2.style.display = "block"; }
-  }
-
-  function calcDerivadaCompleta() {
-    const tipo = document.getElementById('der-tipo').value;
-    const a = parseFloat(document.getElementById('der-in1').value) || 0;
-    const k = parseFloat(document.getElementById('der-in2').value) || 1;
-    let res = tipo === 'sin' ? `${a*k} · cos(${k}x)` : tipo === 'cos' ? `${-(a*k)} · sen(${k}x)` : `${a*k}x^${k-1}`;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Derivada: ${res}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function calcIntegralCompleta() {
-    const tipo = document.getElementById('int-tipo').value;
-    const a = parseFloat(document.getElementById('int-in1').value) || 0;
-    const k = parseFloat(document.getElementById('int-in2').value) || 1;
-    let res = tipo === 'sin' ? `${(-a/k).toFixed(2)} · cos(${k}x) + C` : `${(a/k).toFixed(2)} · sen(${k}x) + C`;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Integral: ${res}</h3>`;
-    document.getElementById('salida').style.display = 'block';
-  }
-
-  function dibujarRiemann(n) {
-    const lbl = document.getElementById('nCuadritos');
-    if (lbl) lbl.innerText = n;
-    const cvs = document.getElementById('cvsRiemann');
-    if (!cvs) return;
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0,0,w,h);
-    const dx = 2 / n; let suma = 0;
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
-    for (let i = 0; i < n; i++) {
-      let x = i * dx, y = (x + dx) * (x + dx);
-      suma += y * dx;
-      ctx.fillRect(20 + (x * 140), (h - 20) - (y * 28), dx * 140, y * 28);
-    }
-    document.getElementById('areaRiemannText').innerText = `Área aproximada: ${suma.toFixed(3)} u²`;
-  }
-
-  function calcMolar() {
+  function calcMasaMolarExtendida() {
     const f = document.getElementById('chem-comp').value;
-    const p = { "H2O": 18.01, "CO2": 44.01, "NaCl": 58.44 };
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Masa Molar: ${p[f]} g/mol</h3>`;
-    document.getElementById('salida').style.display = 'block';
+    const comps = composiciones[f];
+    let total = 0, desglose = "";
+
+    for (let el in comps) {
+      let subtotal = comps[el] * masasAtom[el];
+      total += subtotal;
+    }
+
+    for (let el in comps) {
+      let subtotal = comps[el] * masasAtom[el];
+      let pct = (subtotal / total) * 100;
+      desglose += `<li><b>${el}:</b> ${comps[el]} átomo(s) × ${masasAtom[el]} g/mol = <code>${subtotal.toFixed(2)} g/mol</code> (<b>${pct.toFixed(1)}%</b> en masa)</li>`;
+    }
+
+    const s = document.getElementById('salida');
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Masa Molar de ${f}</h3>
+      <div class="step">Desglose atómico porcentual:<ul>${desglose}</ul></div>
+      <div class="step"><b>Masa Molar Total:</b> <b style="color:#38bdf8;font-size:1.1rem;">${total.toFixed(2)} g/mol</b></div>
+      <div class="step" style="border-left-color:#10b981;">💡 1 mol de este compuesto equivale a <b>${total.toFixed(2)} g</b> y contiene <b>6.022 × 10²³ moléculas</b>.</div>
+    `;
+    s.style.display = 'block';
   }
 
   function calcGases() {
-    const p = parseFloat(document.getElementById('g-p').value) || 0;
-    const v = parseFloat(document.getElementById('g-v').value) || 0;
-    const t = parseFloat(document.getElementById('g-t').value) || 0;
-    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Moles: ${((p*v)/(0.0821*(t+273.15))).toFixed(3)} mol</h3>`;
+    const p = parseFloat(document.getElementById('g-p').value)||1;
+    const v = parseFloat(document.getElementById('g-v').value)||22.4;
+    const t = parseFloat(document.getElementById('g-t').value)||0;
+    const n = (p * v) / (0.0821 * (t + 273.15));
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Gases Ideales: <b>n = ${n.toFixed(3)} moles</b></h3>`;
     document.getElementById('salida').style.display = 'block';
   }
 
+  function calcMolaridad() {
+    const n = parseFloat(document.getElementById('sol-n').value)||1;
+    const v = parseFloat(document.getElementById('sol-v').value)||1;
+    document.getElementById('salida').innerHTML = `<h3 style="color:#38bdf8;">Concentración: M = n / V = <b>${(n/v).toFixed(3)} M (molar)</b></h3>`;
+    document.getElementById('salida').style.display = 'block';
+  }
+
+  // ==========================================
+  // 5. JUEGO Y MODAL
+  // ==========================================
   let vidas = 3, xp = 0;
   function verificarJuego() {
     const a = parseFloat(document.getElementById('j-input').value);
-    if (Math.abs(a - 4) <= 0.1) {
+    if (Math.abs(a - 1) <= 0.05) {
       xp += 50;
-      document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡Correcto! 10 N - 6 N = 4 N hacia 0° (+50 XP).</span>";
+      document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡Correcto! sen²(θ) + cos²(θ) SIEMPRE es 1 (+50 XP).</span>";
       document.getElementById('j-xp').innerText = xp + " XP";
     } else {
       vidas--;
-      document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Casi. Fuerzas en sentido opuesto se restan.</span>";
+      document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Recuerda la identidad fundamental: sen² + cos² = 1.</span>";
       let vStr = ""; for (let i = 0; i < vidas; i++) vStr += "❤️";
       document.getElementById('j-vidas').innerText = vStr || "💀";
       if (vidas <= 0) { vidas = 3; document.getElementById('j-vidas').innerText = "❤️❤️❤️"; }
@@ -891,20 +1411,23 @@
   }
 
   const snippets = {
-    vectores: `function sumaVectores(fuerzas) {\n  let sumX = 0, sumY = 0;\n  fuerzas.forEach(f => {\n    let rad = f.ang * Math.PI / 180;\n    sumX += f.mag * Math.cos(rad);\n    sumY += f.mag * Math.sin(rad);\n  });\n  let FR = Math.sqrt(sumX*sumX + sumY*sumY);\n  let anguloR = Math.atan2(sumY, sumX) * 180 / Math.PI;\n  return { FR, anguloR };\n}`,
-    mrua: `function mrua(v0, a, t) { return (v0 * t) + (0.5 * a * t * t); }`,
-    parabolico: `function parabolico(v0, ang) { ... }`,
-    newton: `function newtonFriccion(m, a, mu) { return (m * a) + (mu * m * 9.81); }`,
-    torque: `function torque(f, d, a) { return f * d * Math.sin(a * Math.PI / 180); }`,
-    resistencia: `function calcR(d1, d2, m) { return ((d1 * 10) + d2) * m; }`,
-    led: `function calcLed(vcc, vled, i) { return (vcc - vled) / i; }`,
-    servo: `function servoPwm(deg) { return (deg / 180) * 255; }`,
-    bateria: `function bat(cap, cTot) { return (cap * 0.70) / cTot; }`,
-    ohm: `function ohm(v, i, r) { return v ? (i ? v/i : v/r) : i*r; }`,
+    trig: `function pitagoras(a, b) { return Math.sqrt(a*a + b*b); }`,
+    identidades: `function identidadPitagorica(rad) { return Math.pow(Math.sin(rad),2) + Math.pow(Math.cos(rad),2); // Siempre 1 }`,
+    exponentes: `function prodBasesIguales(a, n, m) { return Math.pow(a, n + m); }`,
     derivada: `function dSin(A, k) { return (A * k) + " · cos(" + k + "x)"; }`,
     integral: `function iSin(A, k) { return (-A / k) + " · cos(" + k + "x) + C"; }`,
-    molar: `function molH2O() { return 18.01; }`,
-    gases: `function nGas(p, v, t) { return (p * v) / (0.0821 * (t + 273.15)); }`
+    mrua: `function dMRUA(v0, a, t) { return (v0 * t) + (0.5 * a * t * t); }`,
+    parabolico: `function hMax(v0, ang) { let vy = v0 * Math.sin(ang * Math.PI / 180); return (vy * vy) / (2 * 9.81); }`,
+    dcl: `function fNeta(f, mu, m) { return f - (mu * m * 9.81); }`,
+    torque: `function torque(f, d, ang) { return f * d * Math.sin(ang * Math.PI / 180); }`,
+    vectores: `function sumVectores(fx, fy) { return Math.sqrt(fx*fx + fy*fy); }`,
+    resistor: `function calcR(d1, d2, d3, mult) { return ((d1*100) + (d2*10) + d3) * mult; }`,
+    esquema: `function leyOhm(v, r) { return v / r; }`,
+    servo: `function servoPwm(deg) { return 1000 + (deg / 180) * 1000; }`,
+    bateria: `function bat(cap, cTot) { return (cap * 0.70) / cTot; }`,
+    molar: `function masaH2SO4() { return (2*1.008) + 32.065 + (4*15.999); }`,
+    gases: `function moles(p, v, tC) { return (p * v) / (0.0821 * (tC + 273.15)); }`,
+    molaridad: `function molaridad(n, v) { return n / v; }`
   };
 
   function verCodigo(id) {
@@ -914,9 +1437,11 @@
   function cerrarModal(e) { if (e.target.id === 'codeModal') cerrarModalDirecto(); }
   function cerrarModalDirecto() { document.getElementById('codeModal').style.display = 'none'; }
 
+  // Inicialización segura
   window.addEventListener('DOMContentLoaded', () => {
-    renderizarListaFuerzas();
-    actualizarBandas();
+    poblarSelectoresResistor();
+    actualizarBandasColor();
+    calcRazonesTrig();
   });
 </script>
 
