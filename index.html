@@ -440,13 +440,12 @@
       <div id="tabla-resultados-contenedor" style="max-height: 250px; overflow-y: auto; background: #070d19; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-bottom: 12px;"></div>
     </div>
 
-    <!-- 4.2 Masa Molar con Visor 2D Nativo -->
-    <!-- 4.2 Masa Molar & Estructura con Entrada Libre -->
+    <!-- 4.2 Masa Molar & Estructura 2D (AQUÍ CIERRA SU PROPIO CANVAS) -->
     <div id="submod-quim-molar" class="quim-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
           <label><b>Escribe cualquier fórmula química:</b></label>
-          <input type="text" id="chem-custom-input" value="Al2(SO4)3" placeholder="Ej: Fe2O3, Ca(OH)2, H3PO4, C6H12O6" oninput="limpiarSelectorPredefinido()">
+          <input type="text" id="chem-custom-input" value="H2O" placeholder="Ej: Fe2O3, Ca(OH)2, H3PO4, C6H12O6" oninput="limpiarSelectorPredefinido()">
           <small style="color:#94a3b8; display:block; margin-top:2px;">
             Respeta mayúsculas y minúsculas (ej: <code>NaCl</code>, <code>Ca(OH)2</code>).
           </small>
@@ -455,7 +454,7 @@
           <label>O elige un compuesto predefinido:</label>
           <select id="chem-comp" onchange="cargarCompuestoPredefinido()">
             <option value="">Personalizado (escribir fórmula)...</option>
-            <option value="H2O">Agua (H₂O)</option>
+            <option value="H2O" selected>Agua (H₂O)</option>
             <option value="CO2">Dióxido de Carbono (CO₂)</option>
             <option value="CH4">Metano (CH₄)</option>
             <option value="NH3">Amoníaco (NH₃)</option>
@@ -472,20 +471,7 @@
         </div>
       </div>
 
-      <!-- Lienzo 2D Nativo -->
-      <div class="canvas-container" style="padding: 6px;">
-        <canvas id="cvsMol2D" width="480" height="240" style="background:#050811; border-radius:8px;"></canvas>
-        <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
-          🔬 Estructura química generada dinámicamente con radios atómicos y colores CPK
-        </span>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn-main" onclick="calcMasaMolarExtendida()">Desglosar Masa Molar y Estructura</button>
-      </div>
-    </div>
-
-      <!-- Lienzo 2D Nativo de Estructura Molecular -->
+      <!-- Lienzo exclusivo de Masa Molar -->
       <div class="canvas-container" style="padding: 6px;">
         <canvas id="cvsMol2D" width="480" height="240" style="background:#050811; border-radius:8px;"></canvas>
         <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
@@ -496,31 +482,30 @@
       <div class="btn-row">
         <button class="btn-main" onclick="calcMasaMolarExtendida()">Analizar Estructura y Nomenclaturas</button>
       </div>
-    </div>
+    </div> <!-- Cierre estricto de submod-quim-molar -->
 
-    <!-- 4.3 Gases -->
+    <!-- 4.3 Gases Ideales (Limpio y aislado) -->
     <div id="submod-quim-gases" class="quim-subseccion" style="display:none;">
       <div class="grid-3">
-        <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1"></div>
-        <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4"></div>
-        <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0"></div>
+        <div class="form-group"><label>Presión P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
+        <div class="form-group"><label>Volumen V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+        <div class="form-group"><label>Temperatura T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
       </div>
       <div class="btn-row">
         <button class="btn-main" onclick="calcGases()">Calcular Moles (PV = nRT)</button>
       </div>
-    </div>
+    </div> <!-- Cierre estricto de submod-quim-gases -->
 
-    <!-- 4.4 Molaridad -->
+    <!-- 4.4 Molaridad & Dilución (Limpio y aislado) -->
     <div id="submod-quim-soluciones" class="quim-subseccion" style="display:none;">
       <div class="grid-2">
-        <div class="form-group"><label>Moles soluto [mol]:</label><input type="number" id="sol-n" value="0.75"></div>
-        <div class="form-group"><label>Volumen [L]:</label><input type="number" id="sol-v" value="1.5"></div>
+        <div class="form-group"><label>Moles de soluto [mol]:</label><input type="number" id="sol-n" value="0.75" step="any"></div>
+        <div class="form-group"><label>Volumen de disolución [L]:</label><input type="number" id="sol-v" value="1.5" step="any"></div>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcMolaridad()">Calcular Concentración Molar</button>
+        <button class="btn-main" onclick="calcMolaridad()">Calcular Concentración Molar (M = n / V)</button>
       </div>
-    </div>
-  </div>
+    </div> <!-- Cierre estricto de submod-quim-soluciones -->
 
   <!-- ========================================================
        5. DESAFÍOS ANTI-ESTRÉS
