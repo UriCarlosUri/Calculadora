@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Suite Científica, Cálculo & Robótica</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Motor CAS para Derivadas e Integrales Simbólicas -->
+  <!-- Motor CAS opcional para expresiones avanzadas -->
   <script src="https://cdn.jsdelivr.net/npm/algebrite@1.4.0/dist/algebrite.bundle-for-browser.js"></script>
 </head>
 <body>
 
 <div class="main-card">
   <h1>Suite Científica, Cálculo & Robótica</h1>
-  <p class="sub">Plataforma didáctica integral: métodos analíticos, diagramas interactivos y química estructural.</p>
+  <p class="sub">Plataforma didáctica con cálculo simbólico, análisis balístico, cinemática y química estructural.</p>
 
   <!-- Pestañas Principales (Nivel 1) -->
   <div class="tabs-row" id="tabs-nivel-1">
     <button class="btn-tab active" id="btn-tab-calculo" onclick="verMateria('calculo')">📐 Cálculo & Geometría</button>
-    <button class="btn-tab" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física & Diagramas</button>
-    <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica & Hardware</button>
-    <button class="btn-tab" id="btn-tab-quimica" onclick="verMateria('quimica')">🧪 Química & Elementos</button>
-    <button class="btn-tab challenge" id="btn-tab-juego" onclick="verMateria('juego')">🏆 Desafíos Anti-Estrés</button>
+    <button class="btn-tab" id="btn-tab-fisica" onclick="verMateria('fisica')">🚀 Física & Vectores</button>
+    <button class="btn-tab" id="btn-tab-robotica" onclick="verMateria('robotica')">🤖 Robótica & Circuitos</button>
+    <button class="btn-tab" id="btn-tab-quimica" onclick="verMateria('quimica')">🧪 Química Integral</button>
+    <button class="btn-tab challenge" id="btn-tab-juego" onclick="verMateria('juego')">🏆 Desafíos</button>
   </div>
 
   <!-- ========================================================
@@ -28,8 +28,8 @@
        ======================================================== -->
   <div id="mod-calculo" class="mod-content visible">
     <div class="tabs-row" id="sub-calculo">
-      <button class="btn-tab active" onclick="verSubCalculo('calc-libre')">✍️ Derivadas</button>
-      <button class="btn-tab" onclick="verSubCalculo('calc-integrales')">∫ Integrales & Área</button>
+      <button class="btn-tab active" onclick="verSubCalculo('calc-libre')">✍️ Derivadas con Pasos</button>
+      <button class="btn-tab" onclick="verSubCalculo('calc-integrales')">∫ Integrales & Área con Límites</button>
       <button class="btn-tab" onclick="verSubCalculo('calc-figuras')">📐 Geometría 2D</button>
       <button class="btn-tab" onclick="verSubCalculo('calc-volumenes')">📦 Volúmenes 3D</button>
       <button class="btn-tab" onclick="verSubCalculo('calc-trig')">📐 Razones Trig</button>
@@ -40,39 +40,39 @@
     <!-- 1.1 Derivadas -->
     <div id="submod-calc-libre" class="calc-subseccion" style="display:block;">
       <div class="form-group">
-        <label><b>Función f(x) a derivar:</b></label>
-        <input type="text" id="calc-expr-input" value="x * cos(x) + 3*x^2" placeholder="Ej: 3*x^2 + 5*x, (x+1)/(x-1), exp(2*x)">
+        <label><b>Escribe la función a derivar f(x):</b></label>
+        <input type="text" id="calc-expr-input" value="3*x^2 + 5*x - 4" placeholder="Ej: 4*x^3 - 2*x + 5, sin(x), cos(2*x)">
         <small style="color:#94a3b8; display:block; margin-top:4px;">
-          Multiplicación con <code>*</code>, potencias con <code>^</code>. Reconoce Regla de la Cadena, Producto $u \cdot v$ y Cociente $u / v$.
+          Multiplicación con <code>*</code>, potencias con <code>^</code>. Resuelve polinomios, funciones trigonométricas y exponenciales.
         </small>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="resolverCalculoMetodo('derivar')">d/dx Analizar y Derivar Paso a Paso</button>
+        <button class="btn-main" onclick="resolverCalculoMetodo('derivar')">d/dx Analizar y Derivar con Procedimiento</button>
       </div>
     </div>
 
-    <!-- 1.2 Integrales con Diagrama -->
+    <!-- 1.2 Integrales con Diagrama y Límites -->
     <div id="submod-calc-integrales" class="calc-subseccion" style="display:none;">
       <div class="form-group">
-        <label><b>Función f(x) a Integrar:</b></label>
-        <input type="text" id="int-expr-input" value="x^2 - 2" placeholder="Ej: x^2, sin(x), 3*x, cos(2*x)">
+        <label><b>Función a Integrar f(x):</b></label>
+        <input type="text" id="int-expr-input" value="x^2 - 2" placeholder="Ej: x^2, 3*x + 1, sin(x), 2*x^3">
       </div>
       <div class="grid-2">
         <div class="form-group">
-          <label>Límite inferior [a]:</label>
+          <label>Límite inferior [a] (inicio de la región):</label>
           <input type="number" id="int-lim-a" value="0" step="any">
         </div>
         <div class="form-group">
-          <label>Límite superior [b]:</label>
+          <label>Límite superior [b] (fin de la región):</label>
           <input type="number" id="int-lim-b" value="2" step="any">
         </div>
       </div>
       <div class="canvas-container">
         <canvas id="cvsIntegralGrafica" width="500" height="230"></canvas>
-        <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Gráfica en el plano cartesiano con el área bajo la curva sombreada en [a, b]</span>
+        <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Ejes cartesianos y área neta sombreada en el intervalo [a, b]</span>
       </div>
       <div class="btn-row">
-        <button class="btn-main" style="background:#10b981;" onclick="calcularIntegralDedicada()">∫ Graficar Curva y Resolver Integral</button>
+        <button class="btn-main" style="background:#10b981;" onclick="calcularIntegralDedicada()">∫ Resolver y Calcular Área Exacta</button>
       </div>
     </div>
 
@@ -80,7 +80,7 @@
     <div id="submod-calc-figuras" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
-          <label>Familia de Figura Geométrica:</label>
+          <label>Familia de Figuras:</label>
           <select id="fig-familia-2d" onchange="actualizarFamilia2D()">
             <option value="triangulos">Triángulos (Base·h, Herón, Equilátero)</option>
             <option value="circulares">Círculo, Corona y Sector Circular</option>
@@ -98,7 +98,7 @@
         <canvas id="cvsGeometria2D" width="460" height="210"></canvas>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularGeometria2D()">Calcular Área y Diagrama</button>
+        <button class="btn-main" onclick="calcularGeometria2D()">Calcular Área con Cotas</button>
       </div>
     </div>
 
@@ -106,23 +106,23 @@
     <div id="submod-calc-volumenes" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
-          <label>Cuerpo Geométrico 3D:</label>
+          <label>Cuerpo Geométrico:</label>
           <select id="fig-tipo-3d" onchange="configurarInputs3D()">
-            <option value="prisma">Prisma Rectangular (Caja / Cubo)</option>
             <option value="cilindro">Cilindro</option>
+            <option value="prisma">Prisma Rectangular (Cubo / Caja)</option>
             <option value="esfera">Esfera</option>
             <option value="cono">Cono</option>
             <option value="piramide">Pirámide de Base Cuadrada</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Variable a calcular/despejar:</label>
+          <label>Variable a despejar:</label>
           <select id="fig-incognita-3d" onchange="configurarInputs3D()"></select>
         </div>
       </div>
       <div class="grid-3" id="inputs-dinamicos-3d"></div>
       <div class="form-group">
-        <label>Material (Densidad para calcular masa):</label>
+        <label>Material (Densidad para masa):</label>
         <select id="vol-material">
           <option value="1.24">Filamento 3D PLA (1.24 g/cm³)</option>
           <option value="2.70">Aluminio (2.70 g/cm³)</option>
@@ -131,7 +131,7 @@
         </select>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularVolumenDespeje()">Calcular Volumen y Masa Estimada</button>
+        <button class="btn-main" onclick="calcularVolumenDespeje()">Calcular Volumen y Masa</button>
       </div>
     </div>
 
@@ -139,14 +139,14 @@
     <div id="submod-calc-trig" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
-          <label>Modalidad de Cálculo:</label>
+          <label>Modalidad de Entrada:</label>
           <select id="trig-modo-input" onchange="configurarInputsTrig()">
-            <option value="angulo">A partir de un Ángulo (grados o radianes)</option>
-            <option value="triangulo">A partir de Lados del Triángulo Rectángulo</option>
+            <option value="angulo">A partir de un Ángulo</option>
+            <option value="triangulo">A partir de los Catetos</option>
           </select>
         </div>
         <div class="form-group" id="trig-notables-selector">
-          <label>Cargar Ángulo Notable Rápido:</label>
+          <label>Ángulo Notable Rápido:</label>
           <select id="sel-angulo-notable" onchange="cargarAnguloNotable()">
             <option value="">Personalizado...</option>
             <option value="0">0° (0 rad)</option>
@@ -154,110 +154,103 @@
             <option value="45">45° (π/4 rad)</option>
             <option value="60">60° (π/3 rad)</option>
             <option value="90">90° (π/2 rad)</option>
-            <option value="180">180° (π rad)</option>
-            <option value="270">270° (3π/2 rad)</option>
-            <option value="360">360° (2π rad)</option>
           </select>
         </div>
       </div>
       <div id="inputs-trig-container" class="grid-2"></div>
       <div class="canvas-container">
         <canvas id="cvsCirculoUnitario" width="440" height="220"></canvas>
-        <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Círculo Unitario: Proyecciones trigonométricas en vivo</span>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar 6 Razones y Notables</button>
+        <button class="btn-main" onclick="calcularTrigonometriaCompleta()">Analizar Razones y Proyecciones</button>
       </div>
     </div>
 
-    <!-- 1.6 Identidades Trigonométricas -->
+    <!-- 1.6 Identidades -->
     <div id="submod-calc-ident" class="calc-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
-          <label>Familia de Identidades:</label>
+          <label>Familia:</label>
           <select id="ident-familia" onchange="actualizarListaIdentidades()">
-            <option value="pitagoricas">Pitagóricas (sen²θ + cos²θ = 1, etc.)</option>
-            <option value="reciprocas">Recíprocas (csc = 1/sen, sec = 1/cos, cot = 1/tan)</option>
-            <option value="cociente">Cociente (tan = sen/cos, cot = cos/sen)</option>
-            <option value="paridad">Paridad / Negativo (sen(-θ) = -sen(θ), cos(-θ) = cos(θ))</option>
-            <option value="doble">Ángulo Doble (sen 2θ, cos 2θ)</option>
-            <option value="mitad">Ángulo Mitad (sen θ/2, cos θ/2)</option>
-            <option value="suma">Suma y Resta (sen(α ± β), cos(α ± β))</option>
+            <option value="pitagoricas">Pitagóricas</option>
+            <option value="reciprocas">Recíprocas</option>
+            <option value="cociente">Cociente</option>
+            <option value="doble">Ángulo Doble</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Identidad Específica a Comprobar:</label>
+          <label>Identidad:</label>
           <select id="ident-especifica"></select>
         </div>
       </div>
-      <div class="grid-2">
-        <div class="form-group"><label>Ángulo θ (o α) [°]:</label><input type="number" id="ident-ang1" value="30" step="any"></div>
-        <div class="form-group" id="grp-ident-ang2" style="display:none;"><label>Segundo ángulo β [°]:</label><input type="number" id="ident-ang2" value="45" step="any"></div>
-      </div>
+      <div class="form-group"><label>Ángulo θ [°]:</label><input type="number" id="ident-ang1" value="30"></div>
       <div class="btn-row">
-        <button class="btn-main" onclick="demostrarIdentidadCompleta()">Demostrar Identidad y Verificar Igualdad</button>
+        <button class="btn-main" onclick="demostrarIdentidadCompleta()">Verificar Igualdad</button>
       </div>
     </div>
 
-    <!-- 1.7 Leyes de los Exponentes -->
+    <!-- 1.7 Exponentes -->
     <div id="submod-calc-exp" class="calc-subseccion" style="display:none;">
       <div class="form-group">
-        <label>Selecciona la Ley o Propiedad:</label>
+        <label>Propiedad de los Exponentes:</label>
         <select id="sel-ley-exp" onchange="ajustarInputsExponentes()">
-          <option value="prod">Producto de bases iguales: aⁿ · aᵐ = aⁿ⁺ᵐ</option>
-          <option value="coc">Cociente de bases iguales: aⁿ / aᵐ = aⁿ⁻ᵐ</option>
-          <option value="pot">Potencia de una potencia: (aⁿ)ᵐ = aⁿ·ᵐ</option>
-          <option value="dist_prod">Potencia de un producto: (a · b)ⁿ = aⁿ · bⁿ</option>
-          <option value="dist_coc">Potencia de un cociente: (a / b)ⁿ = aⁿ / bⁿ</option>
-          <option value="cero">Exponente cero: a⁰ = 1 (con a ≠ 0)</option>
-          <option value="neg">Exponente negativo: a⁻ⁿ = 1 / aⁿ</option>
-          <option value="frac">Exponente fraccionario / Raíz: a^(m/n) = ⁿ√(aᵐ)</option>
-          <option value="raiz_prod">Raíz de un producto: ⁿ√(a · b) = ⁿ√a · ⁿ√b</option>
+          <option value="prod">Producto: aⁿ · aᵐ = aⁿ⁺ᵐ</option>
+          <option value="coc">Cociente: aⁿ / aᵐ = aⁿ⁻ᵐ</option>
+          <option value="pot">Potencia: (aⁿ)ᵐ = aⁿ·ᵐ</option>
+          <option value="cero">Exponente cero: a⁰ = 1</option>
+          <option value="neg">Exponente negativo: a⁻ⁿ = 1/aⁿ</option>
         </select>
       </div>
       <div class="grid-3" id="cont-inputs-exp">
-        <div class="form-group" id="grp-exp-a"><label id="lbl-exp-a">Base (a):</label><input type="number" id="exp-a" value="2" step="any"></div>
-        <div class="form-group" id="grp-exp-b" style="display:none;"><label id="lbl-exp-b">Base (b):</label><input type="number" id="exp-b" value="3" step="any"></div>
-        <div class="form-group" id="grp-exp-n"><label id="lbl-exp-n">Exponente n:</label><input type="number" id="exp-n" value="3" step="any"></div>
-        <div class="form-group" id="grp-exp-m"><label id="lbl-exp-m">Exponente m:</label><input type="number" id="exp-m" value="4" step="any"></div>
+        <div class="form-group" id="grp-exp-a"><label>Base (a):</label><input type="number" id="exp-a" value="2"></div>
+        <div class="form-group" id="grp-exp-n"><label>Exponente n:</label><input type="number" id="exp-n" value="3"></div>
+        <div class="form-group" id="grp-exp-m"><label>Exponente m:</label><input type="number" id="exp-m" value="4"></div>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcLeyesExponentes()">Demostrar y Resolver con Procedimiento</button>
+        <button class="btn-main" onclick="calcLeyesExponentes()">Demostrar y Resolver</button>
       </div>
     </div>
   </div>
 
   <!-- ========================================================
-       2. FÍSICA & DIAGRAMAS
+       2. FÍSICA & VECTORES
        ======================================================== -->
   <div id="mod-fisica" class="mod-content">
     <div class="tabs-row" id="sub-fisica">
-      <button class="btn-tab active" onclick="verSubFisica('fis-torque')">Torque Multicomponente</button>
-      <button class="btn-tab" onclick="verSubFisica('plano-fuerzas')">Plano Vectorial 2D</button>
-      <button class="btn-tab" onclick="verSubFisica('fis-mrua')">MRUA con Variantes</button>
+      <button class="btn-tab active" onclick="verSubFisica('fis-torque')">Torque & Balancín</button>
+      <button class="btn-tab" onclick="verSubFisica('plano-fuerzas')">Plano de Fuerzas 2D</button>
+      <button class="btn-tab" onclick="verSubFisica('fis-mrua')">MRUA con Ejes</button>
       <button class="btn-tab" onclick="verSubFisica('fis-parabolico')">Tiro Parabólico</button>
-      <button class="btn-tab" onclick="verSubFisica('fis-friccion')">DCL: Fuerza & Fricción</button>
+      <button class="btn-tab" onclick="verSubFisica('fis-friccion')">DCL: Fricción</button>
     </div>
 
     <!-- 2.1 Torque Multicomponente -->
     <div id="submod-fis-torque" class="fis-subseccion" style="display:block;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <label><b>Cargas en la Viga / Balancín:</b></label>
-        <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer;" onclick="agregarFuerzaTorque()">+ Añadir Carga</button>
+      <div class="grid-2">
+        <div class="form-group">
+          <label><b>Posición del Eje de Apoyo (Fulcro):</b></label>
+          <select id="torque-pos-base" onchange="dibujarVigaTorque()">
+            <option value="centro">Fulcro Central (Balancín / Subibaja)</option>
+            <option value="ext_izq">Fulcro en Extremo Izquierdo (Brazo Robótico / Palanca 2ª y 3ª)</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:flex-end; margin-bottom:12px;">
+          <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:10px 14px; font-weight:bold; cursor:pointer; width:100%;" onclick="agregarFuerzaTorque()">+ Añadir Fuerza al Brazo</button>
+        </div>
       </div>
       <div id="lista-torques"></div>
       <div class="canvas-container">
-        <canvas id="cvsTorque" width="500" height="220"></canvas>
+        <canvas id="cvsTorque" width="500" height="230"></canvas>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcTorqueMulticomponente()">Calcular Equilibrio y Torque Neto (Στ)</button>
+        <button class="btn-main" onclick="calcTorqueMulticomponente()">Calcular Equilibrio Rotacional y Torque Neto (Στ)</button>
       </div>
     </div>
 
     <!-- 2.2 Plano Vectorial 2D -->
     <div id="submod-plano-fuerzas" class="fis-subseccion" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <label><b>Fuerzas Concurrentes en el Plano:</b></label>
+        <label><b>Vectores Concurrentes en el Plano:</b></label>
         <button style="background:#10b981; color:#0b1120; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer;" onclick="agregarFuerza()">+ Añadir Vector</button>
       </div>
       <div id="lista-fuerzas"></div>
@@ -265,7 +258,7 @@
         <canvas id="cvsPlano" width="460" height="460"></canvas>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Suma Vectorial y Resultante</button>
+        <button class="btn-main" onclick="calcularPlanoFuerzas()">Calcular Suma Vectorial y Resultante (FR)</button>
       </div>
     </div>
 
@@ -285,7 +278,7 @@
         <canvas id="cvsMRUA" width="460" height="200"></canvas>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcMRUA_Grafico()">Analizar y Trazar Trayectoria</button>
+        <button class="btn-main" onclick="calcMRUA_Grafico()">Analizar Trayectoria y Ejes de Movimiento</button>
       </div>
     </div>
 
@@ -303,7 +296,7 @@
       </div>
     </div>
 
-    <!-- 2.5 DCL Fuerza y Fricción -->
+    <!-- 2.5 DCL -->
     <div id="submod-fis-friccion" class="fis-subseccion" style="display:none;">
       <div class="grid-3">
         <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="dcl-m" value="5" step="any"></div>
@@ -320,41 +313,41 @@
   </div>
 
   <!-- ========================================================
-       3. ROBÓTICA & HARDWARE
+       3. ROBÓTICA & CIRCUITOS
        ======================================================== -->
   <div id="mod-robotica" class="mod-content">
     <div class="tabs-row" id="sub-robotica">
-      <button class="btn-tab active" onclick="verSubRobotica('rob-componentes')">⚡ Componentes (Diodos/Transistores)</button>
+      <button class="btn-tab active" onclick="verSubRobotica('rob-componentes')">⚡ Componentes</button>
       <button class="btn-tab" onclick="verSubRobotica('rob-resistor')">Resistencias (4 y 5 Bandas)</button>
       <button class="btn-tab" onclick="verSubRobotica('rob-esquematico')">Ley de Ohm</button>
-      <button class="btn-tab" onclick="verSubRobotica('rob-servo')">Servo & PWM</button>
-      <button class="btn-tab" onclick="verSubRobotica('rob-bateria')">Batería Robot</button>
+      <button class="btn-tab" onclick="verSubRobotica('rob-servo')">Servo PWM</button>
+      <button class="btn-tab" onclick="verSubRobotica('rob-bateria')">Batería</button>
     </div>
 
     <!-- 3.1 Componentes -->
     <div id="submod-rob-componentes" class="rob-subseccion" style="display:block;">
       <div class="form-group">
-        <label>Selecciona el componente a analizar:</label>
+        <label>Componente a Analizar:</label>
         <select id="rob-sel-comp" onchange="configurarInputsComponente()">
-          <option value="diodo">Diodo Semiconductor (Rectificador 1N4007 / Zener)</option>
-          <option value="transistor">Transistor BJT (NPN 2N2222 como Switch de Motor)</option>
-          <option value="capacitor">Capacitor (Filtro de Ruido en Motores / Constante RC)</option>
-          <option value="regulador">Regulador de Tensión Lineal (7805 / LM317)</option>
+          <option value="diodo">Diodo (Caída de tensión y resistencia serie)</option>
+          <option value="transistor">Transistor BJT como Interruptor de Carga</option>
+          <option value="capacitor">Capacitor (Constante de tiempo RC)</option>
+          <option value="regulador">Regulador Lineal 7805 (Disipación de Calor)</option>
         </select>
       </div>
       <div class="grid-3" id="rob-inputs-comp"></div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcularComponenteHardware()">Calcular Parámetros y Ver Conexión</button>
+        <button class="btn-main" onclick="calcularComponenteHardware()">Calcular Parámetros de Diseño</button>
       </div>
     </div>
 
-    <!-- 3.2 Resistencias 4 y 5 bandas -->
+    <!-- 3.2 Resistencias -->
     <div id="submod-rob-resistor" class="rob-subseccion" style="display:none;">
       <div class="form-group">
-        <label>Tipo de Resistor:</label>
+        <label>Tipo:</label>
         <select id="sel-tipo-resistor" onchange="cambiarModoResistor()">
-          <option value="4">4 Bandas (Estándar ±5%)</option>
-          <option value="5">5 Bandas (Precisión Azul ±1%)</option>
+          <option value="4">4 Bandas (±5%)</option>
+          <option value="5">5 Bandas (±1%)</option>
         </select>
       </div>
       <div class="resistor-display">
@@ -385,7 +378,7 @@
         <div class="form-group"><label>Resistencia Total [Ω]:</label><input type="number" id="cir-r1" value="220"></div>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcCircuitoEsquematico()">Calcular Corriente y Potencia (Watts)</button>
+        <button class="btn-main" onclick="calcCircuitoEsquematico()">Calcular Corriente y Potencia</button>
       </div>
     </div>
 
@@ -407,7 +400,7 @@
     <!-- 3.5 Batería -->
     <div id="submod-rob-bateria" class="rob-subseccion" style="display:none;">
       <div class="grid-2">
-        <div class="form-group"><label>Batería [mAh]:</label><input type="number" id="b-cap" value="2200"></div>
+        <div class="form-group"><label>Capacidad Batería [mAh]:</label><input type="number" id="b-cap" value="2200"></div>
         <div class="form-group"><label>Microcontrolador [mA]:</label><input type="number" id="b-ard" value="50"></div>
       </div>
       <div class="grid-2">
@@ -421,14 +414,15 @@
   </div>
 
   <!-- ========================================================
-       4. QUÍMICA & TABLA PERIÓDICA
+       4. QUÍMICA INTEGRAL
        ======================================================== -->
   <div id="mod-quimica" class="mod-content">
     <div class="tabs-row" id="sub-quimica">
-      <button class="btn-tab active" onclick="verSubQuimica('quim-tabla')">🔍 Buscador Tabla Periódica</button>
-      <button class="btn-tab" onclick="verSubQuimica('quim-molar')">Masa Molar & Estructura 2D</button>
-      <button class="btn-tab" onclick="verSubQuimica('quim-gases')">Gases Ideales (PV=nRT)</button>
-      <button class="btn-tab" onclick="verSubQuimica('quim-soluciones')">Molaridad & Dilución</button>
+      <button class="btn-tab active" onclick="verSubQuimica('quim-tabla')">🔍 Tabla Periódica</button>
+      <button class="btn-tab" onclick="verSubQuimica('quim-molar')">Masa Molar & Enlaces</button>
+      <button class="btn-tab" onclick="verSubQuimica('quim-gases')">Gases (Ley Combinada)</button>
+      <button class="btn-tab" onclick="verSubQuimica('quim-soluciones')">Molaridad & Disoluciones</button>
+      <button class="btn-tab" onclick="verSubQuimica('quim-ph')">pH & Acidez</button>
     </div>
 
     <!-- 4.1 Buscador Tabla Periódica -->
@@ -440,7 +434,7 @@
       <div id="tabla-resultados-contenedor" style="max-height: 250px; overflow-y: auto; background: #070d19; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-bottom: 12px;"></div>
     </div>
 
-    <!-- 4.2 Masa Molar & Estructura 2D (AQUÍ CIERRA SU PROPIO CANVAS) -->
+    <!-- 4.2 Masa Molar con Visor 2D Aislado -->
     <div id="submod-quim-molar" class="quim-subseccion" style="display:none;">
       <div class="grid-2">
         <div class="form-group">
@@ -453,7 +447,7 @@
         <div class="form-group">
           <label>O elige un compuesto predefinido:</label>
           <select id="chem-comp" onchange="cargarCompuestoPredefinido()">
-            <option value="">Personalizado (escribir fórmula)...</option>
+            <option value="">Personalizado...</option>
             <option value="H2O" selected>Agua (H₂O)</option>
             <option value="CO2">Dióxido de Carbono (CO₂)</option>
             <option value="CH4">Metano (CH₄)</option>
@@ -470,45 +464,73 @@
           </select>
         </div>
       </div>
-
-      <!-- Lienzo exclusivo de Masa Molar -->
       <div class="canvas-container" style="padding: 6px;">
         <canvas id="cvsMol2D" width="480" height="240" style="background:#050811; border-radius:8px;"></canvas>
         <span style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">
-          🔬 Diagrama estructural 2D con enlaces químicos y esferas con códigos de color CPK
+          🔬 Diagrama estructural con enlaces químicos y esferas con códigos de color CPK
         </span>
       </div>
-
       <div class="btn-row">
         <button class="btn-main" onclick="calcMasaMolarExtendida()">Analizar Estructura y Nomenclaturas</button>
       </div>
-    </div> <!-- Cierre estricto de submod-quim-molar -->
+    </div>
 
-    <!-- 4.3 Gases Ideales (Limpio y aislado) -->
+    <!-- 4.3 Gases Ideales y Ley Combinada -->
     <div id="submod-quim-gases" class="quim-subseccion" style="display:none;">
-      <div class="grid-3">
-        <div class="form-group"><label>Presión P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
-        <div class="form-group"><label>Volumen V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
-        <div class="form-group"><label>Temperatura T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+      <div class="form-group">
+        <label>¿Qué variable deseas despejar en PV = nRT?</label>
+        <select id="gas-despeje" onchange="configurarInputsGases()">
+          <option value="n">Moles de gas (n) [conozco P, V, T]</option>
+          <option value="p">Presión (P) [conozco n, V, T]</option>
+          <option value="v">Volumen (V) [conozco n, P, T]</option>
+          <option value="t">Temperatura (T) [conozco n, P, V]</option>
+        </select>
       </div>
+      <div class="grid-3" id="inputs-gases-dinamicos"></div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcGases()">Calcular Moles (PV = nRT)</button>
+        <button class="btn-main" onclick="calcGases()">Resolver con Procedimiento Termodinámico</button>
       </div>
-    </div> <!-- Cierre estricto de submod-quim-gases -->
+    </div>
 
-    <!-- 4.4 Molaridad & Dilución (Limpio y aislado) -->
+    <!-- 4.4 Molaridad & Dilución -->
     <div id="submod-quim-soluciones" class="quim-subseccion" style="display:none;">
+      <div class="form-group">
+        <label>Operación de Disolución:</label>
+        <select id="sol-tipo-op" onchange="configurarInputsSoluciones()">
+          <option value="molaridad">Molaridad Directa (M = n / V)</option>
+          <option value="dilucion">Ley de Dilución (C₁ · V₁ = C₂ · V₂)</option>
+        </select>
+      </div>
+      <div class="grid-3" id="inputs-soluciones-dinamicos"></div>
+      <div class="btn-row">
+        <button class="btn-main" onclick="calcMolaridad()">Calcular Concentración y Pasos</button>
+      </div>
+    </div>
+
+    <!-- 4.5 pH y Acidez -->
+    <div id="submod-quim-ph" class="quim-subseccion" style="display:none;">
       <div class="grid-2">
-        <div class="form-group"><label>Moles de soluto [mol]:</label><input type="number" id="sol-n" value="0.75" step="any"></div>
-        <div class="form-group"><label>Volumen de disolución [L]:</label><input type="number" id="sol-v" value="1.5" step="any"></div>
+        <div class="form-group">
+          <label>Dato que conoces:</label>
+          <select id="ph-modo" onchange="ajustarInputsPH()">
+            <option value="h">Concentración de iones [H⁺] en mol/L</option>
+            <option value="ph">Valor de pH medido</option>
+            <option value="oh">Concentración de iones [OH⁻] en mol/L</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-ph-val">Concentración [H⁺]:</label>
+          <input type="number" id="val-ph-in" value="0.001" step="any">
+        </div>
       </div>
       <div class="btn-row">
-        <button class="btn-main" onclick="calcMolaridad()">Calcular Concentración Molar (M = n / V)</button>
+        <button class="btn-main" onclick="calcularPH()">Calcular Escala de pH, pOH y Acidez</button>
       </div>
-    </div> <!-- Cierre estricto de submod-quim-soluciones -->
+    </div>
+  </div>
 
   <!-- ========================================================
-       5. DESAFÍOS ANTI-ESTRÉS
+       5. DESAFÍOS ANTI-ESTRÉS (RESTAURADO Y UNIFICADO)
        ======================================================== -->
   <div id="mod-juego" class="mod-content">
     <div style="background:#0f172a; border:2px dashed #f59e0b; border-radius:12px; padding:20px; text-align:center;">
@@ -541,7 +563,7 @@
     </div>
   </div>
 
-  <!-- RESULTADOS -->
+  <!-- RESULTADOS CON PROCEDIMIENTO -->
   <div id="salida"></div>
 </div>
 
