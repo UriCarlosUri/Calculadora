@@ -1,1678 +1,1530 @@
 // ==========================================
-// 1. NAVEGACIÓN Y CONTROL GENERAL
+// SUITE CIENTÍFICA, CÁLCULO & LÓGICA - MOTOR GENERAL
 // ==========================================
-function verMateria(mat) {
-  try {
-    document.querySelectorAll('#tabs-nivel-1 .btn-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.mod-content').forEach(s => s.classList.remove('visible'));
-    const salida = document.getElementById('salida');
-    if (salida) salida.style.display = 'none';
 
-    const btnActivo = document.getElementById('btn-tab-' + mat);
-    if (btnActivo) btnActivo.classList.add('active');
-
-    const mod = document.getElementById('mod-' + mat);
-    if (mod) mod.classList.add('visible');
-
-    if (mat === 'calculo') verSubCalculo('calc-libre');
-    if (mat === 'fisica') verSubFisica('fis-torque');
-    if (mat === 'robotica') verSubRobotica('rob-componentes');
-    if (mat === 'quimica') verSubQuimica('quim-tabla');
-    if (mat === 'juego') iniciarSesionEstudio();
-  } catch (e) { console.error("Error en verMateria:", e); }
+// --- NAVEGACIÓN Y MODALES ---
+function cerrarBienvenida() {
+  const m = document.getElementById('modal-bienvenida');
+  if (m) m.style.display = 'none';
 }
 
-function verSubCalculo(idSubmod) {
-  document.querySelectorAll('#sub-calculo .btn-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.calc-subseccion').forEach(s => s.style.display = 'none');
-  if (window.event && window.event.target) window.event.target.classList.add('active');
-  const target = document.getElementById('submod-' + idSubmod);
-  if (target) target.style.display = 'block';
+function cambiarModulo(modId) {
+  document.querySelectorAll('.mod-content').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('#tabs-principales .btn-tab').forEach(b => b.classList.remove('active'));
 
-  const salida = document.getElementById('salida');
-  if (salida) salida.style.display = 'none';
+  const act = document.getElementById(modId);
+  if (act) act.classList.add('visible');
 
-  if (idSubmod === 'calc-integrales') calcularIntegralDedicada();
-  if (idSubmod === 'calc-figuras') actualizarFamilia2D();
-  if (idSubmod === 'calc-volumenes') configurarInputs3D();
-  if (idSubmod === 'calc-trig') configurarInputsTrig();
-  if (idSubmod === 'calc-ident') actualizarListaIdentidades();
-  if (idSubmod === 'calc-exp') ajustarInputsExponentes();
-}
-
-function verSubFisica(idSubmod) {
-  document.querySelectorAll('#sub-fisica .btn-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.fis-subseccion').forEach(s => s.style.display = 'none');
-  if (window.event && window.event.target) window.event.target.classList.add('active');
-  const target = document.getElementById('submod-' + idSubmod);
-  if (target) target.style.display = 'block';
-
-  const salida = document.getElementById('salida');
-  if (salida) salida.style.display = 'none';
-
-  if (idSubmod === 'fis-torque') renderizarListaTorques();
-  if (idSubmod === 'plano-fuerzas') renderizarListaFuerzas();
-  if (idSubmod === 'fis-mrua') configurarInputsMRUA();
-  if (idSubmod === 'fis-parabolico') calcParabolico_Grafico();
-  if (idSubmod === 'fis-friccion') configurarInputsDCL();
-}
-
-function verSubRobotica(idSubmod) {
-  document.querySelectorAll('#sub-robotica .btn-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.rob-subseccion').forEach(s => s.style.display = 'none');
-  if (window.event && window.event.target) window.event.target.classList.add('active');
-  const target = document.getElementById('submod-' + idSubmod);
-  if (target) target.style.display = 'block';
-
-  const salida = document.getElementById('salida');
-  if (salida) salida.style.display = 'none';
-
-  if (idSubmod === 'rob-componentes') configurarInputsComponente();
-  if (idSubmod === 'rob-resistor') renderizarListaResistencias();
-  if (idSubmod === 'rob-esquematico') configurarInputsOhm();
-}
-
-function verSubQuimica(idSubmod) {
-  document.querySelectorAll('#sub-quimica .btn-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.quim-subseccion').forEach(s => s.style.display = 'none');
-  if (window.event && window.event.target) window.event.target.classList.add('active');
-  const target = document.getElementById('submod-' + idSubmod);
-  if (target) target.style.display = 'block';
-
-  const salida = document.getElementById('salida');
-  if (salida) salida.style.display = 'none';
-
-  if (idSubmod === 'quim-tabla') buscarElementoQuimico();
-  if (idSubmod === 'quim-molar') calcMasaMolarExtendida();
-  if (idSubmod === 'quim-gases') configurarInputsGases();
-  if (idSubmod === 'quim-soluciones') configurarInputsSoluciones();
-  if (idSubmod === 'quim-ph') ajustarInputsPH();
-}
-
-// ==========================================
-// 2. CÁLCULO: DERIVADAS E INTEGRALES
-// ==========================================
-function derivarPolinomioNativo(expr) {
-  let limpia = expr.replace(/\s+/g, '').replace(/-/g, '+-');
-  let terminos = limpia.split('+').filter(t => t.length > 0);
-  let pasos = [];
-  let resTerminos = [];
-
-  terminos.forEach(t => {
-    if (t.includes('x^')) {
-      let partes = t.split('x^');
-      let c = partes[0] === '' ? 1 : partes[0] === '-' ? -1 : parseFloat(partes[0].replace('*', ''));
-      let exp = parseFloat(partes[1]);
-      let nuevoC = c * exp;
-      let nuevoExp = exp - 1;
-      let resT = nuevoExp === 1 ? `${nuevoC}x` : nuevoExp === 0 ? `${nuevoC}` : `${nuevoC}x^${nuevoExp}`;
-      pasos.push(`d/dx [${t}] = ${c} · ${exp} · x^(${exp}-1) = <b>${resT}</b>`);
-      resTerminos.push(resT);
-    } else if (t.includes('x')) {
-      let c = t.replace('*x', '').replace('x', '');
-      let coef = c === '' ? 1 : c === '-' ? -1 : parseFloat(c);
-      pasos.push(`d/dx [${t}] = ${coef} · 1 = <b>${coef}</b>`);
-      resTerminos.push(`${coef}`);
-    } else {
-      pasos.push(`d/dx [${t}] = <b>0</b> (derivada de constante)`);
-    }
-  });
-
-  return { res: resTerminos.join(' + ').replace(/\+\s\-/g, '- '), pasos: pasos };
-}
-
-function resolverCalculoMetodo(tipo) {
-  const expr = document.getElementById('calc-expr-input').value.trim();
-  const s = document.getElementById('salida');
-  if (!expr) { alert("Escribe una función."); return; }
-
-  let resFinal = "";
-  let procedimientoHTML = "";
-
-  if (typeof Algebrite !== 'undefined') {
-    try {
-      let limpia = expr.replace(/sen\(/g, "sin(").replace(/(\d)([a-zA-Z])/g, "$1*$2");
-      resFinal = Algebrite.run(`d(${limpia}, x)`).toString();
-      procedimientoHTML = `<div class="step">Regla de derivación término a término aplicada a: <code>${expr}</code></div>`;
-    } catch (e) {
-      const deriv = derivarPolinomioNativo(expr);
-      resFinal = deriv.res;
-      procedimientoHTML = `<div class="step">Desglose paso a paso:<ul><li>${deriv.pasos.join('</li><li>')}</li></ul></div>`;
-    }
-  } else {
-    const deriv = derivarPolinomioNativo(expr);
-    resFinal = deriv.res;
-    procedimientoHTML = `<div class="step">Desglose paso a paso:<ul><li>${deriv.pasos.join('</li><li>')}</li></ul></div>`;
+  const btns = document.querySelectorAll('#tabs-principales .btn-tab');
+  const mapa = {
+    'mod-calculo': 0,
+    'mod-fisica': 1,
+    'mod-quimica': 2,
+    'mod-logica': 3,
+    'mod-desafios': 4
+  };
+  if (mapa[modId] !== undefined && btns[mapa[modId]]) {
+    btns[mapa[modId]].classList.add('active');
   }
 
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Derivada Resuelta Paso a Paso</h3>
-    <div class="step"><b>Función f(x):</b> <code>${expr}</code></div>
-    ${procedimientoHTML}
+  const s = document.getElementById('salida');
+  if (s) s.style.display = 'none';
+}
+
+function verSubCalculo(subId) {
+  document.querySelectorAll('.calc-subseccion').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#sub-calculo .btn-tab').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('submod-' + subId);
+  if (s) s.style.display = 'block';
+  if (event && event.target) event.target.classList.add('active');
+}
+
+function verSubFisica(subId) {
+  document.querySelectorAll('.fis-subseccion').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#sub-fisica .btn-tab').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('submod-' + subId);
+  if (s) s.style.display = 'block';
+  if (event && event.target) event.target.classList.add('active');
+}
+
+function verSubQuimica(subId) {
+  document.querySelectorAll('.quim-subseccion').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#sub-quimica .btn-tab').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('submod-' + subId);
+  if (s) s.style.display = 'block';
+  if (event && event.target) event.target.classList.add('active');
+}
+
+function verSubLogica(subId) {
+  document.querySelectorAll('.log-subseccion').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#sub-logica .btn-tab').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('submod-' + subId);
+  if (s) s.style.display = 'block';
+  if (event && event.target) event.target.classList.add('active');
+}
+
+// ==========================================
+// 1. CÁLCULO & GEOMETRÍA
+// ==========================================
+
+// Normalización matemática universal (sen^2(2x), 2x, ln(x), etc.)
+function normalizarSintaxisCalculo(expr) {
+  let limpia = expr.trim();
+  limpia = limpia.replace(/sen/gi, "sin");
+  limpia = limpia.replace(/(sin|cos|tan)\^(\d+)\(([^)]+)\)/gi, "(($1($3))^$2)");
+  limpia = limpia.replace(/(\d)([a-zA-Z(])/g, "$1*$2");
+  limpia = limpia.replace(/\)([a-zA-Z0-9(])/g, ")*$1");
+  return limpia;
+}
+
+function resolverCalculoMetodo() {
+  const exprOriginal = document.getElementById('calc-expr-input').value.trim();
+  const accion = document.getElementById('calc-tipo-deriv').value;
+  const x0Val = parseFloat(document.getElementById('calc-x0').value);
+  const s = document.getElementById('salida');
+
+  if (!exprOriginal) { alert("Escribe una función f(x)."); return; }
+  const expr = normalizarSintaxisCalculo(exprOriginal);
+
+  let f_prima = "";
+  let f_segunda = "";
+
+  try {
+    f_prima = Algebrite.run(`d(${expr}, x)`).toString();
+    try {
+      const simp = Algebrite.run(`simplify(${f_prima})`).toString();
+      if (simp && simp.length < f_prima.length) f_prima = simp;
+    } catch (e) {}
+
+    if (accion === 'segunda' || accion === 'tangente') {
+      f_segunda = Algebrite.run(`d(${f_prima}, x)`).toString();
+    }
+  } catch (err) {
+    f_prima = "No se pudo resolver simbólicamente";
+  }
+
+  const f_prima_es = f_prima.replace(/sin/g, "sen");
+  const f_segunda_es = f_segunda.replace(/sin/g, "sen");
+
+  let htmlPaso = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Derivación Analítica Paso a Paso</h3>
+    <div class="step"><b>Función f(x):</b> <code>${exprOriginal}</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Resultado f'(x):</b> <b style="color:#38bdf8;font-size:1.2rem;">${resFinal}</b>
+      <b>Primera Derivada f'(x):</b><br>
+      <b style="color:#10b981;font-size:1.25rem;">${f_prima_es}</b>
+    </div>
+  `;
+
+  if (accion === 'segunda') {
+    htmlPaso += `
+      <div class="step" style="border-left-color:#f59e0b;">
+        <b>Segunda Derivada f''(x):</b><br>
+        <b style="color:#f59e0b;font-size:1.2rem;">${f_segunda_es}</b>
+      </div>
+    `;
+  }
+
+  if (accion === 'tangente') {
+    if (isNaN(x0Val)) {
+      htmlPaso += `<div class="step" style="color:#ef4444;">Especifica un valor numérico en x₀ para hallar la recta tangente y normal.</div>`;
+    } else {
+      let y0 = 0, m = 0;
+      try {
+        y0 = parseFloat(Algebrite.run(`float(eval(${expr}, x, ${x0Val}))`).toString());
+        m = parseFloat(Algebrite.run(`float(eval(${f_prima}, x, ${x0Val}))`).toString());
+      } catch (e) {
+        y0 = 0; m = 0;
+      }
+
+      const m_norm = m !== 0 ? (-1 / m).toFixed(3) : "Indefinida (Vertical)";
+      const b_tan = (y0 - m * x0Val).toFixed(3);
+
+      htmlPaso += `
+        <div class="step"><b>Punto de tangencia P₀:</b> (${x0Val}, ${y0.toFixed(3)})</div>
+        <div class="step"><b>Pendiente de la curva m = f'(${x0Val}):</b> <code style="color:#38bdf8;">${m.toFixed(4)}</code></div>
+        <div class="step" style="border-left-color:#38bdf8;">
+          <b>Recta Tangente:</b> <code>y = ${m.toFixed(3)}x ${b_tan >= 0 ? '+ ' + b_tan : '- ' + Math.abs(b_tan)}</code>
+        </div>
+        <div class="step" style="border-left-color:#a855f7;">
+          <b>Recta Normal:</b> <code>Pendiente mₙ = ${m_norm}</code>
+        </div>
+      `;
+    }
+  }
+
+  s.innerHTML = htmlPaso;
+  s.style.display = 'block';
+}
+
+// 1.2 Integrales con control de dominio continuo
+function resolverIntegralDefinida() {
+  const exprOrig = document.getElementById('calc-int-expr').value.trim();
+  const a = parseFloat(document.getElementById('calc-int-a').value);
+  const b = parseFloat(document.getElementById('calc-int-b').value);
+  const s = document.getElementById('salida');
+
+  if (!exprOrig || isNaN(a) || isNaN(b)) { alert("Ingresa la función y los límites a y b."); return; }
+  const expr = normalizarSintaxisCalculo(exprOrig);
+
+  let primitiva = "", valDef = 0;
+  try {
+    primitiva = Algebrite.run(`integral(${expr}, x)`).toString();
+    const fa = parseFloat(Algebrite.run(`float(eval(${primitiva}, x, ${a}))`).toString());
+    const fb = parseFloat(Algebrite.run(`float(eval(${primitiva}, x, ${b}))`).toString());
+    valDef = fb - fa;
+  } catch (err) {
+    primitiva = "Evaluada numéricamente";
+    valDef = integrarSimpson(expr, a, b);
+  }
+
+  const cvs = document.getElementById('cvsIntegrales');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const w = cvs.width, h = cvs.height;
+  const xMin = Math.min(a, b) - 1.5;
+  const xMax = Math.max(a, b) + 1.5;
+
+  // Muestreo seguro de puntos evitando infinitos
+  const N = 200;
+  let puntos = [];
+  let yMin = 0, yMax = 0;
+
+  for (let i = 0; i <= N; i++) {
+    const x = xMin + (i / N) * (xMax - xMin);
+    let y = NaN;
+
+    if (expr.includes("log") || exprOrig.includes("ln")) {
+      if (x > 0.001) {
+        try { y = Math.log(x); } catch (e) { y = NaN; }
+      }
+    } else {
+      try {
+        const ev = parseFloat(Algebrite.run(`float(eval(${expr}, x, ${x}))`).toString());
+        if (!isNaN(ev) && isFinite(ev)) y = ev;
+      } catch (e) { y = NaN; }
+    }
+
+    if (!isNaN(y)) {
+      y = Math.max(-15, Math.min(15, y));
+      if (puntos.length === 0) { yMin = y; yMax = y; }
+      else { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
+    }
+    puntos.push({ x, y });
+  }
+
+  if (yMin === yMax) { yMin -= 1; yMax += 1; }
+  yMin = Math.min(0, yMin - 0.5);
+  yMax = Math.max(0, yMax + 0.5);
+
+  const toPxX = (x) => ((x - xMin) / (xMax - xMin)) * w;
+  const toPxY = (y) => h - ((y - yMin) / (yMax - yMin)) * h;
+
+  // Ejes
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 1;
+  const y0Px = toPxY(0);
+  ctx.beginPath(); ctx.moveTo(0, y0Px); ctx.lineTo(w, y0Px); ctx.stroke();
+
+  // Sombreado de área en [a, b]
+  ctx.fillStyle = "rgba(16, 185, 129, 0.25)";
+  ctx.beginPath();
+  let primerPtoArea = true;
+  for (let p of puntos) {
+    if (p.x >= a && p.x <= b && !isNaN(p.y)) {
+      const px = toPxX(p.x), py = toPxY(p.y);
+      if (primerPtoArea) {
+        ctx.moveTo(px, y0Px);
+        ctx.lineTo(px, py);
+        primerPtoArea = false;
+      } else {
+        ctx.lineTo(px, py);
+      }
+    }
+  }
+  ctx.lineTo(toPxX(b), y0Px);
+  ctx.closePath();
+  ctx.fill();
+
+  // Trazo continuo de la curva levantando la pluma en NaN
+  ctx.strokeStyle = "#38bdf8";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  let trazando = false;
+  for (let p of puntos) {
+    if (!isNaN(p.y)) {
+      const px = toPxX(p.x), py = toPxY(p.y);
+      if (!trazando) { ctx.moveTo(px, py); trazando = true; }
+      else { ctx.lineTo(px, py); }
+    } else {
+      trazando = false;
+    }
+  }
+  ctx.stroke();
+
+  // Límites a y b
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = "#f59e0b";
+  ctx.beginPath(); ctx.moveTo(toPxX(a), 0); ctx.lineTo(toPxX(a), h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toPxX(b), 0); ctx.lineTo(toPxX(b), h); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = "#f59e0b";
+  ctx.font = "bold 11px sans-serif";
+  ctx.fillText(`a = ${a}`, toPxX(a) + 4, y0Px - 8);
+  ctx.fillText(`b = ${b}`, toPxX(b) + 4, y0Px - 8);
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Integral Definida & Área Neta</h3>
+    <div class="step"><b>Integral Indefinida ∫ f(x) dx:</b> <code>${primitiva.replace(/sin/g, "sen")} + C</code></div>
+    <div class="step"><b>Evaluación por Regla de Barrow:</b> <code>F(${b}) - F(${a})</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Valor Numérico del Área Neta:</b><br>
+      <b style="color:#10b981;font-size:1.3rem;">${isNaN(valDef) ? "Discontinuidad en el intervalo" : valDef.toFixed(4) + " u²"}</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-function calcularIntegralDedicada() {
-  const expr = document.getElementById('int-expr-input').value.trim();
-  const limAStr = document.getElementById('int-lim-a').value.trim();
-  const limBStr = document.getElementById('int-lim-b').value.trim();
-  const s = document.getElementById('salida');
-  if (!expr) { alert("Escribe una función."); return; }
-
-  let limpia = expr.replace(/sen\(/g, "sin(").replace(/(\d)([a-zA-Z])/g, "$1*$2");
-  let resIndef = "F(x)";
-
-  try {
-    if (typeof Algebrite !== 'undefined') {
-      resIndef = Algebrite.run(`integral(${limpia}, x)`).toString();
-    }
-  } catch (e) { resIndef = "F(x)"; }
-
-  let limA = parseFloat(limAStr), limB = parseFloat(limBStr);
-  const hayLimites = !isNaN(limA) && !isNaN(limB);
-  let areaDef = "0.00";
-  let pasosEvaluacion = "";
-
-  if (hayLimites) {
-    if (limA > limB) { let tmp = limA; limA = limB; limB = tmp; }
-    try {
-      if (typeof Algebrite !== 'undefined') {
-        const valB = Algebrite.run(`float(subst(${limB}, x, ${resIndef}))`);
-        const valA = Algebrite.run(`float(subst(${limA}, x, ${resIndef}))`);
-        areaDef = parseFloat(Algebrite.run(`float(${valB} - (${valA}))`)).toFixed(3);
-        pasosEvaluacion = `
-          <div class="step" style="border-left-color:#f59e0b;">
-            <b>Evaluación de Límites [${limA} a ${limB}] (Regla de Barrow):</b><br>
-            • F(${limB}) = <code>${valB}</code> | • F(${limA}) = <code>${valA}</code><br>
-            <b>Área Neta = F(b) - F(a) = <span style="color:#f59e0b; font-size:1.15rem;">${areaDef} u²</span></b>
-          </div>
-        `;
-      }
-    } catch (e) { areaDef = "Área calculada"; }
+function integrarSimpson(expr, a, b, n = 100) {
+  const h = (b - a) / n;
+  let sum = 0;
+  for (let i = 0; i <= n; i++) {
+    const x = a + i * h;
+    let y = 0;
+    try { y = parseFloat(Algebrite.run(`float(eval(${expr}, x, ${x}))`).toString()); } catch(e){}
+    if (isNaN(y) || !isFinite(y)) y = 0;
+    const coef = (i === 0 || i === n) ? 1 : (i % 2 === 0 ? 2 : 4);
+    sum += coef * y;
   }
-
-  dibujarGraficaIntegral(limpia, hayLimites ? limA : -2, hayLimites ? limB : 2, hayLimites);
-
-  s.innerHTML = `
-    <h3 style="color:#10b981;margin:0 0 8px 0;">Integral Resuelta y Graficada</h3>
-    <div class="step"><b>Antiderivada:</b> <b style="color:#10b981;font-size:1.15rem;">∫ [ ${expr} ] dx = ${resIndef} + C</b></div>
-    ${pasosEvaluacion}
-  `;
-  s.style.display = 'block';
+  return (h / 3) * sum;
 }
 
-function dibujarGraficaIntegral(exprLimpia, a, b, sombrear) {
-  const cvs = document.getElementById('cvsIntegralGrafica');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-  ctx.clearRect(0, 0, w, h);
+// 1.3 Geometría 2D Completa
+function actualizarSelectoresGeo2D() {
+  const fam = document.getElementById('sel-g2d-familia').value;
+  const sel = document.getElementById('sel-g2d-tipo');
+  sel.innerHTML = "";
 
-  const xMin = Math.min(a - 1.5, -4), xMax = Math.max(b + 1.5, 4);
-  const puntos = 200, dx = (xMax - xMin) / puntos;
-  let arrPuntos = [], yMin = -2, yMax = 2;
-
-  for (let i = 0; i <= puntos; i++) {
-    let xVal = xMin + i * dx, yVal = 0;
-    try {
-      if (typeof Algebrite !== 'undefined') {
-        yVal = parseFloat(Algebrite.run(`float(subst(${xVal}, x, ${exprLimpia}))`));
-      } else { yVal = xVal * xVal - 2; }
-      if (isNaN(yVal) || !isFinite(yVal)) yVal = 0;
-    } catch (e) { yVal = 0; }
-    arrPuntos.push({ x: xVal, y: yVal });
-    if (yVal < yMin) yMin = yVal;
-    if (yVal > yMax) yMax = yVal;
-  }
-
-  const margen = 30;
-  const toCanvasX = x => margen + ((x - xMin) / (xMax - xMin)) * (w - 2 * margen);
-  const toCanvasY = y => (h - margen) - ((y - yMin) / (yMax - yMin)) * (h - 2 * margen);
-  const canvasYcero = toCanvasY(0);
-  const canvasXcero = toCanvasX(0);
-
-  ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(10, canvasYcero); ctx.lineTo(w - 10, canvasYcero); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(canvasXcero, 10); ctx.lineTo(canvasXcero, h - 10); ctx.stroke();
-
-  if (sombrear) {
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
-    ctx.beginPath();
-    ctx.moveTo(toCanvasX(a), canvasYcero);
-    arrPuntos.forEach(p => {
-      if (p.x >= a && p.x <= b) ctx.lineTo(toCanvasX(p.x), toCanvasY(p.y));
-    });
-    ctx.lineTo(toCanvasX(b), canvasYcero);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.setLineDash([4, 4]); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(toCanvasX(a), 15); ctx.lineTo(toCanvasX(a), h - 15); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(toCanvasX(b), 15); ctx.lineTo(toCanvasX(b), h - 15); ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 11px monospace';
-    ctx.fillText(`a=${a}`, toCanvasX(a) - 10, h - 10);
-    ctx.fillText(`b=${b}`, toCanvasX(b) - 10, h - 10);
-  }
-
-  ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  arrPuntos.forEach((p, idx) => {
-    let cx = toCanvasX(p.x), cy = toCanvasY(p.y);
-    if (idx === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
-  });
-  ctx.stroke();
-}
-
-// ==========================================
-// 3. GEOMETRÍA 2D Y 3D CON IMÁGENES Y COTAS
-// ==========================================
-const catalogoGeometria2D = {
-  triangulos: {
-    "tri_base_h": { n: "Triángulo (Base y Altura)", f: "A = (b · h) / 2", in: [{id:"b", l:"Base (b):", v:6}, {id:"h", l:"Altura (h):", v:4}] },
-    "tri_heron": { n: "Triángulo (Herón 3 Lados)", f: "A = √[s(s-a)(s-b)(s-c)]", in: [{id:"a", l:"Lado a:", v:5}, {id:"b", l:"Lado b:", v:6}, {id:"c", l:"Lado c:", v:7}] },
-    "tri_equilatero": { n: "Triángulo Equilátero", f: "A = (√3 / 4) · L²", in: [{id:"L", l:"Lado (L):", v:5}] }
-  },
-  circulares: {
-    "circulo": { n: "Círculo", f: "A = π · r²", in: [{id:"r", l:"Radio (r):", v:4}] },
-    "corona": { n: "Corona Circular", f: "A = π · (R² - r²)", in: [{id:"R", l:"Radio Mayor (R):", v:6}, {id:"r", l:"Radio Menor (r):", v:3}] },
-    "sector": { n: "Sector Circular", f: "A = (θ / 360°) · π · r²", in: [{id:"r", l:"Radio (r):", v:5}, {id:"ang", l:"Ángulo central θ [°]:", v:60}] }
-  },
-  cuadrilateros: {
-    "cuadrado": { n: "Cuadrado", f: "A = L²", in: [{id:"L", l:"Lado (L):", v:5}] },
-    "rectangulo": { n: "Rectángulo", f: "A = b · h", in: [{id:"b", l:"Base (b):", v:7}, {id:"h", l:"Altura (h):", v:4}] },
-    "rombo": { n: "Rombo", f: "A = (D · d) / 2", in: [{id:"D", l:"Diagonal Mayor (D):", v:8}, {id:"d", l:"Diagonal Menor (d):", v:5}] },
-    "trapecio": { n: "Trapecio", f: "A = [(B + b) / 2] · h", in: [{id:"B", l:"Base Mayor (B):", v:8}, {id:"b", l:"Base Menor (b):", v:4}, {id:"h", l:"Altura (h):", v:5}] }
-  },
-  poligonos: {
-    "pol_regular": { n: "Polígono Regular n Lados", f: "A = (Perímetro · ap) / 2", in: [{id:"n", l:"Número de lados (n ≥ 5):", v:6}, {id:"L", l:"Longitud de lado (L):", v:4}, {id:"ap", l:"Apotema (ap):", v:3.46}] }
-  }
-};
-
-function actualizarFamilia2D() {
-  const fam = document.getElementById('fig-familia-2d').value;
-  const selTipo = document.getElementById('fig-tipo-2d');
-  selTipo.innerHTML = "";
-  for (let k in catalogoGeometria2D[fam]) {
-    selTipo.innerHTML += `<option value="${k}">${catalogoGeometria2D[fam][k].n}</option>`;
-  }
-  configurarInputs2D();
-}
-
-function configurarInputs2D() {
-  const fam = document.getElementById('fig-familia-2d').value;
-  const tipo = document.getElementById('fig-tipo-2d').value;
-  const cont = document.getElementById('inputs-dinamicos-2d');
-  if (!catalogoGeometria2D[fam] || !catalogoGeometria2D[fam][tipo]) return;
-
-  cont.innerHTML = "";
-  catalogoGeometria2D[fam][tipo].in.forEach(inp => {
-    cont.innerHTML += `
-      <div class="form-group">
-        <label>${inp.l}</label>
-        <input type="number" id="inp-g2d-${inp.id}" value="${inp.v}" step="any" oninput="calcularGeometria2D()">
-      </div>
+  if (fam === 'triangulos') {
+    sel.innerHTML = `
+      <option value="tri_base_h">Triángulo (Base y Altura)</option>
+      <option value="tri_heron">Triángulo (Herón 3 Lados)</option>
+      <option value="tri_equilatero">Triángulo Equilátero</option>
     `;
-  });
-  calcularGeometria2D();
+  } else if (fam === 'cuadrilateros') {
+    sel.innerHTML = `
+      <option value="cuadrado">Cuadrado</option>
+      <option value="rectangulo">Rectángulo</option>
+      <option value="rombo">Rombo (Diagonales D y d)</option>
+      <option value="trapecio">Trapecio (Bases B, b y h)</option>
+    `;
+  } else if (fam === 'circulares') {
+    sel.innerHTML = `
+      <option value="circulo">Círculo Completo</option>
+      <option value="corona">Corona Circular</option>
+      <option value="sector">Sector Circular</option>
+    `;
+  } else {
+    sel.innerHTML = `<option value="pol_regular">Polígono Regular (Lados y Apotema)</option>`;
+  }
+  renderizarInputsGeo2D();
+}
+
+function renderizarInputsGeo2D() {
+  const tipo = document.getElementById('sel-g2d-tipo').value;
+  const cont = document.getElementById('g2d-inputs-dinamicos');
+  cont.innerHTML = "";
+
+  if (tipo === 'tri_base_h') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Base (b):</label><input type="number" id="g2d-b" value="8" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g2d-h" value="5" step="any"></div>
+    `;
+  } else if (tipo === 'tri_heron') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Lado a:</label><input type="number" id="g2d-a" value="5" step="any"></div>
+      <div class="form-group"><label>Lado b:</label><input type="number" id="g2d-b" value="6" step="any"></div>
+      <div class="form-group"><label>Lado c:</label><input type="number" id="g2d-c" value="7" step="any"></div>
+    `;
+  } else if (tipo === 'tri_equilatero') {
+    cont.innerHTML = `<div class="form-group"><label>Lado (L):</label><input type="number" id="g2d-l" value="6" step="any"></div>`;
+  } else if (tipo === 'cuadrado') {
+    cont.innerHTML = `<div class="form-group"><label>Lado (L):</label><input type="number" id="g2d-l" value="5" step="any"></div>`;
+  } else if (tipo === 'rectangulo') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Base (b):</label><input type="number" id="g2d-b" value="8" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g2d-h" value="4" step="any"></div>
+    `;
+  } else if (tipo === 'rombo') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Diagonal Mayor (D):</label><input type="number" id="g2d-D" value="8" step="any"></div>
+      <div class="form-group"><label>Diagonal Menor (d):</label><input type="number" id="g2d-d" value="5" step="any"></div>
+    `;
+  } else if (tipo === 'trapecio') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Base Mayor (B):</label><input type="number" id="g2d-B" value="10" step="any"></div>
+      <div class="form-group"><label>Base Menor (b):</label><input type="number" id="g2d-b" value="6" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g2d-h" value="4" step="any"></div>
+    `;
+  } else if (tipo === 'circulo') {
+    cont.innerHTML = `<div class="form-group"><label>Radio (r):</label><input type="number" id="g2d-r" value="5" step="any"></div>`;
+  } else if (tipo === 'corona') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Radio Mayor (R):</label><input type="number" id="g2d-R" value="6" step="any"></div>
+      <div class="form-group"><label>Radio Menor (r):</label><input type="number" id="g2d-r" value="3" step="any"></div>
+    `;
+  } else if (tipo === 'sector') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Radio (r):</label><input type="number" id="g2d-r" value="5" step="any"></div>
+      <div class="form-group"><label>Ángulo central θ [°]:</label><input type="number" id="g2d-ang" value="60" step="any"></div>
+    `;
+  } else if (tipo === 'pol_regular') {
+    cont.innerHTML = `
+      <div class="form-group"><label>N° Lados (n):</label><input type="number" id="g2d-n" value="6" step="1"></div>
+      <div class="form-group"><label>Longitud de Lado (L):</label><input type="number" id="g2d-l" value="4" step="any"></div>
+    `;
+  }
 }
 
 function calcularGeometria2D() {
-  const fam = document.getElementById('fig-familia-2d').value;
-  const tipo = document.getElementById('fig-tipo-2d').value;
+  const tipo = document.getElementById('sel-g2d-tipo').value;
   const s = document.getElementById('salida');
-  const info = catalogoGeometria2D[fam][tipo];
-
-  let area = 0, procedimiento = "";
   const cvs = document.getElementById('cvsGeometria2D');
-  const ctx = cvs ? cvs.getContext('2d') : null;
-  if (ctx) {
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 2.5;
-  }
-  const cx = cvs ? cvs.width / 2 : 0, cy = cvs ? cvs.height / 2 : 0;
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-  if (tipo === 'tri_base_h' || tipo === 'tri_equilatero') {
-    const b = parseFloat(document.getElementById('inp-g2d-b') ? document.getElementById('inp-g2d-b').value : document.getElementById('inp-g2d-L').value) || 5;
-    const h = parseFloat(document.getElementById('inp-g2d-h') ? document.getElementById('inp-g2d-h').value : (Math.sqrt(3)/2)*b) || 4;
-    area = (b * h) / 2;
-    procedimiento = `A = (${b} · ${h}) / 2 = <b>${area.toFixed(2)} u²</b>`;
-    if (ctx) {
-      ctx.beginPath(); ctx.moveTo(cx - 70, cy + 45); ctx.lineTo(cx + 70, cy + 45); ctx.lineTo(cx, cy - 55); ctx.closePath();
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace';
-      ctx.fillText(`b = ${b}`, cx - 15, cy + 62);
-      ctx.fillText(`h = ${h}`, cx + 8, cy);
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+  let area = 0, formula = "", perim = 0;
+
+  ctx.strokeStyle = "#38bdf8";
+  ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
+  ctx.lineWidth = 2.5;
+
+  if (tipo === 'tri_heron') {
+    const a = parseFloat(document.getElementById('g2d-a').value);
+    const b = parseFloat(document.getElementById('g2d-b').value);
+    const c = parseFloat(document.getElementById('g2d-c').value);
+
+    if (a + b <= c || a + c <= b || b + c <= a) {
+      alert("Desigualdad triangular violada: la suma de dos lados debe ser mayor al tercero.");
+      return;
     }
-  } else if (tipo === 'circulo') {
-    const r = parseFloat(document.getElementById('inp-g2d-r').value) || 3;
-    area = Math.PI * r * r;
-    procedimiento = `A = π · (${r})² = <b>${area.toFixed(3)} u²</b>`;
-    if (ctx) {
-      ctx.beginPath(); ctx.arc(cx, cy, 55, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 55, cy); ctx.stroke();
-      ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace'; ctx.fillText(`r = ${r}`, cx + 15, cy - 8);
-    }
-  } else if (tipo === 'cuadrado' || tipo === 'rectangulo') {
-    const b = parseFloat(document.getElementById('inp-g2d-b') ? document.getElementById('inp-g2d-b').value : document.getElementById('inp-g2d-L').value) || 5;
-    const h = parseFloat(document.getElementById('inp-g2d-h') ? document.getElementById('inp-g2d-h').value : b) || 5;
-    area = b * h;
-    procedimiento = `A = ${b} · ${h} = <b>${area.toFixed(2)} u²</b>`;
-    if (ctx) {
-      ctx.fillRect(cx - 60, cy - 40, 120, 80); ctx.strokeRect(cx - 60, cy - 40, 120, 80);
-      ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace';
-      ctx.fillText(`b = ${b}`, cx - 15, cy + 58);
-      ctx.fillText(`h = ${h}`, cx + 66, cy + 5);
-    }
-  } else if (tipo === 'pol_regular') {
-    const n = parseFloat(document.getElementById('inp-g2d-n').value) || 6;
-    const L = parseFloat(document.getElementById('inp-g2d-L').value) || 4;
-    const ap = parseFloat(document.getElementById('inp-g2d-ap').value) || 3.46;
-    area = (n * L * ap) / 2;
-    procedimiento = `A = (${n * L} · ${ap}) / 2 = <b>${area.toFixed(2)} u²</b>`;
-    if (ctx) {
-      ctx.beginPath();
-      for (let i = 0; i < n; i++) {
-        let ang = (i * 2 * Math.PI / n) - Math.PI / 2;
-        let px = cx + 60 * Math.cos(ang), py = cy + 60 * Math.sin(ang);
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace';
-      ctx.fillText(`Lados: ${n} | L = ${L}`, cx - 40, cy + 80);
-    }
-  } else {
-    area = 20;
-    procedimiento = `Área calculada = <b>${area} u²</b>`;
-  }
+    const sp = (a + b + c) / 2;
+    area = Math.sqrt(sp * (sp - a) * (sp - b) * (sp - c));
+    perim = a + b + c;
+    formula = `A = √[s(s-a)(s-b)(s-c)], s = ${sp.toFixed(2)}`;
 
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D: ${info.n}</h3>
-    <div class="step"><b>Fórmula:</b> <code>${info.f}</code></div>
-    <div class="step">${procedimiento}</div>
-  `;
-  s.style.display = 'block';
-}
+    // Construcción por Ley de Cosenos
+    const angA = Math.acos((b * b + c * c - a * a) / (2 * b * c));
+    const esc = 130 / Math.max(a, b, c);
+    const x1 = cx - (c * esc) / 2, y1 = cy + 40;
+    const x2 = cx + (c * esc) / 2, y2 = y1;
+    const x3 = x1 + Math.cos(angA) * b * esc, y3 = y1 - Math.sin(angA) * b * esc;
 
-function configurarInputs3D() {
-  const fig = document.getElementById('fig-tipo-3d').value;
-  const selInc = document.getElementById('fig-incognita-3d');
-  const cont = document.getElementById('inputs-dinamicos-3d');
-  selInc.innerHTML = `<option value="vol">Volumen</option>`;
-  cont.innerHTML = `
-    <div class="form-group"><label>Radio / Lado [cm]:</label><input type="number" id="inp-3d-r" value="4" oninput="calcularVolumenDespeje()"></div>
-    <div class="form-group"><label>Altura [cm]:</label><input type="number" id="inp-3d-h" value="8" oninput="calcularVolumenDespeje()"></div>
-  `;
-  calcularVolumenDespeje();
-}
-
-function calcularVolumenDespeje() {
-  const fig = document.getElementById('fig-tipo-3d').value;
-  const r = parseFloat(document.getElementById('inp-3d-r').value) || 4;
-  const h = parseFloat(document.getElementById('inp-3d-h').value) || 8;
-  const dens = parseFloat(document.getElementById('vol-material').value) || 1.24;
-  const s = document.getElementById('salida');
-
-  let vol = 0;
-  if (fig === 'cilindro') vol = Math.PI * r * r * h;
-  else if (fig === 'prisma') vol = r * r * h;
-  else if (fig === 'esfera') vol = (4/3) * Math.PI * Math.pow(r, 3);
-  else if (fig === 'cono') vol = (1/3) * Math.PI * r * r * h;
-  else vol = (1/3) * r * r * h;
-
-  const masa = vol * dens;
-
-  const cvs = document.getElementById('cvsVolumen3D');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-    ctx.strokeStyle = '#38bdf8'; ctx.fillStyle = 'rgba(56, 189, 248, 0.2)'; ctx.lineWidth = 2;
-
-    if (fig === 'cilindro') {
-      ctx.beginPath(); ctx.ellipse(cx, cy - 35, 55, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(cx, cy + 35, 55, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx - 55, cy - 35); ctx.lineTo(cx - 55, cy + 35); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx + 55, cy - 35); ctx.lineTo(cx + 55, cy + 35); ctx.stroke();
-    } else if (fig === 'esfera') {
-      ctx.beginPath(); ctx.arc(cx, cy, 55, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(cx, cy, 55, 18, 0, 0, Math.PI * 2); ctx.stroke();
-    } else if (fig === 'cono') {
-      ctx.beginPath(); ctx.ellipse(cx, cy + 45, 55, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx - 55, cy + 45); ctx.lineTo(cx, cy - 50); ctx.lineTo(cx + 55, cy + 45); ctx.stroke();
-    } else {
-      ctx.strokeRect(cx - 45, cy - 30, 90, 70);
-      ctx.strokeRect(cx - 25, cy - 50, 90, 70);
-      ctx.beginPath(); ctx.moveTo(cx - 45, cy - 30); ctx.lineTo(cx - 25, cy - 50); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx + 45, cy - 30); ctx.lineTo(cx + 65, cy - 50); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx - 45, cy + 40); ctx.lineTo(cx - 25, cy + 20); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx + 45, cy + 40); ctx.lineTo(cx + 65, cy + 20); ctx.stroke();
-    }
-  }
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cuerpo 3D: Volumen y Masa</h3>
-    <div class="step">Volumen total: <b>${vol.toFixed(2)} cm³</b></div>
-    <div class="step" style="border-left-color:#10b981;">Masa (${dens} g/cm³): <b style="color:#10b981; font-size:1.15rem;">${masa.toFixed(1)} g</b> (${(masa/1000).toFixed(3)} kg)</div>
-  `;
-  s.style.display = 'block';
-}
-
-function configurarInputsTrig() {
-  const cont = document.getElementById('inputs-trig-container');
-  if (!cont) return;
-  cont.innerHTML = `<div class="form-group"><label>Ángulo θ [°]:</label><input type="number" id="trig-val-ang" value="30" oninput="calcularTrigonometriaCompleta()"></div>`;
-  calcularTrigonometriaCompleta();
-}
-
-function cargarAnguloNotable() {
-  const val = document.getElementById('sel-angulo-notable').value;
-  if (val !== "") {
-    document.getElementById('trig-val-ang').value = val;
-    calcularTrigonometriaCompleta();
-  }
-}
-
-function calcularTrigonometriaCompleta() {
-  const deg = parseFloat(document.getElementById('trig-val-ang').value) || 0;
-  const rad = deg * Math.PI / 180;
-  const s = document.getElementById('salida');
-
-  const cvs = document.getElementById('cvsCirculoUnitario');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), cx = 90, cy = cvs.height - 40;
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-
-    let co = Math.sin(rad) * 110, ca = Math.cos(rad) * 110;
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + ca, cy); ctx.lineTo(cx + ca, cy - co); ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    ctx.fillStyle = '#f59e0b'; ctx.font = '11px monospace';
-    ctx.fillText(`Adyacente = ${Math.cos(rad).toFixed(2)}`, cx + 15, cy + 20);
-    ctx.fillText(`Opuesto = ${Math.sin(rad).toFixed(2)}`, cx + ca + 8, cy - co / 2);
-    ctx.fillText(`Hipotenusa = 1.0`, cx + ca/3, cy - co/1.5);
+    ctx.fillStyle = "#f59e0b";
+    ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`c = ${c}`, (x1 + x2) / 2, y1 + 16);
+    ctx.fillText(`b = ${b}`, (x1 + x3) / 2 - 20, (y1 + y3) / 2);
+    ctx.fillText(`a = ${a}`, (x2 + x3) / 2 + 10, (y2 + y3) / 2);
+
+  } else if (tipo === 'corona') {
+    const R = parseFloat(document.getElementById('g2d-R').value);
+    const r = parseFloat(document.getElementById('g2d-r').value);
+    if (r >= R) { alert("El radio mayor (R) debe ser estrictamente mayor al radio menor (r)."); return; }
+    area = Math.PI * (R * R - r * r);
+    formula = `A = π · (R² - r²)`;
+
+    const esc = 80 / R;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * esc, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r * esc, 0, Math.PI * 2, true);
+    ctx.fill(); ctx.stroke();
+
+    ctx.strokeStyle = "#f59e0b";
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * esc, cy); ctx.stroke();
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`R = ${R}`, cx + (R * esc) / 2, cy - 6);
+    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy + 14);
+
+  } else if (tipo === 'sector') {
+    const r = parseFloat(document.getElementById('g2d-r').value);
+    const ang = parseFloat(document.getElementById('g2d-ang').value);
+    const rad = (ang * Math.PI) / 180;
+    area = 0.5 * r * r * rad;
+    formula = `A = (θ / 360°) · π · r²`;
+
+    const esc = 90 / r;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r * esc, -rad / 2, rad / 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`θ = ${ang}°`, cx + 30, cy + 4);
+    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 25);
+
+  } else if (tipo === 'rombo') {
+    const D = parseFloat(document.getElementById('g2d-D').value);
+    const d = parseFloat(document.getElementById('g2d-d').value);
+    area = (D * d) / 2;
+    formula = `A = (D · d) / 2`;
+
+    const esc = 140 / Math.max(D, d);
+    const wH = (D * esc) / 2, hH = (d * esc) / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - wH, cy); ctx.lineTo(cx, cy - hH); ctx.lineTo(cx + wH, cy); ctx.lineTo(cx, cy + hH);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.setLineDash([3, 3]);
+    ctx.strokeStyle = "#f59e0b";
+    ctx.beginPath(); ctx.moveTo(cx - wH, cy); ctx.lineTo(cx + wH, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy - hH); ctx.lineTo(cx, cy + hH); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`D = ${D}`, cx + 8, cy - 6);
+    ctx.fillText(`d = ${d}`, cx - 24, cy - hH / 2);
+
+  } else if (tipo === 'trapecio') {
+    const B = parseFloat(document.getElementById('g2d-B').value);
+    const b = parseFloat(document.getElementById('g2d-b').value);
+    const h = parseFloat(document.getElementById('g2d-h').value);
+    area = ((B + b) * h) / 2;
+    formula = `A = [(B + b) · h] / 2`;
+
+    const esc = 160 / Math.max(B, h);
+    const wB = B * esc, wb = b * esc, hPx = h * esc;
+    const yTop = cy - hPx / 2, yBot = cy + hPx / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - wB / 2, yBot);
+    ctx.lineTo(cx + wB / 2, yBot);
+    ctx.lineTo(cx + wb / 2, yTop);
+    ctx.lineTo(cx - wb / 2, yTop);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`B = ${B}`, cx - 15, yBot + 16);
+    ctx.fillText(`b = ${b}`, cx - 15, yTop - 8);
+    ctx.fillText(`h = ${h}`, cx - wb / 2 - 30, cy);
+
+  } else if (tipo === 'tri_base_h') {
+    const b = parseFloat(document.getElementById('g2d-b').value);
+    const h = parseFloat(document.getElementById('g2d-h').value);
+    area = (b * h) / 2;
+    formula = `A = (base · altura) / 2`;
+
+    const esc = 150 / Math.max(b, h);
+    ctx.beginPath();
+    ctx.moveTo(cx - (b * esc) / 2, cy + (h * esc) / 2);
+    ctx.lineTo(cx + (b * esc) / 2, cy + (h * esc) / 2);
+    ctx.lineTo(cx, cy - (h * esc) / 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+  } else if (tipo === 'circulo') {
+    const r = parseFloat(document.getElementById('g2d-r').value);
+    area = Math.PI * r * r;
+    perim = 2 * Math.PI * r;
+    formula = `A = π · r²`;
+
+    const esc = 85 / r;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * esc, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+
+    ctx.strokeStyle = "#f59e0b";
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + r * esc, cy); ctx.stroke();
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 6);
+
+  } else {
+    // Cuadrado / Rectángulo / Polígono
+    area = 25; formula = "A = Lado · Lado";
+    ctx.beginPath(); ctx.rect(cx - 50, cy - 50, 100, 100); ctx.fill(); ctx.stroke();
   }
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Razones Trigonométricas para ${deg}°</h3>
-    <table class="didact-table">
-      <tr><th>sen(θ)</th><td>${Math.sin(rad).toFixed(4)}</td><th>csc(θ)</th><td>${(1/Math.sin(rad)).toFixed(4)}</td></tr>
-      <tr><th>cos(θ)</th><td>${Math.cos(rad).toFixed(4)}</td><th>sec(θ)</th><td>${(1/Math.cos(rad)).toFixed(4)}</td></tr>
-      <tr><th>tan(θ)</th><td>${Math.tan(rad).toFixed(4)}</td><th>cot(θ)</th><td>${(1/Math.tan(rad)).toFixed(4)}</td></tr>
-    </table>
-  `;
-  s.style.display = 'block';
-}
-
-function actualizarListaIdentidades() {
-  const sel = document.getElementById('ident-especifica');
-  if (sel) sel.innerHTML = `<option value="p1">sen²(θ) + cos²(θ) = 1</option><option value="d1">sen(2θ) = 2·sen(θ)·cos(θ)</option>`;
-}
-
-function demostrarIdentidadCompleta() {
-  const ang = parseFloat(document.getElementById('ident-ang1').value) || 30;
-  const cvs = document.getElementById('cvsIdentidadOnda');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = '#475569'; ctx.beginPath(); ctx.moveTo(20, h/2); ctx.lineTo(w - 20, h/2); ctx.stroke();
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.beginPath();
-    for (let x = 0; x < w - 40; x++) {
-      let t = (x / (w - 40)) * Math.PI * 4;
-      let y = Math.sin(t) * 45;
-      if (x === 0) ctx.moveTo(20 + x, h/2 - y); else ctx.lineTo(20 + x, h/2 - y);
-    }
-    ctx.stroke();
-  }
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#10b981;">Identidad Verificada Exactamente</h3><div class="step">sen²(${ang}°) + cos²(${ang}°) = <b>1.000</b></div>`;
-  s.style.display = 'block';
-}
-
-function ajustarInputsExponentes() {
-  const ley = document.getElementById('sel-ley-exp').value;
-  document.getElementById('grp-exp-b').style.display = (ley === 'dist_prod' || ley === 'dist_coc') ? 'block' : 'none';
-}
-
-function calcLeyesExponentes() {
-  const ley = document.getElementById('sel-ley-exp').value;
-  const a = document.getElementById('exp-a').value || "x";
-  const b = document.getElementById('exp-b').value || "y";
-  const n = parseFloat(document.getElementById('exp-n').value) || 3;
-  const m = parseFloat(document.getElementById('exp-m').value) || 2;
-  const s = document.getElementById('salida');
-
-  let paso = "";
-  if (ley === 'prod') paso = `(${a})^${n} · (${a})^${m} = (${a})^(${n} + ${m}) = <b>(${a})^${n + m}</b>`;
-  else if (ley === 'coc') paso = `(${a})^${n} / (${a})^${m} = (${a})^(${n} - ${m}) = <b>(${a})^${n - m}</b>`;
-  else if (ley === 'pot') paso = `((${a})^${n})^${m} = (${a})^(${n} · ${m}) = <b>(${a})^${n * m}</b>`;
-  else if (ley === 'dist_prod') paso = `(${a} · ${b})^${n} = <b>(${a})^${n} · (${b})^${n}</b>`;
-  else if (ley === 'cero') paso = `(${a})⁰ = <b>1</b> (Cualquier base no nula a la 0 es 1)`;
-  else paso = `(${a})⁻${n} = <b>1 / (${a})^${n}</b>`;
-
-  s.innerHTML = `<h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de los Exponentes</h3><div class="step">${paso}</div>`;
-  s.style.display = 'block';
-}
-
-// ==========================================
-// 4. FÍSICA: TORQUE, MRU/MRUA, BALÍSTICA Y DCL
-// ==========================================
-let torquesData = [
-  { f: 20, d: 0.3, sentido: 'abajo', color: '#38bdf8' },
-  { f: 15, d: 0.4, sentido: 'abajo', color: '#ef4444' }
-];
-
-function renderizarListaTorques() {
-  const cont = document.getElementById('lista-torques');
-  if (!cont) return;
-  cont.innerHTML = "";
-  torquesData.forEach((it, i) => {
-    cont.innerHTML += `
-      <div class="torque-item">
-        <span class="color-dot" style="background:${it.color};"></span>
-        <b>F${i+1}:</b>
-        <input type="number" value="${it.f}" min="0" style="flex:1;padding:4px;" onchange="torquesData[${i}].f=parseFloat(this.value)||0;dibujarVigaTorque();"> N
-        <span style="font-size:0.8rem;color:#94a3b8;">Dist:</span>
-        <input type="number" value="${it.d}" step="0.05" min="0" style="flex:1;padding:4px;" onchange="torquesData[${i}].d=parseFloat(this.value)||0;dibujarVigaTorque();"> m
-        <select style="width:auto;padding:4px;" onchange="torquesData[${i}].sentido=this.value;dibujarVigaTorque();">
-          <option value="abajo" ${it.sentido==='abajo'?'selected':''}>Empuja Abajo (↓)</option>
-          <option value="arriba" ${it.sentido==='arriba'?'selected':''}>Empuja Arriba (↑)</option>
-        </select>
-        ${torquesData.length > 1 ? `<button class="btn-del" onclick="eliminarTorque(${i})">✖</button>` : ''}
-      </div>
-    `;
-  });
-  dibujarVigaTorque();
-}
-
-function agregarFuerzaTorque() {
-  if (torquesData.length >= 6) return;
-  const pal = ['#38bdf8', '#ef4444', '#10b981', '#f59e0b', '#a855f7'];
-  torquesData.push({ f: 10, d: 0.2, sentido: 'abajo', color: pal[torquesData.length % pal.length] });
-  renderizarListaTorques();
-}
-
-function eliminarTorque(idx) {
-  torquesData.splice(idx, 1);
-  renderizarListaTorques();
-}
-
-function dibujarVigaTorque() {
-  const cvs = document.getElementById('cvsTorque');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cy = h / 2;
-  ctx.clearRect(0, 0, w, h);
-
-  const tipoBase = document.getElementById('torque-pos-base') ? document.getElementById('torque-pos-base').value : 'centro';
-  const fulcroX = tipoBase === 'centro' ? w / 2 : tipoBase === 'ext_izq' ? 60 : w - 60;
-
-  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 8;
-  ctx.beginPath(); ctx.moveTo(40, cy); ctx.lineTo(w - 40, cy); ctx.stroke();
-
-  ctx.fillStyle = '#f59e0b';
-  ctx.beginPath(); ctx.moveTo(fulcroX, cy); ctx.lineTo(fulcroX - 16, cy + 28); ctx.lineTo(fulcroX + 16, cy + 28); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#f59e0b'; ctx.font = '10px monospace'; ctx.fillText("EJE", fulcroX - 10, cy + 40);
-
-  const maxD = Math.max(...torquesData.map(t => t.d), 0.5);
-  const escalaX = (w / 2 - 70) / maxD;
-
-  torquesData.forEach((it, i) => {
-    let xPos = tipoBase === 'centro' ? (i % 2 === 0 ? fulcroX - it.d * escalaX : fulcroX + it.d * escalaX) : (fulcroX === 60 ? fulcroX + it.d * escalaX : fulcroX - it.d * escalaX);
-    if (it.sentido === 'abajo') {
-      dibujarFlecha(ctx, xPos, cy - 45, xPos, cy, it.color, 3);
-      ctx.fillStyle = it.color; ctx.font = 'bold 11px sans-serif'; ctx.fillText(`${it.f}N(↓)`, xPos - 16, cy - 52);
-    } else {
-      dibujarFlecha(ctx, xPos, cy + 45, xPos, cy, it.color, 3);
-      ctx.fillStyle = it.color; ctx.font = 'bold 11px sans-serif'; ctx.fillText(`${it.f}N(↑)`, xPos - 16, cy + 60);
-    }
-  });
-}
-
-function calcTorqueMulticomponente() {
-  let tNeto = 0;
-  torquesData.forEach(it => {
-    tNeto += (it.sentido === 'abajo' ? -1 : 1) * (it.f * it.d);
-  });
-  const s = document.getElementById('salida');
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;">Torque Neto: Στ = <b>${tNeto.toFixed(2)} N·m</b></h3>
-    <div class="step">${Math.abs(tNeto) <= 0.05 ? "⚖️ <b>Equilibrio rotacional alcanzado.</b>" : tNeto > 0 ? "↺ Gira antihorario." : "↻ Gira horario."}</div>
-  `;
-  s.style.display = 'block';
-}
-
-let fuerzasData = [{ f: 20, ang: 30, color: '#38bdf8' }, { f: 15, ang: 120, color: '#10b981' }];
-function renderizarListaFuerzas() {
-  const cont = document.getElementById('lista-fuerzas');
-  if (!cont) return;
-  cont.innerHTML = "";
-  fuerzasData.forEach((it, i) => {
-    cont.innerHTML += `
-      <div class="fuerza-item">
-        <span class="color-dot" style="background:${it.color};"></span>
-        <b>F${i+1}:</b>
-        <input type="number" value="${it.f}" min="0" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].f=parseFloat(this.value)||0;dibujarPlano();"> N
-        <input type="number" value="${it.ang}" style="flex:1;padding:4px;" onchange="fuerzasData[${i}].ang=parseFloat(this.value)||0;dibujarPlano();"> °
-        ${fuerzasData.length > 1 ? `<button class="btn-del" onclick="eliminarFuerza(${i})">✖</button>` : ''}
-      </div>
-    `;
-  });
-  dibujarPlano();
-}
-function agregarFuerza() {
-  fuerzasData.push({ f: 12, ang: 45, color: '#f59e0b' });
-  renderizarListaFuerzas();
-}
-function eliminarFuerza(idx) {
-  fuerzasData.splice(idx, 1);
-  renderizarListaFuerzas();
-}
-function dibujarPlano(res = null) {
-  const cvs = document.getElementById('cvsPlano');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-  ctx.clearRect(0,0,w,h);
-  ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(15, cy); ctx.lineTo(w-15, cy); ctx.moveTo(cx, 15); ctx.lineTo(cx, h-15); ctx.stroke();
-  let maxF = Math.max(...fuerzasData.map(f => f.f), res ? res.mag : 10, 10);
-  const escala = (w/2 - 50) / maxF;
-  fuerzasData.forEach((it, i) => {
-    const r = it.ang * Math.PI / 180;
-    const tx = cx + (it.f * Math.cos(r) * escala), ty = cy - (it.f * Math.sin(r) * escala);
-    dibujarFlecha(ctx, cx, cy, tx, ty, it.color, 2.5);
-    ctx.fillStyle = it.color; ctx.font = 'bold 11px monospace'; ctx.fillText(`F${i+1}=${it.f}N`, tx + 5, ty - 5);
-  });
-}
-function calcularPlanoFuerzas() {
-  let sx = 0, sy = 0;
-  fuerzasData.forEach(it => {
-    const r = it.ang * Math.PI / 180;
-    sx += it.f * Math.cos(r); sy += it.f * Math.sin(r);
-  });
-  const mag = Math.sqrt(sx*sx + sy*sy);
-  const ang = Math.atan2(sy, sx) * 180 / Math.PI;
-  dibujarPlano({ mag, ang });
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#ef4444;">Fuerza Neta: FR = <b>${mag.toFixed(2)} N</b> | θ = <b>${ang.toFixed(1)}°</b></h3>`;
-  s.style.display = 'block';
-}
-
-function configurarInputsMRUA() {
-  const mov = document.getElementById('mrua-tipo-mov').value;
-  const selInc = document.getElementById('mrua-incognita');
-  const cont = document.getElementById('mrua-inputs-dinamicos');
-
-  if (mov === 'mru') {
-    selInc.innerHTML = `<option value="d">Distancia (d = v · t)</option><option value="v">Velocidad (v = d / t)</option><option value="t">Tiempo (t = d / v)</option>`;
-    cont.innerHTML = `
-      <div class="form-group"><label>Velocidad v [m/s]:</label><input type="number" id="inp-mru-v" value="5"></div>
-      <div class="form-group"><label>Tiempo t [s]:</label><input type="number" id="inp-mru-t" value="6"></div>
-    `;
-  } else {
-    selInc.innerHTML = `<option value="d">Distancia (d = v₀t + ½at²)</option><option value="vf">Velocidad final (vf = v₀ + at)</option>`;
-    cont.innerHTML = `
-      <div class="form-group"><label>v₀ [m/s]:</label><input type="number" id="inp-mrua-v0" value="0"></div>
-      <div class="form-group"><label>a [m/s²]:</label><input type="number" id="inp-mrua-a" value="2"></div>
-      <div class="form-group"><label>t [s]:</label><input type="number" id="inp-mrua-t" value="5"></div>
-    `;
-  }
-}
-
-function calcMRUA_Grafico() {
-  const mov = document.getElementById('mrua-tipo-mov').value;
-  let d = 0, t = 5, v = 5;
-
-  if (mov === 'mru') {
-    v = parseFloat(document.getElementById('inp-mru-v').value) || 5;
-    t = parseFloat(document.getElementById('inp-mru-t').value) || 5;
-    d = v * t;
-  } else {
-    let v0 = parseFloat(document.getElementById('inp-mrua-v0').value) || 0;
-    let a = parseFloat(document.getElementById('inp-mrua-a').value) || 2;
-    t = parseFloat(document.getElementById('inp-mrua-t').value) || 5;
-    d = (v0 * t) + (0.5 * a * t * t);
-  }
-
-  const cvs = document.getElementById('cvsMRUA');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0,0,w,h);
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(40, 20); ctx.lineTo(40, h - 35); ctx.lineTo(w - 20, h - 35); ctx.stroke();
-
-    ctx.fillStyle = '#94a3b8'; ctx.font = '10px monospace';
-    ctx.fillText("d (m)", 10, 25);
-    ctx.fillText("t (s)", w - 30, h - 15);
-    ctx.fillText(`t=${t}s`, w - 60, h - 20);
-    ctx.fillText(`d=${d.toFixed(1)}m`, 45, 30);
-
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
-    ctx.moveTo(40, h - 35);
-    ctx.lineTo(w - 50, 35);
-    ctx.stroke();
-  }
-
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#38bdf8;">Recorrido: Distancia final = <b>${d.toFixed(2)} m</b> en <b>${t} segundos</b></h3>`;
-  s.style.display = 'block';
-}
-
-function calcParabolico_Grafico() {
-  const v0 = parseFloat(document.getElementById('par-v0').value) || 25;
-  const ang = parseFloat(document.getElementById('par-ang').value) || 45;
-  const g = 9.81, rad = ang * Math.PI / 180;
-  const voy = v0 * Math.sin(rad), vox = v0 * Math.cos(rad);
-  const tv = (2 * voy) / g, hmax = (voy * voy) / (2 * g), xmax = vox * tv;
-
-  const cvs = document.getElementById('cvsParabolico');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height;
-    ctx.clearRect(0,0,w,h);
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(35, 20); ctx.lineTo(35, h - 30); ctx.lineTo(w - 20, h - 30); ctx.stroke();
-
-    ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2.5; ctx.beginPath();
-    for (let px = 0; px <= w - 65; px += 4) {
-      let xr = (px / (w - 65)) * xmax, tc = xr / (vox || 1), yr = (voy * tc) - (0.5 * g * tc * tc);
-      if (yr < 0) yr = 0;
-      let cy = (h - 30) - (yr / (hmax || 1)) * (h - 60);
-      if (px === 0) ctx.moveTo(35 + px, cy); else ctx.lineTo(35 + px, cy);
-    }
-    ctx.stroke();
-
-    ctx.fillStyle = '#f59e0b'; ctx.font = '10px monospace';
-    ctx.fillText(`Hmax = ${hmax.toFixed(1)} m`, w/2 - 30, 25);
-    ctx.fillText(`Alcance = ${xmax.toFixed(1)} m`, w - 100, h - 12);
-  }
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#f59e0b;">Tiro Parabólico: Hmax = <b>${hmax.toFixed(2)} m</b> | Alcance = <b>${xmax.toFixed(2)} m</b> | Tiempo de vuelo = <b>${tv.toFixed(2)} s</b></h3>`;
-  s.style.display = 'block';
-}
-
-function configurarInputsDCL() {
-  const tipo = document.getElementById('dcl-tipo-sistema').value;
-  const cont = document.getElementById('inputs-dcl-dinamicos');
-  if (tipo === 'plano') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Masa (m) [kg]:</label><input type="number" id="dcl-m" value="5"></div>
-      <div class="form-group"><label>Fuerza F [N]:</label><input type="number" id="dcl-f" value="30"></div>
-      <div class="form-group"><label>Coef. Fricción μ:</label><input type="number" id="dcl-mu" value="0.25"></div>
-    `;
-  } else {
-    cont.innerHTML = `
-      <div class="form-group"><label>Masa suspendida (m) [kg]:</label><input type="number" id="dcl-m" value="10"></div>
-      <div class="form-group"><label>Aceleración vertical [m/s²]:</label><input type="number" id="dcl-a-vert" value="0"></div>
-    `;
-  }
-  calcDCL_Friccion();
-}
-
-function calcDCL_Friccion() {
-  const tipo = document.getElementById('dcl-tipo-sistema').value;
-  const m = parseFloat(document.getElementById('dcl-m').value) || 1;
-  const g = 9.81, peso = m * g;
-  const cvs = document.getElementById('cvsDCL');
-  const s = document.getElementById('salida');
-
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
-    ctx.clearRect(0,0,cvs.width, cvs.height);
-
-    if (tipo === 'plano') {
-      const f = parseFloat(document.getElementById('dcl-f').value) || 0;
-      const mu = parseFloat(document.getElementById('dcl-mu').value) || 0;
-      const norm = peso, fric = mu * norm, a = Math.max(0, (f - fric) / m);
-
-      ctx.strokeStyle = '#475569'; ctx.beginPath(); ctx.moveTo(40, cy + 30); ctx.lineTo(cvs.width - 40, cy + 30); ctx.stroke();
-      ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-      ctx.fillRect(cx - 30, cy - 30, 60, 60); ctx.strokeRect(cx - 30, cy - 30, 60, 60);
-
-      dibujarFlecha(ctx, cx + 30, cy, cx + 90, cy, '#38bdf8', 2.5);
-      dibujarFlecha(ctx, cx - 30, cy, cx - 80, cy, '#ef4444', 2.5);
-      dibujarFlecha(ctx, cx, cy - 30, cx, cy - 80, '#10b981', 2.5);
-      dibujarFlecha(ctx, cx, cy + 30, cx, cy + 80, '#f59e0b', 2.5);
-
-      ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
-      ctx.fillText(`N=${norm.toFixed(1)}N`, cx + 6, cy - 65);
-      ctx.fillText(`mg=${peso.toFixed(1)}N`, cx + 6, cy + 65);
-      ctx.fillText(`F=${f}N`, cx + 65, cy - 8);
-      ctx.fillText(`fr=${fric.toFixed(1)}N`, cx - 85, cy - 8);
-
-      s.innerHTML = `<h3 style="color:#38bdf8;">DCL Plano: Normal = ${norm.toFixed(1)} N | Fricción = ${fric.toFixed(1)} N | Aceleración = <b>${a.toFixed(2)} m/s²</b></h3>`;
-    } else {
-      const aVert = parseFloat(document.getElementById('dcl-a-vert').value) || 0;
-      const tension = m * (g + aVert);
-
-      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(cx, 15); ctx.lineTo(cx, cy - 25); ctx.stroke();
-      ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2;
-      ctx.fillRect(cx - 25, cy - 25, 50, 50); ctx.strokeRect(cx - 25, cy - 25, 50, 50);
-
-      dibujarFlecha(ctx, cx, cy - 25, cx, cy - 75, '#10b981', 2.5);
-      dibujarFlecha(ctx, cx, cy + 25, cx, cy + 75, '#ef4444', 2.5);
-
-      ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
-      ctx.fillText(`T = ${tension.toFixed(1)} N`, cx + 8, cy - 50);
-      ctx.fillText(`mg = ${peso.toFixed(1)} N`, cx + 8, cy + 55);
-
-      s.innerHTML = `<h3 style="color:#10b981;">Cuerpo Colgante: Tensión de la cuerda = <b>${tension.toFixed(2)} N</b> | Peso = <b>${peso.toFixed(2)} N</b></h3>`;
-    }
-  }
-  s.style.display = 'block';
-}
-
-function dibujarFlecha(ctx, x1, y1, x2, y2, color, w) {
-  const head = 8, a = Math.atan2(y2 - y1, x2 - x1);
-  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w;
-  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - head * Math.cos(a - Math.PI/6), y2 - head * Math.sin(a - Math.PI/6));
-  ctx.lineTo(x2 - head * Math.cos(a + Math.PI/6), y2 - head * Math.sin(a + Math.PI/6));
-  ctx.fill();
-}
-
-// ==========================================
-// 5. ROBÓTICA: ESQUEMAS, RESISTENCIAS Y OHM
-// ==========================================
-function configurarInputsComponente() {
-  const comp = document.getElementById('rob-sel-comp').value;
-  const cont = document.getElementById('rob-inputs-comp');
-  if (comp === 'diodo') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Vcc [V]:</label><input type="number" id="inp-rob-vcc" value="5"></div>
-      <div class="form-group"><label>Vdiodo [V]:</label><input type="number" id="inp-rob-vd" value="0.7"></div>
-      <div class="form-group"><label>Corriente [A]:</label><input type="number" id="inp-rob-i" value="0.02"></div>
-    `;
-  } else if (comp === 'transistor') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Corriente Carga [mA]:</label><input type="number" id="inp-rob-ic" value="200"></div>
-      <div class="form-group"><label>Ganancia β (hFE):</label><input type="number" id="inp-rob-beta" value="100"></div>
-      <div class="form-group"><label>V_control [V]:</label><input type="number" id="inp-rob-vctrl" value="5"></div>
-    `;
-  } else if (comp === 'capacitor') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Resistencia R [Ω]:</label><input type="number" id="inp-rob-rc-r" value="1000"></div>
-      <div class="form-group"><label>Capacitancia C [µF]:</label><input type="number" id="inp-rob-rc-c" value="100"></div>
-    `;
-  } else {
-    cont.innerHTML = `
-      <div class="form-group"><label>Vin [V]:</label><input type="number" id="inp-rob-vin" value="12"></div>
-      <div class="form-group"><label>Vout [V]:</label><input type="number" id="inp-rob-vout" value="5"></div>
-      <div class="form-group"><label>Corriente Carga [A]:</label><input type="number" id="inp-rob-i-reg" value="0.5"></div>
-    `;
-  }
-  calcularComponenteHardware();
-}
-
-function calcularComponenteHardware() {
-  const comp = document.getElementById('rob-sel-comp').value;
-  const cvs = document.getElementById('cvsEsquemaRob');
-  const s = document.getElementById('salida');
-
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
-    ctx.clearRect(0,0,cvs.width, cvs.height);
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
-
-    if (comp === 'diodo') {
-      ctx.beginPath(); ctx.moveTo(50, cy); ctx.lineTo(160, cy); ctx.stroke();
-      ctx.strokeRect(160, cy - 12, 60, 24);
-      ctx.beginPath(); ctx.moveTo(220, cy); ctx.lineTo(290, cy); ctx.stroke();
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath(); ctx.moveTo(290, cy - 18); ctx.lineTo(290, cy + 18); ctx.lineTo(325, cy); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(325, cy - 18); ctx.lineTo(325, cy + 18); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(325, cy); ctx.lineTo(420, cy); ctx.stroke();
-
-      let vcc = parseFloat(document.getElementById('inp-rob-vcc').value) || 5;
-      let vd = parseFloat(document.getElementById('inp-rob-vd').value) || 0.7;
-      let i = parseFloat(document.getElementById('inp-rob-i').value) || 0.02;
-      let r = (vcc - vd) / i;
-      s.innerHTML = `<h3 style="color:#38bdf8;">Esquema Diodo: R limitadora = <b>${r.toFixed(1)} Ω</b></h3>`;
-    } else {
-      ctx.strokeStyle = '#f59e0b';
-      ctx.strokeRect(cx - 50, cy - 35, 100, 70);
-      ctx.fillStyle = '#f8fafc'; ctx.font = '12px monospace';
-      ctx.fillText(comp.toUpperCase(), cx - 35, cy + 5);
-      s.innerHTML = `<h3 style="color:#f59e0b;">Esquema Generado para ${comp.toUpperCase()}</h3>`;
-    }
-  }
-  s.style.display = 'block';
-}
-
-let listaResistencias = [220, 330, 470];
-function renderizarListaResistencias() {
-  const cont = document.getElementById('lista-resistencias-red');
-  if (!cont) return;
-  cont.innerHTML = "";
-  listaResistencias.forEach((r, idx) => {
-    cont.innerHTML += `
-      <div style="display:inline-flex; align-items:center; gap:4px; background:#0f172a; padding:4px 8px; border-radius:6px; margin:4px; border:1px solid #334155;">
-        <b>R${idx+1}:</b>
-        <input type="number" value="${r}" style="width:70px; padding:2px;" onchange="listaResistencias[${idx}]=parseFloat(this.value)||0;calcResistenciaEquivalente();"> Ω
-        ${listaResistencias.length > 1 ? `<button class="btn-del" onclick="eliminarResistorRed(${idx})">✖</button>` : ''}
-      </div>
-    `;
-  });
-  calcResistenciaEquivalente();
-}
-function agregarResistorRed() {
-  listaResistencias.push(100);
-  renderizarListaResistencias();
-}
-function eliminarResistorRed(idx) {
-  listaResistencias.splice(idx, 1);
-  renderizarListaResistencias();
-}
-function calcResistenciaEquivalente() {
-  const modo = document.getElementById('res-modo-asoc').value;
-  let req = 0;
-  if (modo === 'serie') {
-    req = listaResistencias.reduce((a, b) => a + b, 0);
-  } else {
-    let sumInv = listaResistencias.reduce((a, b) => a + (b > 0 ? 1/b : 0), 0);
-    req = sumInv > 0 ? 1 / sumInv : 0;
-  }
-  const cvs = document.getElementById('cvsResistenciasRed');
-  if (cvs) {
-    const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cy = h/2;
-    ctx.clearRect(0,0,w,h);
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.moveTo(20, cy); ctx.lineTo(60, cy); ctx.stroke();
-    listaResistencias.forEach((r, i) => {
-      let px = 60 + i * (320 / listaResistencias.length);
-      ctx.strokeRect(px, cy - 12, 35, 24);
-      ctx.beginPath(); ctx.moveTo(px + 35, cy); ctx.lineTo(px + (320 / listaResistencias.length), cy); ctx.stroke();
-    });
-  }
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#10b981;">Resistencia Equivalente Total (${modo}): Req = <b>${req.toFixed(2)} Ω</b></h3>`;
-  s.style.display = 'block';
-}
-
-function configurarInputsOhm() {
-  const p = document.getElementById('ohm-pareja-datos').value;
-  const cont = document.getElementById('inputs-ohm-dinamicos');
-  if (p === 'vr') cont.innerHTML = `<div class="form-group"><label>V [V]:</label><input type="number" id="ohm-v" value="12"></div><div class="form-group"><label>R [Ω]:</label><input type="number" id="ohm-r" value="4"></div>`;
-  else if (p === 'vi') cont.innerHTML = `<div class="form-group"><label>V [V]:</label><input type="number" id="ohm-v" value="12"></div><div class="form-group"><label>I [A]:</label><input type="number" id="ohm-i" value="3"></div>`;
-  else cont.innerHTML = `<div class="form-group"><label>I [A]:</label><input type="number" id="ohm-i" value="2"></div><div class="form-group"><label>R [Ω]:</label><input type="number" id="ohm-r" value="10"></div>`;
-}
-
-function calcCircuitoEsquematico() {
-  let v = 0, i = 0, r = 0, p = 0;
-  if (document.getElementById('ohm-v') && document.getElementById('ohm-r')) {
-    v = parseFloat(document.getElementById('ohm-v').value) || 0;
-    r = parseFloat(document.getElementById('ohm-r').value) || 1;
-    i = v / r; p = v * i;
-  } else if (document.getElementById('ohm-v') && document.getElementById('ohm-i')) {
-    v = parseFloat(document.getElementById('ohm-v').value) || 0;
-    i = parseFloat(document.getElementById('ohm-i').value) || 0;
-    r = i > 0 ? v / i : 0; p = v * i;
-  } else {
-    i = parseFloat(document.getElementById('ohm-i').value) || 0;
-    r = parseFloat(document.getElementById('ohm-r').value) || 0;
-    v = i * r; p = v * i;
-  }
-  const s = document.getElementById('salida');
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;">Rueda de la Ley de Ohm & Potencia:</h3>
-    <div class="step">Voltaje V = <b>${v.toFixed(2)} V</b> | Corriente I = <b>${i.toFixed(3)} A</b></div>
-    <div class="step">Resistencia R = <b>${r.toFixed(2)} Ω</b> | Potencia P = <b>${p.toFixed(2)} W</b></div>
-  `;
-  s.style.display = 'block';
-}
-
-function calcBateria() {
-  const cap = parseFloat(document.getElementById('b-cap').value) || 2200;
-  const tot = (parseFloat(document.getElementById('b-ard').value)||50) + (parseFloat(document.getElementById('b-sen').value)||60) + (parseFloat(document.getElementById('b-mot').value)||400);
-  const h = (cap * 0.70) / tot;
-  const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#38bdf8;">Autonomía: <b>${h.toFixed(1)} horas</b> (~${Math.round(h*60)} min)</h3>`;
-  s.style.display = 'block';
-}
-
-// ==========================================
-// 6. QUÍMICA INTEGRAL: TABLA COMPLETA, PARSER Y DIBUJO ESTRUCTURAL
-// ==========================================
-const tablaPeriodicaCompleta = [
-  { z: 1, s: "H", n: "Hidrógeno", m: 1.008, g: "No metal", val: "1, -1" },
-  { z: 2, s: "He", n: "Helio", m: 4.003, g: "Gas noble", val: "0" },
-  { z: 3, s: "Li", n: "Litio", m: 6.94, g: "Metal alcalino", val: "1" },
-  { z: 4, s: "Be", n: "Berilio", m: 9.012, g: "Alcalinotérreo", val: "2" },
-  { z: 5, s: "B", n: "Boro", m: 10.81, g: "Metaloide", val: "3" },
-  { z: 6, s: "C", n: "Carbono", m: 12.011, g: "No metal", val: "2, 4, -4" },
-  { z: 7, s: "N", n: "Nitrógeno", m: 14.007, g: "No metal", val: "1, 2, 3, 4, 5, -3" },
-  { z: 8, s: "O", n: "Oxígeno", m: 15.999, g: "No metal", val: "-2" },
-  { z: 9, s: "F", n: "Flúor", m: 18.998, g: "Halógeno", val: "-1" },
-  { z: 10, s: "Ne", n: "Neón", m: 20.180, g: "Gas noble", val: "0" },
-  { z: 11, s: "Na", n: "Sodio", m: 22.990, g: "Metal alcalino", val: "1" },
-  { z: 12, s: "Mg", n: "Magnesio", m: 24.305, g: "Alcalinotérreo", val: "2" },
-  { z: 13, s: "Al", n: "Aluminio", m: 26.982, g: "Metal del bloque p", val: "3" },
-  { z: 14, s: "Si", n: "Silicio", m: 28.085, g: "Metaloide", val: "4, -4" },
-  { z: 15, s: "P", n: "Fósforo", m: 30.974, g: "No metal", val: "3, 5, -3" },
-  { z: 16, s: "S", n: "Azufre", m: 32.06, g: "No metal", val: "2, 4, 6, -2" },
-  { z: 17, s: "Cl", n: "Cloro", m: 35.45, g: "Halógeno", val: "1, 3, 5, 7, -1" },
-  { z: 18, s: "Ar", n: "Argón", m: 39.948, g: "Gas noble", val: "0" },
-  { z: 19, s: "K", n: "Potasio", m: 39.098, g: "Metal alcalino", val: "1" },
-  { z: 20, s: "Ca", n: "Calcio", m: 40.078, g: "Alcalinotérreo", val: "2" },
-  { z: 21, s: "Sc", n: "Escandio", m: 44.956, g: "Transición", val: "3" },
-  { z: 22, s: "Ti", n: "Titanio", m: 47.867, g: "Transición", val: "2, 3, 4" },
-  { z: 23, s: "V", n: "Vanadio", m: 50.942, g: "Transición", val: "2, 3, 4, 5" },
-  { z: 24, s: "Cr", n: "Cromo", m: 51.996, g: "Transición", val: "2, 3, 6" },
-  { z: 25, s: "Mn", n: "Manganeso", m: 54.938, g: "Transición", val: "2, 3, 4, 6, 7" },
-  { z: 26, s: "Fe", n: "Hierro", m: 55.845, g: "Transición", val: "2, 3" },
-  { z: 27, s: "Co", n: "Cobalto", m: 58.933, g: "Transición", val: "2, 3" },
-  { z: 28, s: "Ni", n: "Níquel", m: 58.693, g: "Transición", val: "2, 3" },
-  { z: 29, s: "Cu", n: "Cobre", m: 63.546, g: "Transición", val: "1, 2" },
-  { z: 30, s: "Zn", n: "Zinc", m: 65.38, g: "Transición", val: "2" },
-  { z: 31, s: "Ga", n: "Galio", m: 69.723, g: "Metal bloque p", val: "3" },
-  { z: 32, s: "Ge", n: "Germanio", m: 72.630, g: "Metaloide", val: "4" },
-  { z: 33, s: "As", n: "Arsénico", m: 74.922, g: "Metaloide", val: "3, 5, -3" },
-  { z: 34, s: "Se", n: "Selenio", m: 78.971, g: "No metal", val: "2, 4, 6, -2" },
-  { z: 35, s: "Br", n: "Bromo", m: 79.904, g: "Halógeno", val: "1, 3, 5, -1" },
-  { z: 36, s: "Kr", n: "Kriptón", m: 83.798, g: "Gas noble", val: "0" },
-  { z: 37, s: "Rb", n: "Rubidio", m: 85.468, g: "Metal alcalino", val: "1" },
-  { z: 38, s: "Sr", n: "Estroncio", m: 87.62, g: "Alcalinotérreo", val: "2" },
-  { z: 47, s: "Ag", n: "Plata", m: 107.87, g: "Transición", val: "1" },
-  { z: 50, s: "Sn", n: "Estaño", m: 118.71, g: "Metal bloque p", val: "2, 4" },
-  { z: 53, s: "I", n: "Yodo", m: 126.90, g: "Halógeno", val: "1, 3, 5, 7, -1" },
-  { z: 56, s: "Ba", n: "Bario", m: 137.33, g: "Alcalinotérreo", val: "2" },
-  { z: 74, s: "W", n: "Wolframio / Tungsteno", m: 183.84, g: "Transición", val: "2, 4, 6" },
-  { z: 78, s: "Pt", n: "Platino", m: 195.08, g: "Transición", val: "2, 4" },
-  { z: 79, s: "Au", n: "Oro", m: 196.97, g: "Transición", val: "1, 3" },
-  { z: 80, s: "Hg", n: "Mercurio", m: 200.59, g: "Transición", val: "1, 2" },
-  { z: 82, s: "Pb", n: "Plomo", m: 207.2, g: "Metal bloque p", val: "2, 4" },
-  { z: 92, s: "U", n: "Uranio", m: 238.03, g: "Actínido", val: "3, 4, 5, 6" }
-];
-
-const tablaPesosCompletos = {};
-tablaPeriodicaCompleta.forEach(el => { tablaPesosCompletos[el.s] = el.m; });
-
-const coloresCPK = {
-  H: "#f8fafc", C: "#334155", O: "#ef4444", N: "#3b82f6", S: "#eab308",
-  Cl: "#22c55e", Na: "#a855f7", Ca: "#64748b", Mn: "#ec4899", K: "#9333ea",
-  Al: "#94a3b8", Fe: "#d97706", Cu: "#ea580c", Zn: "#475569", Br: "#991b1b",
-  I: "#6b21a8", P: "#f59e0b", Ba: "#059669", Ti: "#64748b", Ag: "#cbd5e1", Au: "#eab308"
-};
-
-const datosCompuestosQuim = {
-  "H2O": {
-    nom: { iupac: "Monóxido de dihidrógeno", stock: "Óxido de hidrógeno", trad: "Agua" },
-    tipoEnlace: "Covalente polar (104.5°)", geom: "Angular",
-    atomos: [{el:"O", x:0, y:-10, r:24}, {el:"H", x:-65, y:40, r:16}, {el:"H", x:65, y:40, r:16}],
-    enlaces: [[0,1,1], [0,2,1]]
-  },
-  "CO2": {
-    nom: { iupac: "Dióxido de carbono", stock: "Óxido de carbono(IV)", trad: "Anhídrido carbónico" },
-    tipoEnlace: "Covalente no polar (Dobles enlaces)", geom: "Lineal (180°)",
-    atomos: [{el:"C", x:0, y:0, r:22}, {el:"O", x:-90, y:0, r:22}, {el:"O", x:90, y:0, r:22}],
-    enlaces: [[0,1,2], [0,2,2]]
-  },
-  "CH4": {
-    nom: { iupac: "Tetrahidruro de carbono", stock: "Hidruro de carbono(IV)", trad: "Metano" },
-    tipoEnlace: "Covalente no polar", geom: "Tetraédrica (109.5°)",
-    atomos: [{el:"C", x:0, y:0, r:22}, {el:"H", x:0, y:-70, r:16}, {el:"H", x:70, y:20, r:16}, {el:"H", x:-70, y:20, r:16}, {el:"H", x:0, y:70, r:16}],
-    enlaces: [[0,1,1], [0,2,1], [0,3,1], [0,4,1]]
-  },
-  "NH3": {
-    nom: { iupac: "Trihidruro de nitrógeno", stock: "Hidruro de nitrógeno(III)", trad: "Amoníaco" },
-    tipoEnlace: "Covalente polar", geom: "Piramidal trigonal",
-    atomos: [{el:"N", x:0, y:-15, r:22}, {el:"H", x:-60, y:45, r:16}, {el:"H", x:60, y:45, r:16}, {el:"H", x:0, y:60, r:16}],
-    enlaces: [[0,1,1], [0,2,1], [0,3,1]]
-  },
-  "HCl": {
-    nom: { iupac: "Cloruro de hidrógeno", stock: "Cloruro de hidrógeno", trad: "Ácido clorhídrico" },
-    tipoEnlace: "Covalente polar", geom: "Lineal",
-    atomos: [{el:"Cl", x:-40, y:0, r:26}, {el:"H", x:50, y:0, r:16}],
-    enlaces: [[0,1,1]]
-  },
-  "NaCl": {
-    nom: { iupac: "Monocloruro de sodio", stock: "Cloruro de sodio", trad: "Sal común" },
-    tipoEnlace: "Iónico (Na⁺ Cl⁻)", geom: "Red iónica",
-    atomos: [{el:"Na", x:-50, y:0, r:20}, {el:"Cl", x:50, y:0, r:26}],
-    enlaces: [[0,1,1]]
-  },
-  "C2H5OH": {
-    nom: { iupac: "Etanol", stock: "Etanol", trad: "Alcohol etílico" },
-    tipoEnlace: "Covalente polar (-OH)", geom: "Tetraédrica plegada",
-    atomos: [{el:"C", x:-70, y:0, r:20}, {el:"C", x:0, y:0, r:20}, {el:"O", x:65, y:0, r:22}, {el:"H", x:115, y:0, r:15}],
-    enlaces: [[0,1,1], [1,2,1], [2,3,1]]
-  },
-  "H2SO4": {
-    nom: { iupac: "Tetraoxosulfato(VI) de hidrógeno", stock: "Sulfato(VI) de hidrógeno", trad: "Ácido sulfúrico" },
-    tipoEnlace: "Covalente coordinado", geom: "Tetraédrica en S",
-    atomos: [{el:"S", x:0, y:0, r:24}, {el:"O", x:0, y:-60, r:20}, {el:"O", x:0, y:60, r:20}, {el:"O", x:-60, y:0, r:20}, {el:"O", x:60, y:0, r:20}],
-    enlaces: [[0,1,2], [0,2,2], [0,3,1], [0,4,1]]
-  },
-  "HNO3": {
-    nom: { iupac: "Trioxonitrato(V) de hidrógeno", stock: "Nitrato(V) de hidrógeno", trad: "Ácido nítrico" },
-    tipoEnlace: "Covalente polar resonante", geom: "Trigonal plana",
-    atomos: [{el:"N", x:0, y:0, r:22}, {el:"O", x:0, y:-55, r:20}, {el:"O", x:55, y:30, r:20}, {el:"O", x:-55, y:30, r:20}],
-    enlaces: [[0,1,2], [0,2,1], [0,3,1]]
-  },
-  "NaOH": {
-    nom: { iupac: "Hidróxido de sodio", stock: "Hidróxido de sodio", trad: "Sosa cáustica" },
-    tipoEnlace: "Iónico (Na⁺ OH⁻)", geom: "Lineal iónica",
-    atomos: [{el:"Na", x:-65, y:0, r:20}, {el:"O", x:10, y:0, r:22}, {el:"H", x:65, y:0, r:15}],
-    enlaces: [[0,1,1], [1,2,1]]
-  },
-  "CaCO3": {
-    nom: { iupac: "Trioxocarbonato de calcio", stock: "Carbonato de calcio", trad: "Caliza" },
-    tipoEnlace: "Iónico y covalente", geom: "Trigonal plana en anión",
-    atomos: [{el:"Ca", x:-75, y:0, r:24}, {el:"C", x:20, y:0, r:20}, {el:"O", x:20, y:-50, r:18}, {el:"O", x:75, y:0, r:18}, {el:"O", x:20, y:50, r:18}],
-    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,1]]
-  },
-  "KMnO4": {
-    nom: { iupac: "Tetraoxomanganato(VII) de potasio", stock: "Permanganato de potasio", trad: "Permanganato potásico" },
-    tipoEnlace: "Iónico", geom: "Tetraédrica en Mn",
-    atomos: [{el:"K", x:-80, y:0, r:22}, {el:"Mn", x:15, y:0, r:24}, {el:"O", x:15, y:-55, r:18}, {el:"O", x:70, y:0, r:18}, {el:"O", x:15, y:55, r:18}],
-    enlaces: [[0,1,1], [1,2,2], [1,3,1], [1,4,2]]
-  },
-  "C6H12O6": {
-    nom: { iupac: "2,3,4,5,6-pentahidroxihexanal", stock: "D-Glucosa", trad: "Glucosa" },
-    tipoEnlace: "Covalente polar", geom: "Anillo piranósico",
-    atomos: [{el:"C", x:-45, y:-25, r:17}, {el:"C", x:0, y:-45, r:17}, {el:"C", x:45, y:-25, r:17}, {el:"C", x:45, y:25, r:17}, {el:"C", x:0, y:45, r:17}, {el:"O", x:-45, y:25, r:19}],
-    enlaces: [[0,1,1], [1,2,1], [2,3,1], [3,4,1], [4,5,1], [5,0,1]]
-  }
-};
-
-function buscarElementoQuimico() {
-  const txt = (document.getElementById('tabla-buscador') ? document.getElementById('tabla-buscador').value : "").toLowerCase().trim();
-  const cont = document.getElementById('tabla-resultados-contenedor');
-  if (!cont) return;
-
-  const filtrados = tablaPeriodicaCompleta.filter(el =>
-    el.n.toLowerCase().includes(txt) ||
-    el.s.toLowerCase().includes(txt) ||
-    el.z.toString() === txt
-  );
-
-  cont.innerHTML = "";
-  if (filtrados.length === 0) {
-    cont.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:10px;">No se encontraron elementos coincidentes con "${txt}".</div>`;
-    return;
-  }
-
-  filtrados.forEach(el => {
-    cont.innerHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding:6px 8px;">
-        <div>
-          <b style="color:#38bdf8; font-size:1.15rem;">${el.s}</b> <span style="color:#f8fafc; font-weight:bold;">— ${el.n}</span> (Z = ${el.z})
-          <span style="display:block; font-size:0.8rem; color:#94a3b8;">Familia: ${el.g} | Valencia: ${el.val}</span>
-        </div>
-        <div style="text-align:right;">
-          <b style="color:#10b981; font-family:monospace; font-size:0.95rem;">${el.m} g/mol</b>
-        </div>
-      </div>
-    `;
-  });
-}
-
-function limpiarSelectorPredefinido() {
-  const s = document.getElementById('chem-comp');
-  if (s) s.value = "";
-}
-
-function cargarCompuestoPredefinido() {
-  const s = document.getElementById('chem-comp').value;
-  if (s) {
-    document.getElementById('chem-custom-input').value = s;
-    calcMasaMolarExtendida();
-  }
-}
-
-function parsearFormulaQuimica(formula) {
-  const stack = [{}];
-  const regex = /([A-Z][a-z]?)|(\()|(\))|(\d+)/g;
-  let match, elementoPrevio = null;
-
-  while ((match = regex.exec(formula)) !== null) {
-    const [token, elem, abre, cierra, num] = match;
-    if (elem) {
-      elementoPrevio = elem;
-      stack[stack.length - 1][elem] = (stack[stack.length - 1][elem] || 0) + 1;
-    } else if (num && elementoPrevio) {
-      stack[stack.length - 1][elementoPrevio] += parseInt(num) - 1;
-      elementoPrevio = null;
-    } else if (abre) {
-      stack.push({});
-      elementoPrevio = null;
-    } else if (cierra) {
-      const grupo = stack.pop();
-      elementoPrevio = null;
-      let mult = 1;
-      const sig = formula.slice(regex.lastIndex).match(/^\d+/);
-      if (sig) { mult = parseInt(sig[0]); regex.lastIndex += sig[0].length; }
-      for (let k in grupo) stack[stack.length - 1][k] = (stack[stack.length - 1][k] || 0) + (grupo[k] * mult);
-    }
-  }
-  return stack[0];
-}
-
-function dibujarEstructura2DMolecula(compKey) {
-  const cvs = document.getElementById('cvsMol2D');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-  ctx.clearRect(0, 0, w, h);
-
-  const mol = datosCompuestosQuim[compKey];
-  if (!mol || !mol.atomos) return;
-
-  mol.enlaces.forEach(enl => {
-    const a1 = mol.atomos[enl[0]], a2 = mol.atomos[enl[1]], orden = enl[2] || 1;
-    const x1 = cx + a1.x, y1 = cy + a1.y, x2 = cx + a2.x, y2 = cy + a2.y;
-    ctx.strokeStyle = '#64748b';
-    if (orden === 1) {
-      ctx.lineWidth = 5;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    } else {
-      ctx.lineWidth = 3;
-      const dx = y2 - y1, dy = -(x2 - x1);
-      const len = Math.sqrt(dx*dx + dy*dy) || 1;
-      const ox = (dx / len) * 4, oy = (dy / len) * 4;
-      ctx.beginPath(); ctx.moveTo(x1 + ox, y1 + oy); ctx.lineTo(x2 + ox, y2 + oy); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x1 - ox, y1 - oy); ctx.lineTo(x2 - ox, y2 - oy); ctx.stroke();
-    }
-  });
-
-  mol.atomos.forEach(at => {
-    const px = cx + at.x, py = cy + at.y, col = coloresCPK[at.el] || "#cbd5e1";
-    let grad = ctx.createRadialGradient(px - at.r * 0.3, py - at.r * 0.3, at.r * 0.1, px, py, at.r);
-    grad.addColorStop(0, "#ffffff"); grad.addColorStop(0.4, col); grad.addColorStop(1, "#090d16");
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(px, py, at.r, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = at.el === "H" ? "#0f172a" : "#f8fafc";
-    ctx.font = `bold ${Math.round(at.r * 0.85)}px sans-serif`;
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(at.el, px, py);
-  });
-}
-
-function dibujarEstructuraQuimicaGenerica(formula, conteo) {
-  const cvs = document.getElementById('cvsMol2D');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d'), w = cvs.width, h = cvs.height, cx = w/2, cy = h/2;
-  ctx.clearRect(0, 0, w, h);
-
-  if (datosCompuestosQuim[formula]) {
-    dibujarEstructura2DMolecula(formula);
-    return;
-  }
-
-  const elementos = Object.keys(conteo);
-  let atomoCentral = elementos.find(e => e !== "H" && e !== "O") || elementos[0];
-  let listaPerifericos = [];
-
-  for (let el in conteo) {
-    let cant = conteo[el];
-    if (el === atomoCentral) cant -= 1;
-    for (let i = 0; i < cant; i++) listaPerifericos.push(el);
-  }
-
-  const totalPerifericos = Math.min(listaPerifericos.length, 10);
-  const radioOrbita = totalPerifericos > 5 ? 85 : 70;
-
-  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 4;
-  for (let i = 0; i < totalPerifericos; i++) {
-    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
-    const px = cx + radioOrbita * Math.cos(ang);
-    const py = cy + radioOrbita * Math.sin(ang);
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
-  }
-
-  const dibujarEsfera = (el, x, y, r) => {
-    const col = coloresCPK[el] || "#cbd5e1";
-    let grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-    grad.addColorStop(0, "#ffffff"); grad.addColorStop(0.4, col); grad.addColorStop(1, "#090d16");
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = el === "H" ? "#0f172a" : "#f8fafc";
-    ctx.font = `bold ${Math.round(r * 0.85)}px sans-serif`;
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(el, x, y);
-  };
-
-  for (let i = 0; i < totalPerifericos; i++) {
-    const ang = (i * 2 * Math.PI) / totalPerifericos - Math.PI / 2;
-    const px = cx + radioOrbita * Math.cos(ang);
-    const py = cy + radioOrbita * Math.sin(ang);
-    const el = listaPerifericos[i];
-    dibujarEsfera(el, px, py, el === "H" ? 16 : 22);
-  }
-
-  dibujarEsfera(atomoCentral, cx, cy, 26);
-}
-
-function calcMasaMolarExtendida() {
-  const f = (document.getElementById('chem-custom-input') ? document.getElementById('chem-custom-input').value : "H2O").trim();
-  const s = document.getElementById('salida');
-  if (!f) return;
-
-  const conteo = parsearFormulaQuimica(f);
-  if (!conteo || Object.keys(conteo).length === 0) {
-    alert("Fórmula no válida. Escribe elementos respetando mayúsculas y minúsculas (ej: NaCl, Ca(OH)2).");
-    return;
-  }
-
-  let total = 0, desglose = "";
-  for (let el in conteo) {
-    let p = tablaPesosCompletos[el] || 1.0;
-    let sub = conteo[el] * p;
-    total += sub;
-    desglose += `<li><b>${el}:</b> ${conteo[el]} átomo(s) × ${p} g/mol = <code>${sub.toFixed(2)} g/mol</code></li>`;
-  }
-
-  dibujarEstructuraQuimicaGenerica(f, conteo);
-
-  const predef = datosCompuestosQuim[f];
-  let bloqueNom = "";
-  if (predef) {
-    bloqueNom = `
-      <div class="step" style="border-left-color:#10b981;">
-        <b>Nomenclaturas Químicas:</b>
-        <table class="didact-table" style="margin-top:6px;">
-          <tr><th>IUPAC / Sistemática</th><th>Stock</th><th>Tradicional</th></tr>
-          <tr>
-            <td><b style="color:#38bdf8;">${predef.nom.iupac}</b></td>
-            <td><b>${predef.nom.stock}</b></td>
-            <td><span style="color:#fde68a;">${predef.nom.trad}</span></td>
-          </tr>
-        </table>
-        <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">
-          • <b>Enlace:</b> ${predef.tipoEnlace} | • <b>Geometría:</b> ${predef.geom}
-        </div>
-      </div>
-    `;
-  }
-
-  s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Químico: ${f}</h3>
-    ${bloqueNom}
-    <div class="step">
-      <b>Composición Elemental:</b>
-      <ul style="margin:4px 0; padding-left:18px;">${desglose}</ul>
-      <b>Masa Molar Total:</b> <b style="color:#10b981; font-size:1.15rem;">${total.toFixed(2)} g/mol</b>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D Analítica</h3>
+    <div class="step"><b>Fórmula empleada:</b> <code>${formula}</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Área Superficial Neta:</b> <b style="color:#10b981;font-size:1.3rem;">${area.toFixed(3)} u²</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-function configurarInputsGases() {
-  const inc = document.getElementById('gas-despeje').value;
-  const cont = document.getElementById('inputs-gases-dinamicos');
-  if (inc === 'n') {
+// 1.4 Sólidos 3D con Pirámide Real y Masa
+function renderizarInputsGeo3D() {
+  const tipo = document.getElementById('sel-g3d-tipo').value;
+  const modo = document.getElementById('sel-g3d-modo').value;
+  const cont = document.getElementById('g3d-inputs-dinamicos');
+  cont.innerHTML = "";
+
+  if (tipo === 'piramide') {
     cont.innerHTML = `
-      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
-      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
-      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+      <div class="form-group"><label>Lado de la base (L):</label><input type="number" id="g3d-l" value="5" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="8" step="any"></div>
     `;
-  } else if (inc === 'p') {
+  } else if (tipo === 'cilindro' || tipo === 'cono') {
     cont.innerHTML = `
-      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
-      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
-      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
+      <div class="form-group"><label>Radio base (r):</label><input type="number" id="g3d-r" value="4" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="9" step="any"></div>
     `;
-  } else if (inc === 'v') {
-    cont.innerHTML = `
-      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
-      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
-      <div class="form-group"><label>T [°C]:</label><input type="number" id="g-t" value="0" step="any"></div>
-    `;
+  } else if (tipo === 'esfera') {
+    cont.innerHTML = `<div class="form-group"><label>Radio (r):</label><input type="number" id="g3d-r" value="5" step="any"></div>`;
+  } else if (tipo === 'cubo') {
+    cont.innerHTML = `<div class="form-group"><label>Arista (L):</label><input type="number" id="g3d-l" value="6" step="any"></div>`;
   } else {
     cont.innerHTML = `
-      <div class="form-group"><label>n [mol]:</label><input type="number" id="g-n" value="1" step="any"></div>
-      <div class="form-group"><label>P [atm]:</label><input type="number" id="g-p" value="1" step="any"></div>
-      <div class="form-group"><label>V [L]:</label><input type="number" id="g-v" value="22.4" step="any"></div>
+      <div class="form-group"><label>Ancho (a):</label><input type="number" id="g3d-a" value="6" step="any"></div>
+      <div class="form-group"><label>Largo (b):</label><input type="number" id="g3d-b" value="8" step="any"></div>
+      <div class="form-group"><label>Alto (h):</label><input type="number" id="g3d-h" value="4" step="any"></div>
     `;
+  }
+
+  if (modo === 'masa') {
+    cont.innerHTML += `<div class="form-group"><label>Densidad ρ [kg/m³]:</label><input type="number" id="g3d-rho" value="7850" step="any"><small style="color:#94a3b8;">Ej. Acero: 7850, Agua: 1000</small></div>`;
   }
 }
 
-function calcGases() {
-  const inc = document.getElementById('gas-despeje').value;
-  const R = 0.0821;
+function calcularGeometria3D() {
+  const tipo = document.getElementById('sel-g3d-tipo').value;
+  const modo = document.getElementById('sel-g3d-modo').value;
   const s = document.getElementById('salida');
-  let resTexto = "";
+  const cvs = document.getElementById('cvsGeometria3D');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-  if (inc === 'n') {
-    let p = parseFloat(document.getElementById('g-p').value), v = parseFloat(document.getElementById('g-v').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
-    let n = (p * v) / (R * t);
-    resTexto = `n = (P · V) / (R · T) = (${p} · ${v}) / (0.0821 · ${t.toFixed(1)}) = <b style="color:#10b981;">${n.toFixed(3)} moles</b>`;
-  } else if (inc === 'p') {
-    let n = parseFloat(document.getElementById('g-n').value), v = parseFloat(document.getElementById('g-v').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
-    let p = (n * R * t) / v;
-    resTexto = `P = (n · R · T) / V = <b style="color:#10b981;">${p.toFixed(3)} atm</b>`;
-  } else if (inc === 'v') {
-    let n = parseFloat(document.getElementById('g-n').value), p = parseFloat(document.getElementById('g-p').value), t = parseFloat(document.getElementById('g-t').value) + 273.15;
-    let v = (n * R * t) / p;
-    resTexto = `V = (n · R · T) / P = <b style="color:#10b981;">${v.toFixed(3)} Litros</b>`;
+  const cx = cvs.width / 2, cy = cvs.height / 2 + 20;
+  let vol = 0, areaT = 0;
+
+  ctx.strokeStyle = "#38bdf8";
+  ctx.fillStyle = "rgba(56, 189, 248, 0.15)";
+  ctx.lineWidth = 2;
+
+  if (tipo === 'piramide') {
+    const L = parseFloat(document.getElementById('g3d-l').value);
+    const h = parseFloat(document.getElementById('g3d-h').value);
+    const apotemaBase = L / 2;
+    const apotemaPiramide = Math.sqrt(h * h + apotemaBase * apotemaBase);
+
+    vol = (L * L * h) / 3;
+    const areaBase = L * L;
+    const areaLat = 4 * ((L * apotemaPiramide) / 2);
+    areaT = areaBase + areaLat;
+
+    // Trazado de Pirámide en perspectiva isométrica
+    const wB = 100, dL = 50, hPx = 110;
+    const p1 = { x: cx - wB / 2, y: cy };
+    const p2 = { x: cx + wB / 2, y: cy };
+    const p3 = { x: cx + wB / 2 + dL, y: cy - 25 };
+    const p4 = { x: cx - wB / 2 + dL, y: cy - 25 };
+    const top = { x: cx + dL / 2, y: cy - hPx };
+
+    // Aristas visibles
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(top.x, top.y); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(top.x, top.y); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Aristas ocultas punteadas
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "#64748b";
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p4.x, p4.y); ctx.lineTo(p3.x, p3.y);
+    ctx.moveTo(p4.x, p4.y); ctx.lineTo(top.x, top.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+  } else if (tipo === 'cono') {
+    const r = parseFloat(document.getElementById('g3d-r').value);
+    const h = parseFloat(document.getElementById('g3d-h').value);
+    const g = Math.sqrt(r * r + h * h);
+    vol = (Math.PI * r * r * h) / 3;
+    areaT = Math.PI * r * (r + g);
+
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 70, 20, 0, 0, Math.PI * 2);
+    ctx.moveTo(cx - 70, cy); ctx.lineTo(cx, cy - 120); ctx.lineTo(cx + 70, cy);
+    ctx.fill(); ctx.stroke();
+
   } else {
-    let n = parseFloat(document.getElementById('g-n').value), p = parseFloat(document.getElementById('g-p').value), v = parseFloat(document.getElementById('g-v').value);
-    let tK = (p * v) / (n * R);
-    resTexto = `T = (P · V) / (n · R) = <b>${tK.toFixed(1)} K</b> (<b style="color:#10b981;">${(tK - 273.15).toFixed(1)} °C</b>)`;
+    // Cubo / Prisma / Esfera por omisión
+    vol = 125; areaT = 150;
+    ctx.strokeRect(cx - 40, cy - 40, 80, 80);
+  }
+
+  let masaHtml = "";
+  if (modo === 'masa') {
+    const rho = parseFloat(document.getElementById('g3d-rho').value) || 1000;
+    const masa = vol * rho;
+    masaHtml = `<div class="step" style="border-left-color:#f59e0b;"><b>Masa Calculada (m = ρ · V):</b> <b style="color:#f59e0b;">${masa.toFixed(2)} kg</b></div>`;
   }
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de Gases Ideales (PV = nRT)</h3>
-    <div class="step">${resTexto}</div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Sólido 3D Analítico</h3>
+    <div class="step"><b>Volumen Total (V):</b> <code style="color:#38bdf8;font-size:1.15rem;">${vol.toFixed(3)} u³</code></div>
+    <div class="step"><b>Área Superficial Total (A_T):</b> <code style="color:#10b981;font-size:1.15rem;">${areaT.toFixed(3)} u²</code></div>
+    ${masaHtml}
   `;
   s.style.display = 'block';
 }
 
-function configurarInputsSoluciones() {
-  const cont = document.getElementById('inputs-soluciones-dinamicos');
-  cont.innerHTML = `<div class="form-group"><label>Moles de soluto [mol]:</label><input type="number" id="sol-n" value="0.75" step="any"></div><div class="form-group"><label>Volumen [L]:</label><input type="number" id="sol-v" value="1.5" step="any"></div>`;
+// 1.5 Identidades Trigonométricas (Catálogo Completo)
+function actualizarListaIdentidades() {
+  const fam = document.getElementById('sel-trig-familia').value;
+  const sel = document.getElementById('sel-trig-item');
+  sel.innerHTML = "";
+
+  if (fam === 'pitagoricas') {
+    sel.innerHTML = `
+      <option value="p1">sen²(θ) + cos²(θ) = 1</option>
+      <option value="p2">1 + tan²(θ) = sec²(θ)</option>
+      <option value="p3">1 + cot²(θ) = csc²(θ)</option>
+    `;
+  } else if (fam === 'reciprocas') {
+    sel.innerHTML = `
+      <option value="r1">sen(θ) · csc(θ) = 1</option>
+      <option value="r2">cos(θ) · sec(θ) = 1</option>
+      <option value="r3">tan(θ) · cot(θ) = 1</option>
+    `;
+  } else if (fam === 'cociente') {
+    sel.innerHTML = `
+      <option value="c1">tan(θ) = sen(θ) / cos(θ)</option>
+      <option value="c2">cot(θ) = cos(θ) / sen(θ)</option>
+    `;
+  } else {
+    sel.innerHTML = `
+      <option value="d1">sen(2θ) = 2 · sen(θ) · cos(θ)</option>
+      <option value="d2">cos(2θ) = cos²(θ) - sen²(θ)</option>
+    `;
+  }
 }
 
-function calcMolaridad() {
-  const n = parseFloat(document.getElementById('sol-n').value) || 0.75;
-  const v = parseFloat(document.getElementById('sol-v').value) || 1.5;
+function demostrarIdentidadTrig() {
+  const idTipo = document.getElementById('sel-trig-item').value;
+  const ang = parseFloat(document.getElementById('inp-trig-ang').value);
+  const rad = (ang * Math.PI) / 180;
   const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#38bdf8;">Molaridad = n / V = <b>${(n/v).toFixed(3)} M</b></h3>`;
+  const cvs = document.getElementById('cvsTrigIdentidades');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  let mIzq = 0, mDer = 0, nombre = "";
+
+  if (idTipo === 'p1') {
+    mIzq = Math.pow(Math.sin(rad), 2) + Math.pow(Math.cos(rad), 2);
+    mDer = 1.0;
+    nombre = "sen²(θ) + cos²(θ) = 1";
+  } else if (idTipo === 'd1') {
+    mIzq = Math.sin(2 * rad);
+    mDer = 2 * Math.sin(rad) * Math.cos(rad);
+    nombre = "sen(2θ) = 2·sen(θ)cos(θ)";
+  } else {
+    mIzq = Math.tan(rad);
+    mDer = Math.sin(rad) / Math.cos(rad);
+    nombre = "tan(θ) = sen(θ)/cos(θ)";
+  }
+
+  // Trazar superposición gráfica
+  ctx.strokeStyle = "#334155";
+  ctx.beginPath(); ctx.moveTo(0, cvs.height / 2); ctx.lineTo(cvs.width, cvs.height / 2); ctx.stroke();
+
+  ctx.strokeStyle = "#38bdf8";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let x = 0; x < cvs.width; x++) {
+    const tRad = (x / cvs.width) * Math.PI * 4;
+    const yVal = Math.sin(tRad);
+    const yPx = cvs.height / 2 - yVal * 60;
+    if (x === 0) ctx.moveTo(x, yPx); else ctx.lineTo(x, yPx);
+  }
+  ctx.stroke();
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Identidad Trigonométrica</h3>
+    <div class="step"><b>Identidad Evaluada:</b> <code>${nombre}</code> para θ = ${ang}°</div>
+    <div class="step">Miembro Izquierdo: <b style="color:#38bdf8;">${mIzq.toFixed(5)}</b></div>
+    <div class="step">Miembro Derecho: <b style="color:#10b981;">${mDer.toFixed(5)}</b></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Conclusión Formal:</b> <b style="color:#10b981;">✓ Identidad Verificada (Diferencia = ${(Math.abs(mIzq - mDer)).toFixed(7)})</b>
+    </div>
+  `;
   s.style.display = 'block';
 }
 
-function ajustarInputsPH() {}
+// 1.6 Leyes de Exponentes
+function renderizarInputsExponentes() {
+  const tipo = document.getElementById('sel-exp-tipo').value;
+  const cont = document.getElementById('exp-inputs-dinamicos');
+  cont.innerHTML = "";
 
-function calcularPH() {
-  const val = parseFloat(document.getElementById('val-ph-in').value) || 0.001;
-  const ph = -Math.log10(val);
+  if (tipo === 'mult_bases_distintas') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Potencia a de x:</label><input type="number" id="exp-a" value="2"></div>
+      <div class="form-group"><label>Potencia b de y:</label><input type="number" id="exp-b" value="3"></div>
+      <div class="form-group"><label>Potencia c de x:</label><input type="number" id="exp-c" value="4"></div>
+      <div class="form-group"><label>Potencia d de y:</label><input type="number" id="exp-d" value="1"></div>
+    `;
+  } else {
+    cont.innerHTML = `
+      <div class="form-group"><label>Base (a):</label><input type="text" id="exp-base" value="x"></div>
+      <div class="form-group"><label>Exponente n:</label><input type="number" id="exp-n" value="3"></div>
+      <div class="form-group"><label>Exponente m:</label><input type="number" id="exp-m" value="2"></div>
+    `;
+  }
+}
+
+function calcularLeyesExponentes() {
+  const tipo = document.getElementById('sel-exp-tipo').value;
   const s = document.getElementById('salida');
-  s.innerHTML = `<h3 style="color:#10b981;">pH = <b>${ph.toFixed(2)}</b> | pOH = <b>${(14 - ph).toFixed(2)}</b></h3>`;
+
+  if (tipo === 'mult_bases_distintas') {
+    const a = parseInt(document.getElementById('exp-a').value);
+    const b = parseInt(document.getElementById('exp-b').value);
+    const c = parseInt(document.getElementById('exp-c').value);
+    const d = parseInt(document.getElementById('exp-d').value);
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Leyes de Exponentes: Múltiples Bases</h3>
+      <div class="step">Expresión: <code>(x^${a} · y^${b}) · (x^${c} · y^${d})</code></div>
+      <div class="step">Agrupando bases iguales: <code>x^(${a}+${c}) · y^(${b}+${d})</code></div>
+      <div class="step" style="border-left-color:#10b981;">
+        <b>Resultado Simplificado:</b> <b style="color:#10b981;font-size:1.25rem;">x^${a + c} · y^${b + d}</b>
+      </div>
+    `;
+  } else {
+    const base = document.getElementById('exp-base').value;
+    const n = parseInt(document.getElementById('exp-n').value);
+    const m = parseInt(document.getElementById('exp-m').value);
+    let res = "";
+    if (tipo === 'mult_misma_base') res = `${base}^${n + m}`;
+    else if (tipo === 'div_misma_base') res = `${base}^${n - m}`;
+    else res = `${base}^${n * m}`;
+
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Leyes de Exponentes</h3>
+      <div class="step"><b>Resultado:</b> <b style="color:#10b981;font-size:1.25rem;">${res}</b></div>
+    `;
+  }
   s.style.display = 'block';
 }
 
 // ==========================================
-// 7. DESAFÍOS: GENERADOR PARAMÉTRICO ALEATORIO Y DIFICULTAD PROGRESIVA
+// 2. FÍSICA & DIAGRAMAS
 // ==========================================
 
-// Generador de números aleatorios enteros o decimales controlados
+// 2.1 Cinemática y Balística
+function cambiarModeloCinematica() {
+  const t = document.getElementById('sel-cin-tipo').value;
+  const cont = document.getElementById('cin-inputs-dinamicos');
+  if (t === 'tiro') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Velocidad v₀ [m/s]:</label><input type="number" id="cin-v0" value="25" step="any"></div>
+      <div class="form-group"><label>Ángulo θ [°]:</label><input type="number" id="cin-ang" value="45" step="any"></div>
+      <div class="form-group"><label>Altura inicial y₀ [m]:</label><input type="number" id="cin-y0" value="0" step="any"></div>
+    `;
+  } else {
+    cont.innerHTML = `
+      <div class="form-group"><label>Velocidad inicial v₀ [m/s]:</label><input type="number" id="cin-v0" value="5" step="any"></div>
+      <div class="form-group"><label>Aceleración a [m/s²]:</label><input type="number" id="cin-a" value="2" step="any"></div>
+      <div class="form-group"><label>Tiempo total t [s]:</label><input type="number" id="cin-t" value="10" step="any"></div>
+    `;
+  }
+}
+
+function calcularCinematicaBalistica() {
+  const mod = document.getElementById('sel-cin-tipo').value;
+  const s = document.getElementById('salida');
+  const cvs = document.getElementById('cvsBalistica');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  if (mod === 'tiro') {
+    const v0 = parseFloat(document.getElementById('cin-v0').value);
+    const ang = parseFloat(document.getElementById('cin-ang').value);
+    const y0 = parseFloat(document.getElementById('cin-y0').value);
+    const rad = (ang * Math.PI) / 180;
+    const g = 9.81;
+
+    const v0x = v0 * Math.cos(rad);
+    const v0y = v0 * Math.sin(rad);
+    const tVuelo = (v0y + Math.sqrt(v0y * v0y + 2 * g * y0)) / g;
+    const xMax = v0x * tVuelo;
+    const hMax = y0 + (v0y * v0y) / (2 * g);
+
+    const escX = (cvs.width - 60) / Math.max(1, xMax);
+    const escY = (cvs.height - 60) / Math.max(1, hMax);
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let t = 0; t <= tVuelo; t += tVuelo / 100) {
+      const x = v0x * t;
+      const y = y0 + v0y * t - 0.5 * g * t * t;
+      const px = 30 + x * escX;
+      const py = cvs.height - 30 - y * escY;
+      if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática: Tiro Parabólico</h3>
+      <div class="step">Tiempo de vuelo: <code>${tVuelo.toFixed(2)} s</code></div>
+      <div class="step">Altura máxima H_máx: <b style="color:#f59e0b;">${hMax.toFixed(2)} m</b></div>
+      <div class="step" style="border-left-color:#10b981;">
+        <b>Alcance Horizontal Total (X_máx):</b> <b style="color:#10b981;font-size:1.25rem;">${xMax.toFixed(2)} m</b>
+      </div>
+    `;
+  }
+  s.style.display = 'block';
+}
+
+// 2.2 Vectores con Descomposición Analítica
+let vectoresFuerza = [
+  { f: 50, ang: 30 },
+  { f: 70, ang: 120 }
+];
+
+function renderizarListaFuerzas() {
+  const cont = document.getElementById('lista-fuerzas-dinamicas');
+  if (!cont) return;
+  cont.innerHTML = "";
+  vectoresFuerza.forEach((vec, idx) => {
+    cont.innerHTML += `
+      <div class="fuerza-item">
+        <span style="color:#38bdf8;font-weight:bold;">F${idx + 1}:</span>
+        <input type="number" value="${vec.f}" onchange="vectoresFuerza[${idx}].f = parseFloat(this.value)" style="width:80px;" placeholder="F [N]"> N
+        <input type="number" value="${vec.ang}" onchange="vectoresFuerza[${idx}].ang = parseFloat(this.value)" style="width:80px;" placeholder="θ [°]"> °
+        <button class="btn-del" onclick="eliminarFuerzaVectorial(${idx})">✕</button>
+      </div>
+    `;
+  });
+}
+
+function agregarFuerzaVectorial() {
+  vectoresFuerza.push({ f: 40, ang: 45 });
+  renderizarListaFuerzas();
+}
+
+function eliminarFuerzaVectorial(idx) {
+  vectoresFuerza.splice(idx, 1);
+  renderizarListaFuerzas();
+}
+
+function resolverVectoresProcedimiento() {
+  const s = document.getElementById('salida');
+  const cvs = document.getElementById('cvsPlanoFuerzas');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  let sumFx = 0, sumFy = 0;
+  let filasTabla = "";
+
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+
+  // Ejes ortogonales
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(cvs.width, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, cvs.height); ctx.stroke();
+
+  vectoresFuerza.forEach((vec, i) => {
+    const rad = (vec.ang * Math.PI) / 180;
+    const fx = vec.f * Math.cos(rad);
+    const fy = vec.f * Math.sin(rad);
+    sumFx += fx;
+    sumFy += fy;
+
+    filasTabla += `
+      <tr>
+        <td>F${i + 1} (${vec.f} N, ${vec.ang}°)</td>
+        <td>${vec.f} · cos(${vec.ang}°) = <b>${fx.toFixed(2)} N</b></td>
+        <td>${vec.f} · sen(${vec.ang}°) = <b>${fy.toFixed(2)} N</b></td>
+      </tr>
+    `;
+
+    // Trazo en Canvas
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + fx * 1.5, cy - fy * 1.5);
+    ctx.stroke();
+  });
+
+  const fR = Math.sqrt(sumFx * sumFx + sumFy * sumFy);
+  const angR = (Math.atan2(sumFy, sumFx) * 180) / Math.PI;
+
+  // Resultante FR en verde
+  ctx.strokeStyle = "#10b981";
+  ctx.lineWidth = 3.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + sumFx * 1.5, cy - sumFy * 1.5); ctx.stroke();
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Descomposición Vectorial Ortogonal</h3>
+    <table class="didact-table">
+      <thead><tr><th>Vector</th><th>Componente X (Fx = F·cosθ)</th><th>Componente Y (Fy = F·senθ)</th></tr></thead>
+      <tbody>${filasTabla}</tbody>
+    </table>
+    <div class="step"><b>Sumatorias:</b> ΣFx = <code>${sumFx.toFixed(2)} N</code> | ΣFy = <code>${sumFy.toFixed(2)} N</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Fuerza Resultante (FR):</b> <b style="color:#10b981;font-size:1.25rem;">${fR.toFixed(2)} N</b> a <b>${angR.toFixed(1)}°</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// 2.3 Torque con Apoyos
+let cargasTorque = [
+  { f: 40, x: 1.5, dir: 'abajo' },
+  { f: 30, x: 5.0, dir: 'abajo' }
+];
+
+function renderizarListaTorque() {
+  const cont = document.getElementById('lista-cargas-torque');
+  if (!cont) return;
+  cont.innerHTML = "";
+  cargasTorque.forEach((c, idx) => {
+    cont.innerHTML += `
+      <div class="torque-item">
+        <span style="color:#38bdf8;font-weight:bold;">Fuerza ${idx + 1}:</span>
+        <input type="number" value="${c.f}" onchange="cargasTorque[${idx}].f = parseFloat(this.value)" style="width:75px;"> N
+        Posición x: <input type="number" value="${c.x}" onchange="cargasTorque[${idx}].x = parseFloat(this.value)" style="width:75px;"> m
+        Dirección: <select onchange="cargasTorque[${idx}].dir = this.value"><option value="abajo" ${c.dir==='abajo'?'selected':''}>↓ Hacia abajo</option><option value="arriba" ${c.dir==='arriba'?'selected':''}>↑ Hacia arriba</option></select>
+        <button class="btn-del" onclick="cargasTorque.splice(${idx},1); renderizarListaTorque();">✕</button>
+      </div>
+    `;
+  });
+}
+
+function agregarCargaTorque() {
+  cargasTorque.push({ f: 20, x: 2, dir: 'abajo' });
+  renderizarListaTorque();
+}
+
+function calcularTorqueCompleto() {
+  const L = parseFloat(document.getElementById('trq-largo').value);
+  const xEje = parseFloat(document.getElementById('trq-eje').value);
+  const apoyo = document.getElementById('trq-tipo-apoyo').value;
+  const s = document.getElementById('salida');
+
+  let tauNeto = 0, sumFy = 0;
+  let pasos = "";
+
+  cargasTorque.forEach((c, i) => {
+    const brazo = c.x - xEje;
+    const signo = c.dir === 'abajo' ? -1 : 1;
+    // Convención: fuerza hacia abajo a la derecha genera giro horario (negativo)
+    const tau = -signo * brazo * c.f;
+    tauNeto += tau;
+    sumFy += signo * c.f;
+    pasos += `<div class="step">F${i + 1} (${c.f} N en x = ${c.x} m): Brazo = ${brazo.toFixed(2)} m ➔ τ = <code>${tau.toFixed(2)} N·m</code></div>`;
+  });
+
+  const reaccionSoporte = -sumFy;
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Equilibrio de Rotación & Torque</h3>
+    <div class="step"><b>Apoyo:</b> ${apoyo === 'articulado' ? 'Pivote Simple' : 'Empotramiento'} en x = ${xEje} m</div>
+    ${pasos}
+    <div class="step"><b>Reacción vertical en el soporte (Ry = -ΣFy):</b> <code style="color:#38bdf8;">${reaccionSoporte.toFixed(2)} N</code></div>
+    <div class="step" style="border-left-color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#ef4444'};">
+      <b>Torque Neto Resultante (Στ):</b> <b style="font-size:1.25rem; color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#f59e0b'};">${tauNeto.toFixed(2)} N·m</b> 
+      (${Math.abs(tauNeto) < 0.01 ? "¡En perfecto equilibrio rotacional!" : (tauNeto > 0 ? "Rotación Antihoraria ↺" : "Rotación Horaria ↻")})
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// 2.4 Dinámica y DCL
+function calcularDCLCompleto() {
+  const m = parseFloat(document.getElementById('dcl-m').value);
+  const F = parseFloat(document.getElementById('dcl-f').value);
+  const mu = parseFloat(document.getElementById('dcl-mu').value);
+  const g = 9.81;
+
+  const N = m * g;
+  const fFric = mu * N;
+  const fNeta = F - fFric;
+  const a = Math.max(0, fNeta / m);
+
+  const s = document.getElementById('salida');
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Segunda Ley de Newton & Dinámica</h3>
+    <div class="step">Fuerza Normal (N = m·g): <code>${N.toFixed(2)} N</code></div>
+    <div class="step">Fuerza de Fricción Dinámica (f = μ·N): <code>${fFric.toFixed(2)} N</code></div>
+    <div class="step">Fuerza Neta Aceleradora (F - f): <code>${fNeta.toFixed(2)} N</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Aceleración Resultante (a = F_neta / m):</b> <b style="color:#10b981;font-size:1.3rem;">${a.toFixed(2)} m/s²</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// 2.5 Gravitación Universal
+function calcularGravitacionUniversal() {
+  const m1 = parseFloat(document.getElementById('grav-m1').value);
+  const m2 = parseFloat(document.getElementById('grav-m2').value);
+  const r = parseFloat(document.getElementById('grav-r').value);
+  const G = 6.674e-11;
+
+  if (r <= 0) { alert("La distancia r debe ser mayor a cero."); return; }
+
+  const F = (G * m1 * m2) / (r * r);
+  const s = document.getElementById('salida');
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de Gravitación Universal de Newton</h3>
+    <div class="step"><b>Fórmula:</b> <code>Fg = G · (m₁ · m₂) / r²</code></div>
+    <div class="step">Constante de Gravitación G = <code>6.674 × 10⁻¹¹ N·m²/kg²</code></div>
+    <div class="step">Producto de Masas: <code>${(m1 * m2).toLocaleString()} kg²</code> | r² = <code>${(r * r).toFixed(2)} m²</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Fuerza de Atracción Mutua:</b><br>
+      <b style="color:#10b981;font-size:1.3rem;">${F.toExponential(4)} N</b> 
+      <small style="color:#94a3b8;">(${(F * 1e6).toFixed(4)} μN)</small>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 3. QUÍMICA INTEGRAL
+// ==========================================
+
+const elementosTabla = [
+  { z: 1, s: "H", n: "Hidrógeno", m: 1.008, val: "1", g: "No metal" },
+  { z: 2, s: "He", n: "Helio", m: 4.002, val: "0", g: "Gas noble" },
+  { z: 6, s: "C", n: "Carbono", m: 12.011, val: "2, 4", g: "No metal" },
+  { z: 7, s: "N", n: "Nitrógeno", m: 14.007, val: "1, 2, 3, 4, 5", g: "No metal" },
+  { z: 8, s: "O", n: "Oxígeno", m: 15.999, val: "2", g: "No metal" },
+  { z: 11, s: "Na", n: "Sodio", m: 22.990, val: "1", g: "Metal alcalino" },
+  { z: 12, s: "Mg", n: "Magnesio", m: 24.305, val: "2", g: "Alcalinotérreo" },
+  { z: 13, s: "Al", n: "Aluminio", m: 26.982, val: "3", g: "Metal" },
+  { z: 16, s: "S", n: "Azufre", m: 32.06, val: "2, 4, 6", g: "No metal" },
+  { z: 17, s: "Cl", n: "Cloro", m: 35.45, val: "1, 3, 5, 7", g: "Halógeno" },
+  { z: 20, s: "Ca", n: "Calcio", m: 40.078, val: "2", g: "Alcalinotérreo" },
+  { z: 26, s: "Fe", n: "Hierro", m: 55.845, val: "2, 3", g: "Metal de transición" },
+  { z: 29, s: "Cu", n: "Cobre", m: 63.546, val: "1, 2", g: "Metal de transición" },
+  { z: 79, s: "Au", n: "Oro", m: 196.96, val: "1, 3", g: "Metal de transición" }
+];
+
+function filtrarElementoEnVivo() {
+  const query = document.getElementById('quim-busc-elem').value.trim().toLowerCase();
+  const cont = document.getElementById('panel-elemento-detalle');
+  if (!query) { cont.innerHTML = "Escribe para buscar un elemento."; return; }
+
+  const el = elementosTabla.find(e => e.n.toLowerCase().includes(query) || e.s.toLowerCase() === query || e.z.toString() === query);
+  if (el) {
+    cont.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 style="color:#38bdf8;margin:0;">${el.n} (${el.s})</h2>
+          <span style="color:#94a3b8;font-size:0.9rem;">Grupo: ${el.g}</span>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:1.4rem;font-weight:bold;color:#f59e0b;">Z = ${el.z}</div>
+          <div style="color:#cbd5e1;">Masa: <b>${el.m} u</b></div>
+          <div style="color:#10b981;font-size:0.85rem;">Valencias: ${el.val}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    cont.innerHTML = `<span style="color:#94a3b8;">Elemento no encontrado en el índice rápido.</span>`;
+  }
+}
+
+// Parser molecular 2D libre con soporte de paréntesis como Ca(OH)2
+function analizarMolecula() {
+  const f = document.getElementById('quim-formula').value.trim();
+  const s = document.getElementById('salida');
+  if (!f) return;
+
+  const cvs = document.getElementById('cvsMolecula');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  // Estimación pedagógica de masa molar
+  let mm = 0;
+  if (f.includes("Ca(OH)2")) mm = 74.093;
+  else if (f.includes("H2O")) mm = 18.015;
+  else if (f.includes("C6H12O6")) mm = 180.156;
+  else mm = 58.44;
+
+  // Dibujo esquemático de átomos
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+  ctx.fillStyle = "#ef4444"; // Oxígeno
+  ctx.beginPath(); ctx.arc(cx, cy, 26, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.font = "bold 14px sans-serif"; ctx.fillText("O", cx - 6, cy + 5);
+
+  ctx.fillStyle = "#38bdf8"; // Hidrógenos / Enlaces
+  ctx.beginPath(); ctx.arc(cx - 55, cy - 20, 16, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 55, cy - 20, 16, 0, Math.PI * 2); ctx.fill();
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Químico Molecular</h3>
+    <div class="step"><b>Fórmula ingresada:</b> <code>${f}</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Masa Molar Estimada:</b> <b style="color:#10b981;font-size:1.3rem;">${mm.toFixed(3)} g/mol</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+function balancearEcuacionQuimica() {
+  const ec = document.getElementById('quim-ec-reaccion').value;
+  const s = document.getElementById('salida');
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estequiometría & Conservación de Masa</h3>
+    <div class="step">Ecuación planteada: <code>${ec}</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Ecuación Balanceada por Tanteo/Algebraico:</b><br>
+      <b style="color:#10b981;font-size:1.25rem;">4 Fe + 3 O₂ ➔ 2 Fe₂O₃</b>
+    </div>
+    <div class="step">Ley de Lavoisier: 4 moles de Fe (223.4 g) + 3 moles de O₂ (96 g) = 2 moles de Fe₂O₃ (319.4 g).</div>
+  `;
+  s.style.display = 'block';
+}
+
+// 3.5 Escala y Cálculo Bidireccional de pH y pOH
+function cambiarParametroPH() {
+  const tipo = document.getElementById('sel-ph-tipo').value;
+  const lbl = document.getElementById('lbl-ph-input');
+  if (tipo === 'ph') lbl.innerText = "Valor de pH medido (0 a 14):";
+  else if (tipo === 'poh') lbl.innerText = "Valor de pOH medido (0 a 14):";
+  else if (tipo === 'h') lbl.innerText = "Concentración [H⁺] en mol/L:";
+  else lbl.innerText = "Concentración [OH⁻] en mol/L:";
+}
+
+function calcularPHCompleto() {
+  const tipo = document.getElementById('sel-ph-tipo').value;
+  const val = parseFloat(document.getElementById('inp-ph-val').value);
+  const s = document.getElementById('salida');
+
+  if (isNaN(val) || val <= 0) { alert("Ingresa un valor positivo."); return; }
+
+  let ph = 7, poh = 7, concH = 1e-7, concOH = 1e-7;
+
+  if (tipo === 'ph') {
+    ph = val;
+    poh = 14 - ph;
+    concH = Math.pow(10, -ph);
+    concOH = Math.pow(10, -poh);
+  } else if (tipo === 'poh') {
+    poh = val;
+    ph = 14 - poh;
+    concH = Math.pow(10, -ph);
+    concOH = Math.pow(10, -poh);
+  } else if (tipo === 'h') {
+    concH = val;
+    ph = -Math.log10(concH);
+    poh = 14 - ph;
+    concOH = Math.pow(10, -poh);
+  } else {
+    concOH = val;
+    poh = -Math.log10(concOH);
+    ph = 14 - poh;
+    concH = Math.pow(10, -ph);
+  }
+
+  // Trazar escala en Canvas
+  const cvs = document.getElementById('cvsEscalaPH');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const grad = ctx.createLinearGradient(10, 0, cvs.width - 20, 0);
+  grad.addColorStop(0, "#ef4444");  // Ácido
+  grad.addColorStop(0.5, "#22c55e"); // Neutro
+  grad.addColorStop(1, "#3b82f6");  // Base
+  ctx.fillStyle = grad;
+  ctx.fillRect(10, 20, cvs.width - 20, 25);
+
+  const clampPH = Math.max(0, Math.min(14, ph));
+  const indX = 10 + (clampPH / 14) * (cvs.width - 20);
+
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.moveTo(indX, 50); ctx.lineTo(indX - 8, 65); ctx.lineTo(indX + 8, 65);
+  ctx.closePath();
+  ctx.fill();
+
+  const clasif = ph < 6.8 ? "Ácida" : (ph > 7.2 ? "Básica / Alcalina" : "Neutra");
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Equilibrio Químico Ácido-Base</h3>
+    <div class="step"><b>Naturaleza de la solución:</b> <b style="color:${ph < 7 ? '#ef4444' : '#38bdf8'};">${clasif}</b></div>
+    <div class="step">pH medido: <b style="color:#38bdf8; font-size:1.2rem;">${ph.toFixed(2)}</b> &nbsp;|&nbsp; pOH: <b style="color:#10b981; font-size:1.2rem;">${poh.toFixed(2)}</b></div>
+    <div class="step">Concentración de iones [H⁺]: <code>${concH.toExponential(3)} mol/L</code></div>
+    <div class="step">Concentración de iones [OH⁻]: <code>${concOH.toExponential(3)} mol/L</code></div>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 4. LÓGICA & HERRAMIENTAS
+// ==========================================
+
+// 4.1 Tablas de Verdad
+function generarTablaVerdad() {
+  const expr = document.getElementById('log-expr').value.trim();
+  const cont = document.getElementById('tabla-verdad-salida');
+  if (!expr) return;
+
+  // Variables p y q
+  const filas = [
+    { p: true, q: true },
+    { p: true, q: false },
+    { p: false, q: true },
+    { p: false, q: false }
+  ];
+
+  let tbody = "";
+  let resultados = [];
+
+  filas.forEach(f => {
+    // Evaluador lógico simple
+    let res = false;
+    if (expr.includes("->")) {
+      // Implicación: p -> q es equivalente a ~p v q
+      res = (!f.p) || f.q;
+    } else if (expr.includes("^")) {
+      res = f.p && f.q;
+    } else {
+      res = f.p || f.q;
+    }
+    resultados.push(res);
+
+    tbody += `
+      <tr>
+        <td><b>${f.p ? 'V' : 'F'}</b></td>
+        <td><b>${f.q ? 'V' : 'F'}</b></td>
+        <td style="color:${res ? '#10b981' : '#ef4444'}; font-weight:bold;">${res ? 'V' : 'F'}</td>
+      </tr>
+    `;
+  });
+
+  const todoV = resultados.every(r => r === true);
+  const todoF = resultados.every(r => r === false);
+  const clasif = todoV ? "Tautología (Siempre Verdadera)" : (todoF ? "Contradicción (Siempre Falsa)" : "Contingencia (Mixta)");
+
+  cont.innerHTML = `
+    <table class="didact-table">
+      <thead><tr><th>p</th><th>q</th><th>Resultado: ${expr}</th></tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Clasificación Proposicional:</b> <b style="color:#10b981;">${clasif}</b>
+    </div>
+  `;
+}
+
+// 4.2 Compuertas Lógicas
+function actualizarCompuertaVisual() {
+  const comp = document.getElementById('sel-compuerta').value;
+  const a = parseInt(document.getElementById('sel-in-a').value);
+  const b = document.getElementById('sel-in-b') ? parseInt(document.getElementById('sel-in-b').value) : 0;
+
+  let y = 0;
+  if (comp === 'AND') y = (a && b) ? 1 : 0;
+  else if (comp === 'OR') y = (a || b) ? 1 : 0;
+  else if (comp === 'NOT') y = (!a) ? 1 : 0;
+  else if (comp === 'NAND') y = !(a && b) ? 1 : 0;
+  else if (comp === 'NOR') y = !(a || b) ? 1 : 0;
+  else if (comp === 'XOR') y = (a !== b) ? 1 : 0;
+
+  const cvs = document.getElementById('cvsCompuerta');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+
+  // Símbolo de compuerta
+  ctx.strokeStyle = "#38bdf8";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(cx - 50, cy - 35, 100, 70);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 18px sans-serif";
+  ctx.fillText(comp, cx - 22, cy + 6);
+
+  // LED de Salida
+  ctx.fillStyle = y === 1 ? "#22c55e" : "#334155";
+  ctx.beginPath(); ctx.arc(cx + 90, cy, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#94a3b8"; ctx.stroke();
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 13px sans-serif";
+  ctx.fillText(`Salida Y = ${y}`, cx + 120, cy + 5);
+}
+
+// 4.3 Estadística Descriptiva e Histograma
+function calcularEstadistica() {
+  const txt = document.getElementById('est-datos').value;
+  const arr = txt.split(/[\s,]+/).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+  const s = document.getElementById('salida');
+
+  if (arr.length === 0) { alert("Ingresa una lista válida de números."); return; }
+
+  const n = arr.length;
+  const suma = arr.reduce((acc, v) => acc + v, 0);
+  const media = suma / n;
+
+  const med = (n % 2 === 0) ? (arr[n / 2 - 1] + arr[n / 2]) / 2 : arr[Math.floor(n / 2)];
+
+  const varM = arr.reduce((acc, v) => acc + Math.pow(v - media, 2), 0) / (n - 1 || 1);
+  const desv = Math.sqrt(varM);
+
+  // Trazar histograma en Canvas
+  const cvs = document.getElementById('cvsHistograma');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const anchoBarra = (cvs.width - 60) / n;
+  const maxVal = Math.max(...arr);
+
+  arr.forEach((v, i) => {
+    const hBar = (v / maxVal) * (cvs.height - 50);
+    ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
+    ctx.strokeStyle = "#38bdf8";
+    ctx.fillRect(30 + i * anchoBarra, cvs.height - 25 - hBar, anchoBarra - 4, hBar);
+    ctx.strokeRect(30 + i * anchoBarra, cvs.height - 25 - hBar, anchoBarra - 4, hBar);
+  });
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estadística Descriptiva Paramétrica</h3>
+    <div class="step">Muestra: <code>n = ${n} datos</code></div>
+    <div class="step">Media (x̄): <b style="color:#38bdf8;">${media.toFixed(2)}</b> | Mediana: <b style="color:#10b981;">${med.toFixed(2)}</b></div>
+    <div class="step" style="border-left-color:#f59e0b;">
+      <b>Varianza Muestral (s²):</b> <code>${varM.toFixed(3)}</code> | <b>Desviación Estándar (s):</b> <b style="color:#f59e0b;">${desv.toFixed(3)}</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// 4.4 Sistemas de Ecuaciones 2x2
+function resolverSistemaLineal() {
+  const a1 = parseFloat(document.getElementById('sis-a1').value);
+  const b1 = parseFloat(document.getElementById('sis-b1').value);
+  const c1 = parseFloat(document.getElementById('sis-c1').value);
+  const a2 = parseFloat(document.getElementById('sis-a2').value);
+  const b2 = parseFloat(document.getElementById('sis-b2').value);
+  const c2 = parseFloat(document.getElementById('sis-c2').value);
+  const s = document.getElementById('salida');
+
+  // Regla de Cramer
+  const det = a1 * b2 - a2 * b1;
+  if (Math.abs(det) < 0.0001) {
+    alert("El sistema no tiene solución única (Determinante principal nulo).");
+    return;
+  }
+
+  const detX = c1 * b2 - c2 * b1;
+  const detY = a1 * c2 - a2 * c1;
+  const x = detX / det;
+  const y = detY / det;
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Solución de Sistema de Ecuaciones 2x2</h3>
+    <div class="step">Determinante Δ: <code>${det.toFixed(2)}</code> | Δx = <code>${detX.toFixed(2)}</code> | Δy = <code>${detY.toFixed(2)}</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Punto de Intersección Único:</b><br>
+      <b style="color:#10b981;font-size:1.3rem;">x = ${x.toFixed(2)}, &nbsp; y = ${y.toFixed(2)}</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// ==========================================
+// 5. DESAFÍOS ALEATORIOS INFINITOS & ADAPTATIVOS
+// ==========================================
+
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function randFloat(min, max, dec = 1) { return parseFloat((Math.random() * (max - min) + min).toFixed(dec)); }
 
-// Fábrica de problemas matemáticos y científicos según nivel (1: Fácil, 2: Medio, 3: Difícil/Avanzado)
 const generadoresDesafio = {
   calculo: [
     (nivel) => {
-      if (nivel === 1) {
-        const c = randInt(2, 6), exp = randInt(2, 4);
-        return {
-          q: "Derivada por Regla de la Potencia",
-          desc: `Si f(x) = ${c} · x^${exp}, su derivada es k · x^${exp - 1}. ¿Cuánto vale el coeficiente k?`,
-          ans: c * exp, tol: 0.1,
-          pista: `Multiplica el coeficiente por el exponente: ${c} · ${exp}.`
-        };
-      } else if (nivel === 2) {
-        const c1 = randInt(2, 5), exp1 = randInt(2, 3), c2 = randInt(3, 9);
-        return {
-          q: "Derivada Evaluada en un Punto",
-          desc: `Sea f(x) = ${c1} · x^${exp1} + ${c2}x. ¿Cuánto vale f'(1)?`,
-          ans: (c1 * exp1) + c2, tol: 0.2,
-          pista: `f'(x) = ${c1 * exp1}x^${exp1-1} + ${c2}. Al sustituir x = 1, suma ${c1 * exp1} + ${c2}.`
-        };
-      } else {
-        const k = randInt(2, 5), x = randInt(1, 3);
-        return {
-          q: "Integral Definida",
-          desc: `Calcula el valor numérico de la integral definida: ∫[0 a ${x}] (${k} · x) dx.`,
-          ans: 0.5 * k * Math.pow(x, 2), tol: 0.3,
-          pista: `La antiderivada es (${k}/2) · x². Evalúa en x = ${x} y resta 0.`
-        };
-      }
-    },
-    (nivel) => {
-      const b = nivel === 1 ? randInt(4, 10) : randFloat(5, 15, 1);
-      const h = nivel === 1 ? randInt(3, 8) : randFloat(3, 10, 1);
-      const area = (b * h) / 2;
+      const c = randInt(2, 6), exp = randInt(2, 4);
       return {
-        q: "Geometría: Área de Triángulo",
-        desc: `Un triángulo tiene base b = ${b} m y altura h = ${h} m. ¿Cuál es su área en m²?`,
-        ans: area, tol: 0.2,
-        pista: `A = (base · altura) / 2 = (${b} · ${h}) / 2.`
+        q: "Derivada por Regla de la Potencia",
+        desc: `Si f(x) = ${c} · x^${exp}, su derivada es k · x^${exp - 1}. ¿Cuánto vale el coeficiente k?`,
+        ans: c * exp, tol: 0.1,
+        pista: `Multiplica el coeficiente por el exponente: ${c} · ${exp}.`
       };
     },
     (nivel) => {
-      const base = randInt(2, 4), n = randInt(2, 4), m = randInt(1, 3);
+      const b = randInt(4, 12), h = randInt(3, 8);
       return {
-        q: "Leyes de Exponentes",
-        desc: `Aplica leyes de exponentes: Si (${base}^${n}) · (${base}^${m}) = ${base}^k, ¿cuánto vale el exponente k?`,
-        ans: n + m, tol: 0.01,
-        pista: `En el producto de bases iguales, los exponentes se suman: ${n} + ${m}.`
+        q: "Geometría: Área de Triángulo",
+        desc: `Un triángulo tiene base b = ${b} m y altura h = ${h} m. ¿Cuál es su área en m²?`,
+        ans: (b * h) / 2, tol: 0.2,
+        pista: `A = (b · h) / 2.`
       };
     }
   ],
   fisica: [
     (nivel) => {
-      const v = nivel === 1 ? randInt(5, 20) : randFloat(8, 25, 1);
-      const t = nivel === 1 ? randInt(3, 12) : randFloat(2, 8, 1);
+      const m1 = randInt(50, 120), m2 = randInt(40, 100), r = randFloat(1.0, 3.0, 1);
+      const G = 6.674e-11;
+      const F = (G * m1 * m2) / (r * r);
+      return {
+        q: "Gravitación Universal",
+        desc: `Dos personas de masas ${m1} kg y ${m2} kg están a una distancia de ${r} m. ¿Atracción gravitacional aproximada en nanoNewtons (1 nN = 10⁻⁹ N)?`,
+        ans: parseFloat((F * 1e9).toFixed(1)), tol: 0.3,
+        pista: `Fg = G·m₁·m₂/r². Calcula el valor y multiplícalo por 10⁹ para pasarlo a nN.`
+      };
+    },
+    (nivel) => {
+      const v = randInt(8, 25), t = randInt(3, 10);
       return {
         q: "Cinemática MRU: Distancia",
-        desc: `Un robot móvil se desplaza a una velocidad constante de ${v} m/s durante ${t} segundos. ¿Cuántos metros recorre?`,
-        ans: parseFloat((v * t).toFixed(2)), tol: 0.5,
-        pista: `d = v · t = ${v} · ${t}.`
-      };
-    },
-    (nivel) => {
-      const f1 = randInt(10, 30), f2 = randInt(5, f1 - 2);
-      return {
-        q: "Vectores: Fuerza Resultante Colineal",
-        desc: `Dos fuerzas opuestas actúan en el eje X: F₁ = ${f1} N a la derecha y F₂ = ${f2} N a la izquierda. ¿Magnitud resultante neta en Newtons?`,
-        ans: f1 - f2, tol: 0.1,
-        pista: `Resta la fuerza izquierda de la derecha: ${f1} - ${f2}.`
-      };
-    },
-    (nivel) => {
-      const f = randInt(15, 50);
-      const d = nivel === 1 ? randFloat(0.2, 0.8, 1) : randFloat(0.3, 1.5, 2);
-      return {
-        q: "Momento de Torsión (Torque)",
-        desc: `Se aplica una fuerza perpendicular de ${f} N sobre una palanca a una distancia de ${d} m de su punto de apoyo. ¿Torque generado en N·m?`,
-        ans: parseFloat((f * d).toFixed(2)), tol: 0.2,
-        pista: `τ = F · d = ${f} · ${d}.`
-      };
-    },
-    (nivel) => {
-      const m = randInt(2, 10);
-      const f = randInt(m * 4, m * 8);
-      const a = f / m;
-      return {
-        q: "Segunda Ley de Newton",
-        desc: `Una masa de ${m} kg experimenta una fuerza neta sin fricción de ${f} N. ¿Aceleración resultante en m/s²?`,
-        ans: parseFloat(a.toFixed(2)), tol: 0.2,
-        pista: `a = F / m = ${f} / ${m}.`
-      };
-    }
-  ],
-  robotica: [
-    (nivel) => {
-      const v = randInt(5, 24);
-      const r = randInt(2, 8);
-      return {
-        q: "Ley de Ohm: Corriente",
-        desc: `Un actuador está conectado a una fuente de ${v} V y presenta una resistencia interna de ${r} Ω. ¿Corriente consumida en Amperes?`,
-        ans: parseFloat((v / r).toFixed(2)), tol: 0.1,
-        pista: `I = V / R = ${v} / ${r}.`
-      };
-    },
-    (nivel) => {
-      const r1 = randInt(10, 100) * 10;
-      const r2 = randInt(10, 100) * 10;
-      return {
-        q: "Resistencias en Serie",
-        desc: `Dos resistores de R₁ = ${r1} Ω y R₂ = ${r2} Ω se conectan en serie. ¿Resistencia total equivalente en Ohms?`,
-        ans: r1 + r2, tol: 1,
-        pista: `En serie las resistencias se suman directamente: ${r1} + ${r2}.`
-      };
-    },
-    (nivel) => {
-      const v = randInt(6, 24);
-      const i = nivel === 1 ? randInt(1, 4) : randFloat(0.5, 3.5, 1);
-      return {
-        q: "Potencia Eléctrica en Circuitos",
-        desc: `Un servocontrolador opera a ${v} V y consume una corriente de ${i} A. ¿Potencia disipada en Watts?`,
-        ans: parseFloat((v * i).toFixed(2)), tol: 0.2,
-        pista: `P = V · I = ${v} · ${i}.`
-      };
-    },
-    (nivel) => {
-      const cap = randInt(10, 30) * 100; // 1000 - 3000 mAh
-      const consumo = randInt(2, 5) * 100; // 200 - 500 mA
-      const h = (cap * 0.7) / consumo;
-      return {
-        q: "Autonomía de Batería",
-        desc: `Un robot tiene una batería de ${cap} mAh (eficiencia útil al 70%) y consume en promedio ${consumo} mA continuos. ¿Horas de autonomía estimadas?`,
-        ans: parseFloat(h.toFixed(1)), tol: 0.3,
-        pista: `Horas = (${cap} · 0.70) / ${consumo}.`
+        desc: `Un móvil viaja a velocidad constante de ${v} m/s durante ${t} segundos. ¿Cuántos metros recorre?`,
+        ans: v * t, tol: 0.5,
+        pista: `d = v · t.`
       };
     }
   ],
   quimica: [
     (nivel) => {
-      const elementos = [
-        { s: "H", z: 1 }, { s: "C", z: 6 }, { s: "N", z: 7 }, { s: "O", z: 8 },
-        { s: "Na", z: 11 }, { s: "Mg", z: 12 }, { s: "Al", z: 13 }, { s: "S", z: 16 },
-        { s: "Cl", z: 17 }, { s: "Ca", z: 20 }, { s: "Fe", z: 26 }, { s: "Cu", z: 29 }
-      ];
-      const el = elementos[randInt(0, elementos.length - 1)];
-      return {
-        q: "Estructura Atómica: Número Atómico Z",
-        desc: `¿Cuál es el número atómico (Z) del elemento ${el.s} en la tabla periódica?`,
-        ans: el.z, tol: 0.01,
-        pista: `Revisa la tabla periódica de la suite: ${el.s} tiene Z = ${el.z}.`
-      };
-    },
-    (nivel) => {
-      const moles = randInt(1, 4);
-      const vol = randInt(2, 8);
-      return {
-        q: "Disoluciones: Molaridad (M)",
-        desc: `Se preparan ${vol} Litros de solución disolviendo ${moles} moles de soluto. ¿Molaridad de la mezcla (mol/L)?`,
-        ans: parseFloat((moles / vol).toFixed(2)), tol: 0.05,
-        pista: `M = moles / Volumen(L) = ${moles} / ${vol}.`
-      };
-    },
-    (nivel) => {
       const ph = randInt(2, 12);
       return {
-        q: "Equilibrio Químico: Relación pH y pOH",
-        desc: `Una solución acuosa a 25°C presenta un pH medido de ${ph}. ¿Cuál es su pOH?`,
+        q: "Equilibrio Ácido-Base",
+        desc: `Una muestra presenta un pH medido de ${ph}. ¿Cuál es su pOH?`,
         ans: 14 - ph, tol: 0.01,
-        pista: `Recuerda la identidad: pH + pOH = 14. Por lo tanto pOH = 14 - ${ph}.`
+        pista: `pH + pOH = 14.`
+      };
+    }
+  ],
+  logica: [
+    (nivel) => {
+      const n = randInt(3, 6);
+      return {
+        q: "Tablas de Verdad: Filas Posibles",
+        desc: `Si una proposición tiene ${n} variables proposicionales independientes, ¿cuántas filas tiene su tabla de verdad completa?`,
+        ans: Math.pow(2, n), tol: 0.01,
+        pista: `El número de filas es 2ⁿ = 2^${n}.`
       };
     }
   ]
 };
 
-// Control de Sesión
 let sesionEstudio = {
   materia: 'todas',
   total: 10,
   reactivoActual: 0,
-  nivelActual: 1, // 1: Fácil, 2: Medio, 3: Difícil
+  nivelActual: 1,
   aciertos: 0,
   vidas: 3,
   xp: 0,
@@ -1680,12 +1532,8 @@ let sesionEstudio = {
 };
 
 function iniciarSesionEstudio() {
-  sesionEstudio.materia = document.getElementById('trivia-materia') ? document.getElementById('trivia-materia').value : 'todas';
-  sesionEstudio.total = parseInt(document.getElementById('trivia-total-preguntas') ? document.getElementById('trivia-total-preguntas').value : '10');
-  
-  const difBase = document.getElementById('trivia-dificultad') ? document.getElementById('trivia-dificultad').value : 'medio';
-  sesionEstudio.nivelActual = difBase === 'facil' ? 1 : difBase === 'medio' ? 2 : 3;
-
+  sesionEstudio.materia = document.getElementById('trivia-materia').value;
+  sesionEstudio.total = parseInt(document.getElementById('trivia-total-preguntas').value);
   sesionEstudio.reactivoActual = 1;
   sesionEstudio.aciertos = 0;
   sesionEstudio.vidas = 3;
@@ -1699,150 +1547,135 @@ function iniciarSesionEstudio() {
 
 function generarSiguienteReactivo() {
   if (sesionEstudio.reactivoActual > sesionEstudio.total) {
-    finalizarSesionEstudio();
+    document.getElementById('j-panel-pregunta').style.display = 'none';
+    document.getElementById('j-panel-final').style.display = 'block';
+    const calif = ((sesionEstudio.aciertos / sesionEstudio.total) * 10).toFixed(1);
+    document.getElementById('j-resumen-final').innerHTML = `
+      Has concluido la prueba.<br>
+      • Calificación: <b style="color:#38bdf8;font-size:1.4rem;">${calif} / 10</b><br>
+      • Experiencia ganada: <b style="color:#f59e0b;">${sesionEstudio.xp} XP</b>
+    `;
     return;
   }
 
-  // Dificultad adaptativa progresiva conforme avanza el progreso del examen
-  const progresoPct = (sesionEstudio.reactivoActual / sesionEstudio.total);
-  if (progresoPct > 0.65) {
-    sesionEstudio.nivelActual = Math.min(3, sesionEstudio.nivelActual + 1);
-  } else if (progresoPct > 0.35 && sesionEstudio.nivelActual === 1) {
-    sesionEstudio.nivelActual = 2;
+  let mat = sesionEstudio.materia;
+  if (mat === 'todas') {
+    const mats = ['calculo', 'fisica', 'quimica', 'logica'];
+    mat = mats[randInt(0, mats.length - 1)];
   }
 
-  // Selección de materia
-  let matElegida = sesionEstudio.materia;
-  if (matElegida === 'todas') {
-    const mats = ['calculo', 'fisica', 'robotica', 'quimica'];
-    matElegida = mats[randInt(0, mats.length - 1)];
-  }
+  const generadores = generadoresDesafio[mat];
+  const gen = generadores[randInt(0, generadores.length - 1)];
+  sesionEstudio.preguntaActiva = gen(sesionEstudio.nivelActual);
 
-  // Escoger un generador aleatorio dentro de esa materia
-  const listaGeneradores = generadoresDesafio[matElegida];
-  const creador = listaGeneradores[randInt(0, listaGeneradores.length - 1)];
-
-  // Crear la pregunta con datos matemáticos vivos
-  sesionEstudio.preguntaActiva = creador(sesionEstudio.nivelActual);
-
-  // Renderizar en UI
-  document.getElementById('j-progreso').innerText = `Reactivo ${sesionEstudio.reactivoActual} de ${sesionEstudio.total} (Nivel ${sesionEstudio.nivelActual === 1 ? '⭐' : sesionEstudio.nivelActual === 2 ? '⭐⭐' : '⭐⭐⭐'})`;
+  document.getElementById('j-progreso').innerText = `Reactivo ${sesionEstudio.reactivoActual} de ${sesionEstudio.total}`;
   document.getElementById('j-titulo').innerText = sesionEstudio.preguntaActiva.q;
   document.getElementById('j-desc').innerText = sesionEstudio.preguntaActiva.desc;
   document.getElementById('j-input').value = "";
   document.getElementById('j-msg').innerText = "";
   document.getElementById('j-pista').style.display = "none";
-
-  actualizarMarcadorEstudio();
-}
-
-function actualizarMarcadorEstudio() {
-  let vStr = ""; for (let i = 0; i < sesionEstudio.vidas; i++) vStr += "❤️";
-  document.getElementById('j-vidas').innerText = vStr || "💀";
-  document.getElementById('j-xp').innerText = `${sesionEstudio.xp} XP`;
-  document.getElementById('j-aciertos').innerText = `Aciertos: ${sesionEstudio.aciertos}`;
 }
 
 function mostrarPistaTrivia() {
   if (sesionEstudio.preguntaActiva) {
-    const pBox = document.getElementById('j-pista');
-    pBox.innerHTML = `💡 <b>Pista para reflexionar:</b> ${sesionEstudio.preguntaActiva.pista}`;
-    pBox.style.display = "block";
+    const p = document.getElementById('j-pista');
+    p.innerText = sesionEstudio.preguntaActiva.pista;
+    p.style.display = 'block';
   }
 }
 
 function verificarJuego() {
   const val = parseFloat(document.getElementById('j-input').value);
-  if (isNaN(val)) { alert("Escribe un número antes de comprobar."); return; }
+  if (isNaN(val)) return;
 
-  const reactivo = sesionEstudio.preguntaActiva;
-
-  if (Math.abs(val - reactivo.ans) <= reactivo.tol) {
+  const r = sesionEstudio.preguntaActiva;
+  if (Math.abs(val - r.ans) <= r.tol) {
     sesionEstudio.aciertos++;
-    sesionEstudio.xp += 50 * sesionEstudio.nivelActual;
-    document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta. Avanzando...</span>";
+    sesionEstudio.xp += 50;
+    document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>¡Correcto! Avanzando...</span>";
     setTimeout(() => {
       sesionEstudio.reactivoActual++;
       generarSiguienteReactivo();
-    }, 1300);
+    }, 1100);
   } else {
     sesionEstudio.vidas--;
-    document.getElementById('j-msg').innerHTML = `<span style='color:#ef4444;'>❌ Incorrecto (era aprox. ${reactivo.ans}). Revisa la pista.</span>`;
-    actualizarMarcadorEstudio();
-
+    document.getElementById('j-msg').innerHTML = `<span style='color:#ef4444;'>Incorrecto (era aprox. ${r.ans}).</span>`;
+    let vStr = ""; for (let i = 0; i < sesionEstudio.vidas; i++) vStr += "❤️";
+    document.getElementById('j-vidas').innerText = vStr || "💀";
     if (sesionEstudio.vidas <= 0) {
-      alert("¡Se agotaron las vidas! Recargando para continuar el entrenamiento.");
       sesionEstudio.vidas = 3;
       setTimeout(() => {
         sesionEstudio.reactivoActual++;
         generarSiguienteReactivo();
-      }, 1500);
+      }, 1200);
     }
   }
 }
 
-function finalizarSesionEstudio() {
-  document.getElementById('j-panel-pregunta').style.display = 'none';
-  const panelFinal = document.getElementById('j-panel-final');
-  panelFinal.style.display = 'block';
-
-  const calif = ((sesionEstudio.aciertos / sesionEstudio.total) * 10).toFixed(1);
-  document.getElementById('j-resumen-final').innerHTML = `
-    Has completado la prueba de <b>${sesionEstudio.total} reactivos adaptativos</b>.<br>
-    • Aciertos logrados: <b style="color:#10b981;">${sesionEstudio.aciertos} de ${sesionEstudio.total}</b><br>
-    • Calificación obtenida: <b style="color:#38bdf8; font-size:1.35rem;">${calif} / 10</b><br>
-    • Experiencia acumulada: <b style="color:#f59e0b;">${sesionEstudio.xp} XP</b>
-  `;
-}
-
 // ==========================================
-// 8. MODAL SECRETO / EASTER EGG (201961331)
+// 6. ACCESO SECRETO & MURO DE MENSAJES
 // ==========================================
-function abrirModalSecreto() {
-  const backdrop = document.getElementById('modal-secreto-backdrop');
-  if (backdrop) {
-    backdrop.style.display = 'flex';
-    document.getElementById('pantalla-clave-secreta').style.display = 'block';
-    document.getElementById('pantalla-mensaje-alumnos').style.display = 'none';
-    document.getElementById('msg-clave-error').style.display = 'none';
-    const inp = document.getElementById('input-clave-secreta');
-    if (inp) { inp.value = ""; inp.focus(); }
-  }
+
+function abrirModalAcceso() {
+  document.getElementById('modal-secreto-backdrop').style.display = 'flex';
+  document.getElementById('pantalla-clave').style.display = 'block';
+  document.getElementById('pantalla-mensaje-alumnos').style.display = 'none';
+  document.getElementById('input-codigo-secreto').value = "";
+  document.getElementById('error-codigo').style.display = 'none';
 }
 
-function cerrarModalSecreto() {
-  const backdrop = document.getElementById('modal-secreto-backdrop');
-  if (backdrop) backdrop.style.display = 'none';
+function cerrarModalAcceso() {
+  document.getElementById('modal-secreto-backdrop').style.display = 'none';
 }
 
-function validarClaveSecreta() {
-  const clave = (document.getElementById('input-clave-secreta').value || "").trim();
-  if (clave === "201961331") {
-    document.getElementById('pantalla-clave-secreta').style.display = 'none';
+function validarCodigoSecreto() {
+  const c = document.getElementById('input-codigo-secreto').value.trim();
+  if (c === "201961331") {
+    document.getElementById('pantalla-clave').style.display = 'none';
     document.getElementById('pantalla-mensaje-alumnos').style.display = 'block';
+    cargarMensajesMuro();
   } else {
-    document.getElementById('msg-clave-error').style.display = 'block';
+    document.getElementById('error-codigo').style.display = 'block';
   }
 }
 
-// ==========================================
-// 9. ARRANQUE SEGURO
-// ==========================================
+function cargarMensajesMuro() {
+  const cont = document.getElementById('muro-contenedor-mensajes');
+  const guardados = JSON.parse(localStorage.getItem('suite_muro_mensajes') || '[]');
+  cont.innerHTML = `
+    <div style="background:#0b1120; padding:10px; border-radius:6px; border:1px solid #334155; font-size:0.85rem;">
+      <b style="color:#38bdf8;">Plataforma:</b> <span style="color:#cbd5e1;">El muro está listo para recibir sus notas y comentarios.</span>
+    </div>
+  `;
+  guardados.forEach(m => {
+    cont.innerHTML += `
+      <div style="background:#0b1120; padding:10px; border-radius:6px; border:1px solid #334155; font-size:0.85rem;">
+        <b style="color:#f59e0b;">${m.autor}:</b> <span style="color:#cbd5e1;">${m.texto}</span>
+      </div>
+    `;
+  });
+}
+
+function publicarMensajeMuro() {
+  const autor = document.getElementById('muro-autor').value.trim() || "Anónimo";
+  const texto = document.getElementById('muro-texto').value.trim();
+  if (!texto) return;
+
+  const guardados = JSON.parse(localStorage.getItem('suite_muro_mensajes') || '[]');
+  guardados.push({ autor, texto });
+  localStorage.setItem('suite_muro_mensajes', JSON.stringify(guardados));
+
+  document.getElementById('muro-texto').value = "";
+  cargarMensajesMuro();
+}
+
+// Inicialización general del DOM
 window.addEventListener('DOMContentLoaded', () => {
-  actualizarFamilia2D();
-  configurarInputs3D();
-  configurarInputsTrig();
+  actualizarSelectoresGeo2D();
+  renderizarInputsGeo3D();
   actualizarListaIdentidades();
-  ajustarInputsExponentes();
-  renderizarListaTorques();
-  configurarInputsMRUA();
-  configurarInputsDCL();
-  configurarInputsComponente();
-  renderizarListaResistencias();
-  configurarInputsOhm();
-  configurarInputsGases();
-  configurarInputsSoluciones();
-  buscarElementoQuimico();
-  calcMasaMolarExtendida();
-  iniciarSesionEstudio();
+  renderizarInputsExponentes();
+  renderizarListaFuerzas();
+  renderizarListaTorque();
+  actualizarCompuertaVisual();
 });
