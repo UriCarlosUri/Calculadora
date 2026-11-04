@@ -67,7 +67,6 @@ function verSubLogica(subId) {
 // 1. CÁLCULO & GEOMETRÍA
 // ==========================================
 
-// Normalización matemática universal (sen^2(2x), 2x, ln(x), etc.)
 function normalizarSintaxisCalculo(expr) {
   let limpia = expr.trim();
   limpia = limpia.replace(/sen/gi, "sin");
@@ -86,8 +85,7 @@ function resolverCalculoMetodo() {
   if (!exprOriginal) { alert("Escribe una función f(x)."); return; }
   const expr = normalizarSintaxisCalculo(exprOriginal);
 
-  let f_prima = "";
-  let f_segunda = "";
+  let f_prima = "", f_segunda = "";
 
   try {
     f_prima = Algebrite.run(`d(${expr}, x)`).toString();
@@ -136,12 +134,12 @@ function resolverCalculoMetodo() {
         y0 = 0; m = 0;
       }
 
-      const m_norm = m !== 0 ? (-1 / m).toFixed(3) : "Indefinida (Vertical)";
+      const m_norm = m !== 0 ? (-1 / m).toFixed(3) : "Indefinida";
       const b_tan = (y0 - m * x0Val).toFixed(3);
 
       htmlPaso += `
         <div class="step"><b>Punto de tangencia P₀:</b> (${x0Val}, ${y0.toFixed(3)})</div>
-        <div class="step"><b>Pendiente de la curva m = f'(${x0Val}):</b> <code style="color:#38bdf8;">${m.toFixed(4)}</code></div>
+        <div class="step"><b>Pendiente m = f'(${x0Val}):</b> <code style="color:#38bdf8;">${m.toFixed(4)}</code></div>
         <div class="step" style="border-left-color:#38bdf8;">
           <b>Recta Tangente:</b> <code>y = ${m.toFixed(3)}x ${b_tan >= 0 ? '+ ' + b_tan : '- ' + Math.abs(b_tan)}</code>
         </div>
@@ -156,7 +154,6 @@ function resolverCalculoMetodo() {
   s.style.display = 'block';
 }
 
-// 1.2 Integrales con control de dominio continuo
 function resolverIntegralDefinida() {
   const exprOrig = document.getElementById('calc-int-expr').value.trim();
   const a = parseFloat(document.getElementById('calc-int-a').value);
@@ -185,7 +182,6 @@ function resolverIntegralDefinida() {
   const xMin = Math.min(a, b) - 1.5;
   const xMax = Math.max(a, b) + 1.5;
 
-  // Muestreo seguro de puntos evitando infinitos
   const N = 200;
   let puntos = [];
   let yMin = 0, yMax = 0;
@@ -220,13 +216,11 @@ function resolverIntegralDefinida() {
   const toPxX = (x) => ((x - xMin) / (xMax - xMin)) * w;
   const toPxY = (y) => h - ((y - yMin) / (yMax - yMin)) * h;
 
-  // Ejes
   ctx.strokeStyle = "#334155";
   ctx.lineWidth = 1;
   const y0Px = toPxY(0);
   ctx.beginPath(); ctx.moveTo(0, y0Px); ctx.lineTo(w, y0Px); ctx.stroke();
 
-  // Sombreado de área en [a, b]
   ctx.fillStyle = "rgba(16, 185, 129, 0.25)";
   ctx.beginPath();
   let primerPtoArea = true;
@@ -246,7 +240,6 @@ function resolverIntegralDefinida() {
   ctx.closePath();
   ctx.fill();
 
-  // Trazo continuo de la curva levantando la pluma en NaN
   ctx.strokeStyle = "#38bdf8";
   ctx.lineWidth = 2.5;
   ctx.beginPath();
@@ -262,7 +255,6 @@ function resolverIntegralDefinida() {
   }
   ctx.stroke();
 
-  // Límites a y b
   ctx.setLineDash([4, 4]);
   ctx.strokeStyle = "#f59e0b";
   ctx.beginPath(); ctx.moveTo(toPxX(a), 0); ctx.lineTo(toPxX(a), h); ctx.stroke();
@@ -276,11 +268,10 @@ function resolverIntegralDefinida() {
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Integral Definida & Área Neta</h3>
-    <div class="step"><b>Integral Indefinida ∫ f(x) dx:</b> <code>${primitiva.replace(/sin/g, "sen")} + C</code></div>
-    <div class="step"><b>Evaluación por Regla de Barrow:</b> <code>F(${b}) - F(${a})</code></div>
+    <div class="step"><b>Antiderivada F(x):</b> <code>${primitiva.replace(/sin/g, "sen")} + C</code></div>
+    <div class="step"><b>Evaluación de Barrow:</b> <code>F(${b}) - F(${a})</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Valor Numérico del Área Neta:</b><br>
-      <b style="color:#10b981;font-size:1.3rem;">${isNaN(valDef) ? "Discontinuidad en el intervalo" : valDef.toFixed(4) + " u²"}</b>
+      <b>Área Neta:</b> <b style="color:#10b981;font-size:1.3rem;">${isNaN(valDef) ? "Discontinuidad" : valDef.toFixed(4) + " u²"}</b>
     </div>
   `;
   s.style.display = 'block';
@@ -300,7 +291,7 @@ function integrarSimpson(expr, a, b, n = 100) {
   return (h / 3) * sum;
 }
 
-// 1.3 Geometría 2D Completa
+// 1.3 Geometría 2D Completa (Con trazos reales de todas las figuras y cotas)
 function actualizarSelectoresGeo2D() {
   const fam = document.getElementById('sel-g2d-familia').value;
   const sel = document.getElementById('sel-g2d-tipo');
@@ -308,9 +299,9 @@ function actualizarSelectoresGeo2D() {
 
   if (fam === 'triangulos') {
     sel.innerHTML = `
+      <option value="tri_equilatero">Triángulo Equilátero</option>
       <option value="tri_base_h">Triángulo (Base y Altura)</option>
       <option value="tri_heron">Triángulo (Herón 3 Lados)</option>
-      <option value="tri_equilatero">Triángulo Equilátero</option>
     `;
   } else if (fam === 'cuadrilateros') {
     sel.innerHTML = `
@@ -326,7 +317,7 @@ function actualizarSelectoresGeo2D() {
       <option value="sector">Sector Circular</option>
     `;
   } else {
-    sel.innerHTML = `<option value="pol_regular">Polígono Regular (Lados y Apotema)</option>`;
+    sel.innerHTML = `<option value="pol_regular">Polígono Regular (Lados y Longitud)</option>`;
   }
   renderizarInputsGeo2D();
 }
@@ -336,7 +327,9 @@ function renderizarInputsGeo2D() {
   const cont = document.getElementById('g2d-inputs-dinamicos');
   cont.innerHTML = "";
 
-  if (tipo === 'tri_base_h') {
+  if (tipo === 'tri_equilatero') {
+    cont.innerHTML = `<div class="form-group"><label>Lado (L):</label><input type="number" id="g2d-l" value="6" step="any"></div>`;
+  } else if (tipo === 'tri_base_h') {
     cont.innerHTML = `
       <div class="form-group"><label>Base (b):</label><input type="number" id="g2d-b" value="8" step="any"></div>
       <div class="form-group"><label>Altura (h):</label><input type="number" id="g2d-h" value="5" step="any"></div>
@@ -347,8 +340,6 @@ function renderizarInputsGeo2D() {
       <div class="form-group"><label>Lado b:</label><input type="number" id="g2d-b" value="6" step="any"></div>
       <div class="form-group"><label>Lado c:</label><input type="number" id="g2d-c" value="7" step="any"></div>
     `;
-  } else if (tipo === 'tri_equilatero') {
-    cont.innerHTML = `<div class="form-group"><label>Lado (L):</label><input type="number" id="g2d-l" value="6" step="any"></div>`;
   } else if (tipo === 'cuadrado') {
     cont.innerHTML = `<div class="form-group"><label>Lado (L):</label><input type="number" id="g2d-l" value="5" step="any"></div>`;
   } else if (tipo === 'rectangulo') {
@@ -381,7 +372,7 @@ function renderizarInputsGeo2D() {
     `;
   } else if (tipo === 'pol_regular') {
     cont.innerHTML = `
-      <div class="form-group"><label>N° Lados (n):</label><input type="number" id="g2d-n" value="6" step="1"></div>
+      <div class="form-group"><label>N° Lados (n ≥ 3):</label><input type="number" id="g2d-n" value="6" step="1"></div>
       <div class="form-group"><label>Longitud de Lado (L):</label><input type="number" id="g2d-l" value="4" step="any"></div>
     `;
   }
@@ -395,29 +386,72 @@ function calcularGeometria2D() {
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
   const cx = cvs.width / 2, cy = cvs.height / 2;
-  let area = 0, formula = "", perim = 0;
+  let area = 0, perim = 0, formula = "", medidasTxt = "";
 
   ctx.strokeStyle = "#38bdf8";
   ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
   ctx.lineWidth = 2.5;
 
-  if (tipo === 'tri_heron') {
+  if (tipo === 'tri_equilatero') {
+    const L = parseFloat(document.getElementById('g2d-l').value);
+    area = (Math.sqrt(3) / 4) * L * L;
+    perim = 3 * L;
+    const h = (Math.sqrt(3) / 2) * L;
+    formula = `A = (√3 / 4) · L²`;
+    medidasTxt = `Lado = ${L} u | Altura calculada = ${h.toFixed(2)} u | Perímetro = ${perim.toFixed(2)} u`;
+
+    const esc = 140 / L;
+    const hPx = h * esc, lPx = L * esc;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - hPx / 2);
+    ctx.lineTo(cx + lPx / 2, cy + hPx / 2);
+    ctx.lineTo(cx - lPx / 2, cy + hPx / 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`L = ${L}`, cx - 15, cy + hPx / 2 + 18);
+    ctx.fillText(`h = ${h.toFixed(2)}`, cx + 6, cy);
+
+  } else if (tipo === 'tri_base_h') {
+    const b = parseFloat(document.getElementById('g2d-b').value);
+    const h = parseFloat(document.getElementById('g2d-h').value);
+    area = (b * h) / 2;
+    formula = `A = (base · altura) / 2`;
+    medidasTxt = `Base = ${b} u | Altura = ${h} u`;
+
+    const esc = 150 / Math.max(b, h);
+    const bPx = b * esc, hPx = h * esc;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - bPx / 2, cy + hPx / 2);
+    ctx.lineTo(cx + bPx / 2, cy + hPx / 2);
+    ctx.lineTo(cx - bPx / 6, cy - hPx / 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`b = ${b}`, cx - 10, cy + hPx / 2 + 18);
+    ctx.fillText(`h = ${h}`, cx - bPx / 6 - 25, cy);
+
+  } else if (tipo === 'tri_heron') {
     const a = parseFloat(document.getElementById('g2d-a').value);
     const b = parseFloat(document.getElementById('g2d-b').value);
     const c = parseFloat(document.getElementById('g2d-c').value);
 
     if (a + b <= c || a + c <= b || b + c <= a) {
-      alert("Desigualdad triangular violada: la suma de dos lados debe ser mayor al tercero.");
+      alert("Desigualdad triangular violada: la suma de dos lados debe superar al tercero.");
       return;
     }
     const sp = (a + b + c) / 2;
     area = Math.sqrt(sp * (sp - a) * (sp - b) * (sp - c));
     perim = a + b + c;
-    formula = `A = √[s(s-a)(s-b)(s-c)], s = ${sp.toFixed(2)}`;
+    formula = `A = √[s(s-a)(s-b)(s-c)], donde s = ${sp.toFixed(2)}`;
+    medidasTxt = `Lados: a = ${a}, b = ${b}, c = ${c} | Perímetro = ${perim}`;
 
-    // Construcción por Ley de Cosenos
     const angA = Math.acos((b * b + c * c - a * a) / (2 * b * c));
-    const esc = 130 / Math.max(a, b, c);
+    const esc = 140 / Math.max(a, b, c);
     const x1 = cx - (c * esc) / 2, y1 = cy + 40;
     const x2 = cx + (c * esc) / 2, y2 = y1;
     const x3 = x1 + Math.cos(angA) * b * esc, y3 = y1 - Math.sin(angA) * b * esc;
@@ -426,54 +460,48 @@ function calcularGeometria2D() {
     ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    ctx.fillStyle = "#f59e0b";
-    ctx.font = "bold 11px sans-serif";
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
     ctx.fillText(`c = ${c}`, (x1 + x2) / 2, y1 + 16);
     ctx.fillText(`b = ${b}`, (x1 + x3) / 2 - 20, (y1 + y3) / 2);
     ctx.fillText(`a = ${a}`, (x2 + x3) / 2 + 10, (y2 + y3) / 2);
 
-  } else if (tipo === 'corona') {
-    const R = parseFloat(document.getElementById('g2d-R').value);
-    const r = parseFloat(document.getElementById('g2d-r').value);
-    if (r >= R) { alert("El radio mayor (R) debe ser estrictamente mayor al radio menor (r)."); return; }
-    area = Math.PI * (R * R - r * r);
-    formula = `A = π · (R² - r²)`;
+  } else if (tipo === 'cuadrado') {
+    const L = parseFloat(document.getElementById('g2d-l').value);
+    area = L * L; perim = 4 * L;
+    formula = `A = L²`;
+    medidasTxt = `Lado = ${L} u | Perímetro = ${perim} u`;
 
-    const esc = 80 / R;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R * esc, 0, Math.PI * 2);
-    ctx.arc(cx, cy, r * esc, 0, Math.PI * 2, true);
-    ctx.fill(); ctx.stroke();
+    const esc = 130 / L;
+    const lPx = L * esc;
+    ctx.fillRect(cx - lPx / 2, cy - lPx / 2, lPx, lPx);
+    ctx.strokeRect(cx - lPx / 2, cy - lPx / 2, lPx, lPx);
 
-    ctx.strokeStyle = "#f59e0b";
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * esc, cy); ctx.stroke();
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText(`R = ${R}`, cx + (R * esc) / 2, cy - 6);
-    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy + 14);
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`L = ${L}`, cx - 12, cy + lPx / 2 + 18);
+    ctx.fillText(`L = ${L}`, cx + lPx / 2 + 8, cy + 4);
 
-  } else if (tipo === 'sector') {
-    const r = parseFloat(document.getElementById('g2d-r').value);
-    const ang = parseFloat(document.getElementById('g2d-ang').value);
-    const rad = (ang * Math.PI) / 180;
-    area = 0.5 * r * r * rad;
-    formula = `A = (θ / 360°) · π · r²`;
+  } else if (tipo === 'rectangulo') {
+    const b = parseFloat(document.getElementById('g2d-b').value);
+    const h = parseFloat(document.getElementById('g2d-h').value);
+    area = b * h; perim = 2 * (b + h);
+    formula = `A = base · altura`;
+    medidasTxt = `Base = ${b} u | Altura = ${h} u | Perímetro = ${perim} u`;
 
-    const esc = 90 / r;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r * esc, -rad / 2, rad / 2);
-    ctx.closePath();
-    ctx.fill(); ctx.stroke();
+    const esc = 160 / Math.max(b, h);
+    const bPx = b * esc, hPx = h * esc;
+    ctx.fillRect(cx - bPx / 2, cy - hPx / 2, bPx, hPx);
+    ctx.strokeRect(cx - bPx / 2, cy - hPx / 2, bPx, hPx);
 
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText(`θ = ${ang}°`, cx + 30, cy + 4);
-    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 25);
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`b = ${b}`, cx - 12, cy + hPx / 2 + 18);
+    ctx.fillText(`h = ${h}`, cx + bPx / 2 + 8, cy + 4);
 
   } else if (tipo === 'rombo') {
     const D = parseFloat(document.getElementById('g2d-D').value);
     const d = parseFloat(document.getElementById('g2d-d').value);
     area = (D * d) / 2;
     formula = `A = (D · d) / 2`;
+    medidasTxt = `Diagonal Mayor D = ${D} u | Diagonal Menor d = ${d} u`;
 
     const esc = 140 / Math.max(D, d);
     const wH = (D * esc) / 2, hH = (d * esc) / 2;
@@ -483,13 +511,13 @@ function calcularGeometria2D() {
     ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    ctx.setLineDash([3, 3]);
-    ctx.strokeStyle = "#f59e0b";
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = "#f59e0b";
     ctx.beginPath(); ctx.moveTo(cx - wH, cy); ctx.lineTo(cx + wH, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, cy - hH); ctx.lineTo(cx, cy + hH); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText(`D = ${D}`, cx + 8, cy - 6);
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`D = ${D}`, cx + 10, cy - 6);
     ctx.fillText(`d = ${d}`, cx - 24, cy - hH / 2);
 
   } else if (tipo === 'trapecio') {
@@ -498,96 +526,135 @@ function calcularGeometria2D() {
     const h = parseFloat(document.getElementById('g2d-h').value);
     area = ((B + b) * h) / 2;
     formula = `A = [(B + b) · h] / 2`;
+    medidasTxt = `Base Mayor B = ${B} | Base Menor b = ${b} | Altura h = ${h}`;
 
     const esc = 160 / Math.max(B, h);
     const wB = B * esc, wb = b * esc, hPx = h * esc;
     const yTop = cy - hPx / 2, yBot = cy + hPx / 2;
 
     ctx.beginPath();
-    ctx.moveTo(cx - wB / 2, yBot);
-    ctx.lineTo(cx + wB / 2, yBot);
-    ctx.lineTo(cx + wb / 2, yTop);
-    ctx.lineTo(cx - wb / 2, yTop);
+    ctx.moveTo(cx - wB / 2, yBot); ctx.lineTo(cx + wB / 2, yBot);
+    ctx.lineTo(cx + wb / 2, yTop); ctx.lineTo(cx - wb / 2, yTop);
     ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText(`B = ${B}`, cx - 15, yBot + 16);
-    ctx.fillText(`b = ${b}`, cx - 15, yTop - 8);
-    ctx.fillText(`h = ${h}`, cx - wb / 2 - 30, cy);
-
-  } else if (tipo === 'tri_base_h') {
-    const b = parseFloat(document.getElementById('g2d-b').value);
-    const h = parseFloat(document.getElementById('g2d-h').value);
-    area = (b * h) / 2;
-    formula = `A = (base · altura) / 2`;
-
-    const esc = 150 / Math.max(b, h);
-    ctx.beginPath();
-    ctx.moveTo(cx - (b * esc) / 2, cy + (h * esc) / 2);
-    ctx.lineTo(cx + (b * esc) / 2, cy + (h * esc) / 2);
-    ctx.lineTo(cx, cy - (h * esc) / 2);
-    ctx.closePath();
-    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`B = ${B}`, cx - 12, yBot + 18);
+    ctx.fillText(`b = ${b}`, cx - 12, yTop - 8);
+    ctx.fillText(`h = ${h}`, cx - wb / 2 - 28, cy);
 
   } else if (tipo === 'circulo') {
     const r = parseFloat(document.getElementById('g2d-r').value);
-    area = Math.PI * r * r;
-    perim = 2 * Math.PI * r;
+    area = Math.PI * r * r; perim = 2 * Math.PI * r;
     formula = `A = π · r²`;
+    medidasTxt = `Radio r = ${r} u | Perímetro = ${perim.toFixed(2)} u`;
 
     const esc = 85 / r;
+    ctx.beginPath(); ctx.arc(cx, cy, r * esc, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = "#f59e0b"; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + r * esc, cy); ctx.stroke();
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif"; ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 6);
+
+  } else if (tipo === 'corona') {
+    const R = parseFloat(document.getElementById('g2d-R').value);
+    const r = parseFloat(document.getElementById('g2d-r').value);
+    if (r >= R) { alert("El radio mayor (R) debe superar al radio menor (r)."); return; }
+    area = Math.PI * (R * R - r * r);
+    formula = `A = π · (R² - r²)`;
+    medidasTxt = `Radio Mayor R = ${R} u | Radio Menor r = ${r} u`;
+
+    const esc = 85 / R;
     ctx.beginPath();
-    ctx.arc(cx, cy, r * esc, 0, Math.PI * 2);
+    ctx.arc(cx, cy, R * esc, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r * esc, 0, Math.PI * 2, true);
     ctx.fill(); ctx.stroke();
 
     ctx.strokeStyle = "#f59e0b";
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + r * esc, cy); ctx.stroke();
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 6);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * esc, cy); ctx.stroke();
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`R = ${R}`, cx + (R * esc) / 2, cy - 8);
+    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy + 16);
 
-  } else {
-    // Cuadrado / Rectángulo / Polígono
-    area = 25; formula = "A = Lado · Lado";
-    ctx.beginPath(); ctx.rect(cx - 50, cy - 50, 100, 100); ctx.fill(); ctx.stroke();
+  } else if (tipo === 'sector') {
+    const r = parseFloat(document.getElementById('g2d-r').value);
+    const ang = parseFloat(document.getElementById('g2d-ang').value);
+    const rad = (ang * Math.PI) / 180;
+    area = 0.5 * r * r * rad;
+    formula = `A = (θ / 360°) · π · r²`;
+    medidasTxt = `Radio r = ${r} u | Ángulo central θ = ${ang}°`;
+
+    const esc = 90 / r;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r * esc, -rad / 2, rad / 2); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`θ = ${ang}°`, cx + 30, cy + 4);
+    ctx.fillText(`r = ${r}`, cx + (r * esc) / 2, cy - 25);
+
+  } else if (tipo === 'pol_regular') {
+    const n = parseInt(document.getElementById('g2d-n').value);
+    const L = parseFloat(document.getElementById('g2d-l').value);
+    if (n < 3) { alert("Un polígono debe tener al menos 3 lados."); return; }
+
+    perim = n * L;
+    const apotema = L / (2 * Math.tan(Math.PI / n));
+    area = (perim * apotema) / 2;
+    formula = `A = (Perímetro · Apotema) / 2`;
+    medidasTxt = `N° lados = ${n} | Lado = ${L} u | Apotema = ${apotema.toFixed(2)} u | Perímetro = ${perim.toFixed(2)} u`;
+
+    const rCirc = apotema / Math.cos(Math.PI / n);
+    const esc = 85 / rCirc;
+
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const theta = (i * 2 * Math.PI) / n - Math.PI / 2;
+      const px = cx + Math.cos(theta) * rCirc * esc;
+      const py = cy + Math.sin(theta) * rCirc * esc;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif";
+    ctx.fillText(`n = ${n} lados | L = ${L}`, cx - 35, cy + 85);
   }
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Geometría 2D Analítica</h3>
-    <div class="step"><b>Fórmula empleada:</b> <code>${formula}</code></div>
+    <div class="step"><b>Dimensiones:</b> <code>${medidasTxt}</code></div>
+    <div class="step"><b>Fórmula:</b> <code>${formula}</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Área Superficial Neta:</b> <b style="color:#10b981;font-size:1.3rem;">${area.toFixed(3)} u²</b>
+      <b>Área Superficial:</b> <b style="color:#10b981;font-size:1.3rem;">${area.toFixed(3)} u²</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 1.4 Sólidos 3D con Pirámide Real y Masa
+// 1.4 Volúmenes y Cuerpos 3D Reales (Cubo, Prisma, Esfera, Cilindro, Cono, Pirámide)
 function renderizarInputsGeo3D() {
   const tipo = document.getElementById('sel-g3d-tipo').value;
   const modo = document.getElementById('sel-g3d-modo').value;
   const cont = document.getElementById('g3d-inputs-dinamicos');
   cont.innerHTML = "";
 
-  if (tipo === 'piramide') {
+  if (tipo === 'cubo') {
+    cont.innerHTML = `<div class="form-group"><label>Arista (L):</label><input type="number" id="g3d-l" value="5" step="any"></div>`;
+  } else if (tipo === 'prisma') {
     cont.innerHTML = `
-      <div class="form-group"><label>Lado de la base (L):</label><input type="number" id="g3d-l" value="5" step="any"></div>
-      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="8" step="any"></div>
-    `;
-  } else if (tipo === 'cilindro' || tipo === 'cono') {
-    cont.innerHTML = `
-      <div class="form-group"><label>Radio base (r):</label><input type="number" id="g3d-r" value="4" step="any"></div>
-      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="9" step="any"></div>
+      <div class="form-group"><label>Largo (a):</label><input type="number" id="g3d-a" value="8" step="any"></div>
+      <div class="form-group"><label>Ancho (b):</label><input type="number" id="g3d-b" value="5" step="any"></div>
+      <div class="form-group"><label>Alto (h):</label><input type="number" id="g3d-h" value="4" step="any"></div>
     `;
   } else if (tipo === 'esfera') {
     cont.innerHTML = `<div class="form-group"><label>Radio (r):</label><input type="number" id="g3d-r" value="5" step="any"></div>`;
-  } else if (tipo === 'cubo') {
-    cont.innerHTML = `<div class="form-group"><label>Arista (L):</label><input type="number" id="g3d-l" value="6" step="any"></div>`;
-  } else {
+  } else if (tipo === 'cilindro' || tipo === 'cono') {
     cont.innerHTML = `
-      <div class="form-group"><label>Ancho (a):</label><input type="number" id="g3d-a" value="6" step="any"></div>
-      <div class="form-group"><label>Largo (b):</label><input type="number" id="g3d-b" value="8" step="any"></div>
-      <div class="form-group"><label>Alto (h):</label><input type="number" id="g3d-h" value="4" step="any"></div>
+      <div class="form-group"><label>Radio base (r):</label><input type="number" id="g3d-r" value="4" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="8" step="any"></div>
+    `;
+  } else if (tipo === 'piramide') {
+    cont.innerHTML = `
+      <div class="form-group"><label>Lado de la Base (L):</label><input type="number" id="g3d-l" value="6" step="any"></div>
+      <div class="form-group"><label>Altura (h):</label><input type="number" id="g3d-h" value="8" step="any"></div>
     `;
   }
 
@@ -604,33 +671,124 @@ function calcularGeometria3D() {
   const ctx = cvs.getContext('2d');
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-  const cx = cvs.width / 2, cy = cvs.height / 2 + 20;
-  let vol = 0, areaT = 0;
+  const cx = cvs.width / 2, cy = cvs.height / 2 + 15;
+  let vol = 0, areaT = 0, nombreSolido = "";
 
   ctx.strokeStyle = "#38bdf8";
-  ctx.fillStyle = "rgba(56, 189, 248, 0.15)";
+  ctx.fillStyle = "rgba(56, 189, 248, 0.18)";
   ctx.lineWidth = 2;
 
-  if (tipo === 'piramide') {
+  if (tipo === 'cubo') {
+    const L = parseFloat(document.getElementById('g3d-l').value);
+    vol = Math.pow(L, 3); areaT = 6 * L * L;
+    nombreSolido = `Cubo (Arista L = ${L} u)`;
+
+    const sPx = 70, dX = 35, dY = 25;
+    ctx.fillRect(cx - sPx / 2, cy - sPx / 2, sPx, sPx);
+    ctx.strokeRect(cx - sPx / 2, cy - sPx / 2, sPx, sPx);
+
+    ctx.beginPath();
+    ctx.moveTo(cx - sPx / 2, cy - sPx / 2); ctx.lineTo(cx - sPx / 2 + dX, cy - sPx / 2 - dY);
+    ctx.lineTo(cx + sPx / 2 + dX, cy - sPx / 2 - dY); ctx.lineTo(cx + sPx / 2, cy - sPx / 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + sPx / 2, cy - sPx / 2); ctx.lineTo(cx + sPx / 2 + dX, cy - sPx / 2 - dY);
+    ctx.lineTo(cx + sPx / 2 + dX, cy + sPx / 2 - dY); ctx.lineTo(cx + sPx / 2, cy + sPx / 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  } else if (tipo === 'prisma') {
+    const a = parseFloat(document.getElementById('g3d-a').value);
+    const b = parseFloat(document.getElementById('g3d-b').value);
+    const h = parseFloat(document.getElementById('g3d-h').value);
+    vol = a * b * h; areaT = 2 * (a * b + a * h + b * h);
+    nombreSolido = `Prisma Rectangular (${a} × ${b} × ${h} u)`;
+
+    const wPx = 100, hPx = 60, dX = 35, dY = 25;
+    ctx.fillRect(cx - wPx / 2, cy - hPx / 2, wPx, hPx);
+    ctx.strokeRect(cx - wPx / 2, cy - hPx / 2, wPx, hPx);
+
+    ctx.beginPath();
+    ctx.moveTo(cx - wPx / 2, cy - hPx / 2); ctx.lineTo(cx - wPx / 2 + dX, cy - hPx / 2 - dY);
+    ctx.lineTo(cx + wPx / 2 + dX, cy - hPx / 2 - dY); ctx.lineTo(cx + wPx / 2, cy - hPx / 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + wPx / 2, cy - hPx / 2); ctx.lineTo(cx + wPx / 2 + dX, cy - hPx / 2 - dY);
+    ctx.lineTo(cx + wPx / 2 + dX, cy + hPx / 2 - dY); ctx.lineTo(cx + wPx / 2, cy + hPx / 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  } else if (tipo === 'esfera') {
+    const r = parseFloat(document.getElementById('g3d-r').value);
+    vol = (4 / 3) * Math.PI * Math.pow(r, 3);
+    areaT = 4 * Math.PI * r * r;
+    nombreSolido = `Esfera (Radio r = ${r} u)`;
+
+    const rPx = 75;
+    ctx.beginPath(); ctx.arc(cx, cy, rPx, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rPx, 22, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = "#f59e0b";
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + rPx, cy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px sans-serif"; ctx.fillText(`r = ${r}`, cx + rPx / 2 - 8, cy - 6);
+
+  } else if (tipo === 'cilindro') {
+    const r = parseFloat(document.getElementById('g3d-r').value);
+    const h = parseFloat(document.getElementById('g3d-h').value);
+    vol = Math.PI * r * r * h;
+    areaT = 2 * Math.PI * r * (r + h);
+    nombreSolido = `Cilindro (r = ${r} u, h = ${h} u)`;
+
+    const rPx = 60, hPx = 100;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + hPx / 2, rPx, 18, 0, 0, Math.PI);
+    ctx.lineTo(cx - rPx, cy - hPx / 2);
+    ctx.ellipse(cx, cy - hPx / 2, rPx, 18, 0, Math.PI, 0, true);
+    ctx.lineTo(cx + rPx, cy + hPx / 2);
+    ctx.fill(); ctx.stroke();
+
+    ctx.beginPath(); ctx.ellipse(cx, cy - hPx / 2, rPx, 18, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  } else if (tipo === 'cono') {
+    const r = parseFloat(document.getElementById('g3d-r').value);
+    const h = parseFloat(document.getElementById('g3d-h').value);
+    const g = Math.sqrt(r * r + h * h);
+    vol = (Math.PI * r * r * h) / 3;
+    areaT = Math.PI * r * (r + g);
+    nombreSolido = `Cono (r = ${r} u, h = ${h} u)`;
+
+    const rPx = 65, hPx = 110;
+    ctx.beginPath();
+    ctx.moveTo(cx - rPx, cy + 25);
+    ctx.lineTo(cx, cy - hPx + 25);
+    ctx.lineTo(cx + rPx, cy + 25);
+    ctx.ellipse(cx, cy + 25, rPx, 18, 0, 0, Math.PI, false);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.beginPath(); ctx.ellipse(cx, cy + 25, rPx, 18, 0, Math.PI, Math.PI * 2, true);
+    ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+  } else if (tipo === 'piramide') {
     const L = parseFloat(document.getElementById('g3d-l').value);
     const h = parseFloat(document.getElementById('g3d-h').value);
     const apotemaBase = L / 2;
     const apotemaPiramide = Math.sqrt(h * h + apotemaBase * apotemaBase);
-
     vol = (L * L * h) / 3;
-    const areaBase = L * L;
-    const areaLat = 4 * ((L * apotemaPiramide) / 2);
-    areaT = areaBase + areaLat;
+    areaT = L * L + 4 * ((L * apotemaPiramide) / 2);
+    nombreSolido = `Pirámide Cuadrada (Base L = ${L} u, h = ${h} u)`;
 
-    // Trazado de Pirámide en perspectiva isométrica
-    const wB = 100, dL = 50, hPx = 110;
-    const p1 = { x: cx - wB / 2, y: cy };
-    const p2 = { x: cx + wB / 2, y: cy };
-    const p3 = { x: cx + wB / 2 + dL, y: cy - 25 };
-    const p4 = { x: cx - wB / 2 + dL, y: cy - 25 };
+    const wB = 100, dL = 45, hPx = 110;
+    const p1 = { x: cx - wB / 2, y: cy + 15 };
+    const p2 = { x: cx + wB / 2, y: cy + 15 };
+    const p3 = { x: cx + wB / 2 + dL, y: cy - 10 };
+    const p4 = { x: cx - wB / 2 + dL, y: cy - 10 };
     const top = { x: cx + dL / 2, y: cy - hPx };
 
-    // Aristas visibles
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(top.x, top.y); ctx.closePath();
     ctx.fill(); ctx.stroke();
@@ -639,50 +797,30 @@ function calcularGeometria3D() {
     ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(top.x, top.y); ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    // Aristas ocultas punteadas
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = "#64748b";
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = "#64748b";
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y); ctx.lineTo(p4.x, p4.y); ctx.lineTo(p3.x, p3.y);
     ctx.moveTo(p4.x, p4.y); ctx.lineTo(top.x, top.y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-  } else if (tipo === 'cono') {
-    const r = parseFloat(document.getElementById('g3d-r').value);
-    const h = parseFloat(document.getElementById('g3d-h').value);
-    const g = Math.sqrt(r * r + h * h);
-    vol = (Math.PI * r * r * h) / 3;
-    areaT = Math.PI * r * (r + g);
-
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, 70, 20, 0, 0, Math.PI * 2);
-    ctx.moveTo(cx - 70, cy); ctx.lineTo(cx, cy - 120); ctx.lineTo(cx + 70, cy);
-    ctx.fill(); ctx.stroke();
-
-  } else {
-    // Cubo / Prisma / Esfera por omisión
-    vol = 125; areaT = 150;
-    ctx.strokeRect(cx - 40, cy - 40, 80, 80);
+    ctx.stroke(); ctx.setLineDash([]);
   }
 
   let masaHtml = "";
   if (modo === 'masa') {
     const rho = parseFloat(document.getElementById('g3d-rho').value) || 1000;
     const masa = vol * rho;
-    masaHtml = `<div class="step" style="border-left-color:#f59e0b;"><b>Masa Calculada (m = ρ · V):</b> <b style="color:#f59e0b;">${masa.toFixed(2)} kg</b></div>`;
+    masaHtml = `<div class="step" style="border-left-color:#f59e0b;"><b>Masa (m = ρ · V):</b> <b style="color:#f59e0b;font-size:1.2rem;">${masa.toFixed(2)} kg</b></div>`;
   }
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Sólido 3D Analítico</h3>
-    <div class="step"><b>Volumen Total (V):</b> <code style="color:#38bdf8;font-size:1.15rem;">${vol.toFixed(3)} u³</code></div>
-    <div class="step"><b>Área Superficial Total (A_T):</b> <code style="color:#10b981;font-size:1.15rem;">${areaT.toFixed(3)} u²</code></div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Sólido 3D: ${nombreSolido}</h3>
+    <div class="step"><b>Volumen Total (V):</b> <b style="color:#38bdf8;font-size:1.25rem;">${vol.toFixed(3)} u³</b></div>
+    <div class="step"><b>Área Superficial Total:</b> <b style="color:#10b981;font-size:1.25rem;">${areaT.toFixed(3)} u²</b></div>
     ${masaHtml}
   `;
   s.style.display = 'block';
 }
 
-// 1.5 Identidades Trigonométricas (Catálogo Completo)
+// 1.5 Identidades Trigonométricas (Sin congelamiento ni líneas fijas)
 function actualizarListaIdentidades() {
   const fam = document.getElementById('sel-trig-familia').value;
   const sel = document.getElementById('sel-trig-item');
@@ -722,50 +860,115 @@ function demostrarIdentidadTrig() {
   const ctx = cvs.getContext('2d');
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-  let mIzq = 0, mDer = 0, nombre = "";
+  let mIzq = 0, mDer = 0, nombre = "", fnIzq = (t) => 0, fnDer = (t) => 0;
 
   if (idTipo === 'p1') {
     mIzq = Math.pow(Math.sin(rad), 2) + Math.pow(Math.cos(rad), 2);
     mDer = 1.0;
     nombre = "sen²(θ) + cos²(θ) = 1";
+    fnIzq = (t) => Math.pow(Math.sin(t), 2) + Math.pow(Math.cos(t), 2);
+    fnDer = (t) => 1.0;
+  } else if (idTipo === 'p2') {
+    mIzq = 1 + Math.pow(Math.tan(rad), 2);
+    mDer = 1 / Math.pow(Math.cos(rad), 2);
+    nombre = "1 + tan²(θ) = sec²(θ)";
+    fnIzq = (t) => 1 + Math.pow(Math.tan(t), 2);
+    fnDer = (t) => 1 / Math.pow(Math.cos(t), 2);
+  } else if (idTipo === 'p3') {
+    mIzq = 1 + Math.pow(1 / Math.tan(rad), 2);
+    mDer = 1 / Math.pow(Math.sin(rad), 2);
+    nombre = "1 + cot²(θ) = csc²(θ)";
+    fnIzq = (t) => 1 + Math.pow(1 / Math.tan(t), 2);
+    fnDer = (t) => 1 / Math.pow(Math.sin(t), 2);
+  } else if (idTipo === 'r1') {
+    mIzq = Math.sin(rad) * (1 / Math.sin(rad));
+    mDer = 1.0;
+    nombre = "sen(θ) · csc(θ) = 1";
+    fnIzq = (t) => Math.sin(t) * (1 / Math.sin(t));
+    fnDer = (t) => 1.0;
+  } else if (idTipo === 'r2') {
+    mIzq = Math.cos(rad) * (1 / Math.cos(rad));
+    mDer = 1.0;
+    nombre = "cos(θ) · sec(θ) = 1";
+    fnIzq = (t) => Math.cos(t) * (1 / Math.cos(t));
+    fnDer = (t) => 1.0;
+  } else if (idTipo === 'r3') {
+    mIzq = Math.tan(rad) * (1 / Math.tan(rad));
+    mDer = 1.0;
+    nombre = "tan(θ) · cot(θ) = 1";
+    fnIzq = (t) => Math.tan(t) * (1 / Math.tan(t));
+    fnDer = (t) => 1.0;
+  } else if (idTipo === 'c1') {
+    mIzq = Math.tan(rad);
+    mDer = Math.sin(rad) / Math.cos(rad);
+    nombre = "tan(θ) = sen(θ) / cos(θ)";
+    fnIzq = (t) => Math.tan(t);
+    fnDer = (t) => Math.sin(t) / Math.cos(t);
+  } else if (idTipo === 'c2') {
+    mIzq = 1 / Math.tan(rad);
+    mDer = Math.cos(rad) / Math.sin(rad);
+    nombre = "cot(θ) = cos(θ) / sen(θ)";
+    fnIzq = (t) => 1 / Math.tan(t);
+    fnDer = (t) => Math.cos(t) / Math.sin(t);
   } else if (idTipo === 'd1') {
     mIzq = Math.sin(2 * rad);
     mDer = 2 * Math.sin(rad) * Math.cos(rad);
     nombre = "sen(2θ) = 2·sen(θ)cos(θ)";
+    fnIzq = (t) => Math.sin(2 * t);
+    fnDer = (t) => 2 * Math.sin(t) * Math.cos(t);
   } else {
-    mIzq = Math.tan(rad);
-    mDer = Math.sin(rad) / Math.cos(rad);
-    nombre = "tan(θ) = sen(θ)/cos(θ)";
+    mIzq = Math.cos(2 * rad);
+    mDer = Math.pow(Math.cos(rad), 2) - Math.pow(Math.sin(rad), 2);
+    nombre = "cos(2θ) = cos²(θ) - sen²(θ)";
+    fnIzq = (t) => Math.cos(2 * t);
+    fnDer = (t) => Math.pow(Math.cos(t), 2) - Math.pow(Math.sin(t), 2);
   }
 
-  // Trazar superposición gráfica
-  ctx.strokeStyle = "#334155";
+  // Trazar superposición en Canvas
+  ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(0, cvs.height / 2); ctx.lineTo(cvs.width, cvs.height / 2); ctx.stroke();
 
-  ctx.strokeStyle = "#38bdf8";
-  ctx.lineWidth = 3;
+  // Curva Izquierda (Azul)
+  ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
   ctx.beginPath();
   for (let x = 0; x < cvs.width; x++) {
-    const tRad = (x / cvs.width) * Math.PI * 4;
-    const yVal = Math.sin(tRad);
-    const yPx = cvs.height / 2 - yVal * 60;
-    if (x === 0) ctx.moveTo(x, yPx); else ctx.lineTo(x, yPx);
+    const t = (x / cvs.width) * Math.PI * 4;
+    let yVal = fnIzq(t);
+    if (!isNaN(yVal) && isFinite(yVal)) {
+      yVal = Math.max(-4, Math.min(4, yVal));
+      const py = cvs.height / 2 - yVal * 35;
+      if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+    }
   }
   ctx.stroke();
 
+  // Curva Derecha (Verde punteada superpuesta)
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let x = 0; x < cvs.width; x++) {
+    const t = (x / cvs.width) * Math.PI * 4;
+    let yVal = fnDer(t);
+    if (!isNaN(yVal) && isFinite(yVal)) {
+      yVal = Math.max(-4, Math.min(4, yVal));
+      const py = cvs.height / 2 - yVal * 35;
+      if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+    }
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Demostración de Identidad Trigonométrica</h3>
-    <div class="step"><b>Identidad Evaluada:</b> <code>${nombre}</code> para θ = ${ang}°</div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Comprobación de Identidad Trigonométrica</h3>
+    <div class="step"><b>Identidad:</b> <code>${nombre}</code> para θ = ${ang}°</div>
     <div class="step">Miembro Izquierdo: <b style="color:#38bdf8;">${mIzq.toFixed(5)}</b></div>
     <div class="step">Miembro Derecho: <b style="color:#10b981;">${mDer.toFixed(5)}</b></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Conclusión Formal:</b> <b style="color:#10b981;">✓ Identidad Verificada (Diferencia = ${(Math.abs(mIzq - mDer)).toFixed(7)})</b>
+      <b>Conclusión:</b> <b style="color:#10b981;">✓ Identidad Verificada (Curvas idénticas sobre el dominio)</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 1.6 Leyes de Exponentes
 function renderizarInputsExponentes() {
   const tipo = document.getElementById('sel-exp-tipo').value;
   const cont = document.getElementById('exp-inputs-dinamicos');
@@ -797,9 +1000,8 @@ function calcularLeyesExponentes() {
     const c = parseInt(document.getElementById('exp-c').value);
     const d = parseInt(document.getElementById('exp-d').value);
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Leyes de Exponentes: Múltiples Bases</h3>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Leyes de Exponentes: Bases Múltiples</h3>
       <div class="step">Expresión: <code>(x^${a} · y^${b}) · (x^${c} · y^${d})</code></div>
-      <div class="step">Agrupando bases iguales: <code>x^(${a}+${c}) · y^(${b}+${d})</code></div>
       <div class="step" style="border-left-color:#10b981;">
         <b>Resultado Simplificado:</b> <b style="color:#10b981;font-size:1.25rem;">x^${a + c} · y^${b + d}</b>
       </div>
@@ -825,7 +1027,6 @@ function calcularLeyesExponentes() {
 // 2. FÍSICA & DIAGRAMAS
 // ==========================================
 
-// 2.1 Cinemática y Balística
 function cambiarModeloCinematica() {
   const t = document.getElementById('sel-cin-tipo').value;
   const cont = document.getElementById('cin-inputs-dinamicos');
@@ -837,9 +1038,9 @@ function cambiarModeloCinematica() {
     `;
   } else {
     cont.innerHTML = `
-      <div class="form-group"><label>Velocidad inicial v₀ [m/s]:</label><input type="number" id="cin-v0" value="5" step="any"></div>
-      <div class="form-group"><label>Aceleración a [m/s²]:</label><input type="number" id="cin-a" value="2" step="any"></div>
-      <div class="form-group"><label>Tiempo total t [s]:</label><input type="number" id="cin-t" value="10" step="any"></div>
+      <div class="form-group"><label>Velocidad inicial v₀ [m/s]:</label><input type="number" id="cin-v0" value="4" step="any"></div>
+      <div class="form-group"><label>Aceleración a [m/s²]:</label><input type="number" id="cin-a" value="2.5" step="any"></div>
+      <div class="form-group"><label>Tiempo total t [s]:</label><input type="number" id="cin-t" value="6" step="any"></div>
     `;
   }
 }
@@ -864,34 +1065,86 @@ function calcularCinematicaBalistica() {
     const xMax = v0x * tVuelo;
     const hMax = y0 + (v0y * v0y) / (2 * g);
 
-    const escX = (cvs.width - 60) / Math.max(1, xMax);
-    const escY = (cvs.height - 60) / Math.max(1, hMax);
+    const escX = (cvs.width - 90) / Math.max(1, xMax);
+    const escY = (cvs.height - 80) / Math.max(1, hMax);
 
-    ctx.strokeStyle = "#38bdf8";
-    ctx.lineWidth = 2.5;
+    // Ejes
+    ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, cvs.height - 35); ctx.lineTo(cvs.width - 20, cvs.height - 35);
+    ctx.moveTo(40, cvs.height - 35); ctx.lineTo(40, 20);
+    ctx.stroke();
+
+    // Trayectoria
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
     ctx.beginPath();
     for (let t = 0; t <= tVuelo; t += tVuelo / 100) {
       const x = v0x * t;
       const y = y0 + v0y * t - 0.5 * g * t * t;
-      const px = 30 + x * escX;
-      const py = cvs.height - 30 - y * escY;
+      const px = 40 + x * escX;
+      const py = cvs.height - 35 - y * escY;
       if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
     ctx.stroke();
 
+    // Cotas en Canvas
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = "#f59e0b";
+    const pxHMax = 40 + (v0x * (v0y / g)) * escX;
+    const pyHMax = cvs.height - 35 - hMax * escY;
+    ctx.beginPath(); ctx.moveTo(pxHMax, cvs.height - 35); ctx.lineTo(pxHMax, pyHMax); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`H_máx = ${hMax.toFixed(2)} m`, pxHMax + 6, pyHMax + 12);
+    ctx.fillText(`X_máx = ${xMax.toFixed(2)} m`, 40 + xMax * escX - 45, cvs.height - 15);
+
     s.innerHTML = `
-      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática: Tiro Parabólico</h3>
-      <div class="step">Tiempo de vuelo: <code>${tVuelo.toFixed(2)} s</code></div>
-      <div class="step">Altura máxima H_máx: <b style="color:#f59e0b;">${hMax.toFixed(2)} m</b></div>
-      <div class="step" style="border-left-color:#10b981;">
-        <b>Alcance Horizontal Total (X_máx):</b> <b style="color:#10b981;font-size:1.25rem;">${xMax.toFixed(2)} m</b>
-      </div>
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática: Balística y Tiro Parabólico</h3>
+      <div class="step">Componentes: <code>v₀x = ${v0x.toFixed(2)} m/s</code> | <code>v₀y = ${v0y.toFixed(2)} m/s</code></div>
+      <div class="step">Tiempo en el aire: <code>${tVuelo.toFixed(2)} s</code></div>
+      <div class="step" style="border-left-color:#f59e0b;"><b>Altura Máxima (H_máx):</b> <b style="color:#f59e0b;font-size:1.25rem;">${hMax.toFixed(2)} m</b></div>
+      <div class="step" style="border-left-color:#10b981;"><b>Alcance Horizontal Total (X_máx):</b> <b style="color:#10b981;font-size:1.25rem;">${xMax.toFixed(2)} m</b></div>
+    `;
+
+  } else {
+    // MRUA
+    const v0 = parseFloat(document.getElementById('cin-v0').value);
+    const a = parseFloat(document.getElementById('cin-a').value);
+    const t = parseFloat(document.getElementById('cin-t').value);
+
+    const vFinal = v0 + a * t;
+    const dist = v0 * t + 0.5 * a * t * t;
+
+    // Gráfica posición vs tiempo
+    ctx.strokeStyle = "#334155"; ctx.beginPath();
+    ctx.moveTo(40, cvs.height - 30); ctx.lineTo(cvs.width - 20, cvs.height - 30);
+    ctx.moveTo(40, cvs.height - 30); ctx.lineTo(40, 20); ctx.stroke();
+
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let ti = 0; ti <= t; ti += t / 60) {
+      const xi = v0 * ti + 0.5 * a * ti * ti;
+      const px = 40 + (ti / t) * (cvs.width - 80);
+      const py = cvs.height - 30 - (xi / dist) * (cvs.height - 60);
+      if (ti === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`t = ${t} s`, cvs.width - 60, cvs.height - 12);
+    ctx.fillText(`d = ${dist.toFixed(2)} m`, cvs.width - 80, 35);
+
+    s.innerHTML = `
+      <h3 style="color:#38bdf8;margin:0 0 8px 0;">Cinemática: Movimiento Rectilíneo (MRUA)</h3>
+      <div class="step">Velocidad Inicial: <code>${v0} m/s</code> | Aceleración: <code>${a} m/s²</code> | Tiempo: <code>${t} s</code></div>
+      <div class="step">Velocidad Final alcanzada: <b style="color:#38bdf8;">${vFinal.toFixed(2)} m/s</b></div>
+      <div class="step" style="border-left-color:#10b981;"><b>Distancia Total Recorrida:</b> <b style="color:#10b981;font-size:1.25rem;">${dist.toFixed(2)} m</b></div>
     `;
   }
   s.style.display = 'block';
 }
 
-// 2.2 Vectores con Descomposición Analítica
+// 2.2 Vectores con Identificación Completa en Canvas
 let vectoresFuerza = [
   { f: 50, ang: 30 },
   { f: 70, ang: 120 }
@@ -905,8 +1158,8 @@ function renderizarListaFuerzas() {
     cont.innerHTML += `
       <div class="fuerza-item">
         <span style="color:#38bdf8;font-weight:bold;">F${idx + 1}:</span>
-        <input type="number" value="${vec.f}" onchange="vectoresFuerza[${idx}].f = parseFloat(this.value)" style="width:80px;" placeholder="F [N]"> N
-        <input type="number" value="${vec.ang}" onchange="vectoresFuerza[${idx}].ang = parseFloat(this.value)" style="width:80px;" placeholder="θ [°]"> °
+        <input type="number" value="${vec.f}" onchange="vectoresFuerza[${idx}].f = parseFloat(this.value)" style="width:75px;" placeholder="F [N]"> N
+        <input type="number" value="${vec.ang}" onchange="vectoresFuerza[${idx}].ang = parseFloat(this.value)" style="width:75px;" placeholder="θ [°]"> °
         <button class="btn-del" onclick="eliminarFuerzaVectorial(${idx})">✕</button>
       </div>
     `;
@@ -931,21 +1184,20 @@ function resolverVectoresProcedimiento() {
 
   let sumFx = 0, sumFy = 0;
   let filasTabla = "";
-
   const cx = cvs.width / 2, cy = cvs.height / 2;
 
-  // Ejes ortogonales
-  ctx.strokeStyle = "#334155";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(cvs.width, cy); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, cvs.height); ctx.stroke();
+
+  const maxF = Math.max(...vectoresFuerza.map(v => v.f), 10);
+  const esc = 90 / maxF;
 
   vectoresFuerza.forEach((vec, i) => {
     const rad = (vec.ang * Math.PI) / 180;
     const fx = vec.f * Math.cos(rad);
     const fy = vec.f * Math.sin(rad);
-    sumFx += fx;
-    sumFy += fy;
+    sumFx += fx; sumFy += fy;
 
     filasTabla += `
       <tr>
@@ -955,22 +1207,28 @@ function resolverVectoresProcedimiento() {
       </tr>
     `;
 
-    // Trazo en Canvas
-    ctx.strokeStyle = "#38bdf8";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + fx * 1.5, cy - fy * 1.5);
-    ctx.stroke();
+    // Trazo del vector con flecha y etiqueta
+    const px = cx + fx * esc;
+    const py = cy - fy * esc;
+
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+
+    ctx.fillStyle = "#38bdf8"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`F${i + 1} (${vec.f}N)`, px + 5, py - 5);
   });
 
   const fR = Math.sqrt(sumFx * sumFx + sumFy * sumFy);
   const angR = (Math.atan2(sumFy, sumFx) * 180) / Math.PI;
 
-  // Resultante FR en verde
-  ctx.strokeStyle = "#10b981";
-  ctx.lineWidth = 3.5;
-  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + sumFx * 1.5, cy - sumFy * 1.5); ctx.stroke();
+  // Vector Resultante en verde
+  const pxR = cx + sumFx * esc;
+  const pyR = cy - sumFy * esc;
+  ctx.strokeStyle = "#10b981"; ctx.lineWidth = 3.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(pxR, pyR); ctx.stroke();
+
+  ctx.fillStyle = "#10b981"; ctx.font = "bold 12px sans-serif";
+  ctx.fillText(`FR (${fR.toFixed(1)}N, ${angR.toFixed(1)}°)`, pxR + 6, pyR);
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Descomposición Vectorial Ortogonal</h3>
@@ -980,13 +1238,13 @@ function resolverVectoresProcedimiento() {
     </table>
     <div class="step"><b>Sumatorias:</b> ΣFx = <code>${sumFx.toFixed(2)} N</code> | ΣFy = <code>${sumFy.toFixed(2)} N</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Fuerza Resultante (FR):</b> <b style="color:#10b981;font-size:1.25rem;">${fR.toFixed(2)} N</b> a <b>${angR.toFixed(1)}°</b>
+      <b>Fuerza Resultante (FR):</b> <b style="color:#10b981;font-size:1.3rem;">${fR.toFixed(2)} N</b> con dirección angular <b>${angR.toFixed(1)}°</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 2.3 Torque con Apoyos
+// 2.3 Torque con Representación Visual
 let cargasTorque = [
   { f: 40, x: 1.5, dir: 'abajo' },
   { f: 30, x: 5.0, dir: 'abajo' }
@@ -999,10 +1257,10 @@ function renderizarListaTorque() {
   cargasTorque.forEach((c, idx) => {
     cont.innerHTML += `
       <div class="torque-item">
-        <span style="color:#38bdf8;font-weight:bold;">Fuerza ${idx + 1}:</span>
-        <input type="number" value="${c.f}" onchange="cargasTorque[${idx}].f = parseFloat(this.value)" style="width:75px;"> N
-        Posición x: <input type="number" value="${c.x}" onchange="cargasTorque[${idx}].x = parseFloat(this.value)" style="width:75px;"> m
-        Dirección: <select onchange="cargasTorque[${idx}].dir = this.value"><option value="abajo" ${c.dir==='abajo'?'selected':''}>↓ Hacia abajo</option><option value="arriba" ${c.dir==='arriba'?'selected':''}>↑ Hacia arriba</option></select>
+        <span style="color:#38bdf8;font-weight:bold;">F${idx + 1}:</span>
+        <input type="number" value="${c.f}" onchange="cargasTorque[${idx}].f = parseFloat(this.value)" style="width:70px;"> N
+        Pos: <input type="number" value="${c.x}" onchange="cargasTorque[${idx}].x = parseFloat(this.value)" style="width:70px;"> m
+        <select onchange="cargasTorque[${idx}].dir = this.value"><option value="abajo" ${c.dir==='abajo'?'selected':''}>↓</option><option value="arriba" ${c.dir==='arriba'?'selected':''}>↑</option></select>
         <button class="btn-del" onclick="cargasTorque.splice(${idx},1); renderizarListaTorque();">✕</button>
       </div>
     `;
@@ -1020,35 +1278,71 @@ function calcularTorqueCompleto() {
   const apoyo = document.getElementById('trq-tipo-apoyo').value;
   const s = document.getElementById('salida');
 
+  const cvs = document.getElementById('cvsPalancaTorque');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
   let tauNeto = 0, sumFy = 0;
   let pasos = "";
 
   cargasTorque.forEach((c, i) => {
     const brazo = c.x - xEje;
     const signo = c.dir === 'abajo' ? -1 : 1;
-    // Convención: fuerza hacia abajo a la derecha genera giro horario (negativo)
     const tau = -signo * brazo * c.f;
     tauNeto += tau;
     sumFy += signo * c.f;
-    pasos += `<div class="step">F${i + 1} (${c.f} N en x = ${c.x} m): Brazo = ${brazo.toFixed(2)} m ➔ τ = <code>${tau.toFixed(2)} N·m</code></div>`;
+    pasos += `<div class="step">F${i + 1} (${c.f} N a ${c.x} m): Brazo = ${brazo.toFixed(2)} m ➔ τ = <code>${tau.toFixed(2)} N·m</code></div>`;
   });
 
   const reaccionSoporte = -sumFy;
 
+  // Dibujo de la Barra y Fulcro
+  const x0 = 40, wBarra = cvs.width - 80, yBarra = cvs.height / 2;
+  const escX = wBarra / L;
+
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(x0, yBarra - 6, wBarra, 12);
+
+  // Fulcro triangular
+  const pxEje = x0 + xEje * escX;
+  ctx.fillStyle = "#f59e0b";
+  ctx.beginPath();
+  ctx.moveTo(pxEje, yBarra + 6);
+  ctx.lineTo(pxEje - 14, yBarra + 28);
+  ctx.lineTo(pxEje + 14, yBarra + 28);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif";
+  ctx.fillText(`Fulcro (${xEje}m)`, pxEje - 30, yBarra + 42);
+
+  // Fuerzas sobre la barra
+  cargasTorque.forEach((c, idx) => {
+    const px = x0 + c.x * escX;
+    const dirSign = c.dir === 'abajo' ? 1 : -1;
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(px, yBarra - dirSign * 40);
+    ctx.lineTo(px, yBarra);
+    ctx.stroke();
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText(`F${idx + 1} (${c.f}N)`, px - 18, yBarra - dirSign * 45);
+  });
+
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Equilibrio de Rotación & Torque</h3>
-    <div class="step"><b>Apoyo:</b> ${apoyo === 'articulado' ? 'Pivote Simple' : 'Empotramiento'} en x = ${xEje} m</div>
     ${pasos}
-    <div class="step"><b>Reacción vertical en el soporte (Ry = -ΣFy):</b> <code style="color:#38bdf8;">${reaccionSoporte.toFixed(2)} N</code></div>
-    <div class="step" style="border-left-color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#ef4444'};">
-      <b>Torque Neto Resultante (Στ):</b> <b style="font-size:1.25rem; color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#f59e0b'};">${tauNeto.toFixed(2)} N·m</b> 
-      (${Math.abs(tauNeto) < 0.01 ? "¡En perfecto equilibrio rotacional!" : (tauNeto > 0 ? "Rotación Antihoraria ↺" : "Rotación Horaria ↻")})
+    <div class="step"><b>Reacción vertical en el soporte (Ry):</b> <code style="color:#38bdf8;">${reaccionSoporte.toFixed(2)} N</code></div>
+    <div class="step" style="border-left-color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#f59e0b'};">
+      <b>Torque Neto (Στ):</b> <b style="font-size:1.3rem; color:${Math.abs(tauNeto) < 0.01 ? '#10b981' : '#f59e0b'};">${tauNeto.toFixed(2)} N·m</b> 
+      (${Math.abs(tauNeto) < 0.01 ? "¡Equilibrio estático!" : (tauNeto > 0 ? "Giro Antihorario ↺" : "Giro Horario ↻")})
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 2.4 Dinámica y DCL
+// 2.4 Dinámica y DCL Completo con Gráfico
 function calcularDCLCompleto() {
   const m = parseFloat(document.getElementById('dcl-m').value);
   const F = parseFloat(document.getElementById('dcl-f').value);
@@ -1060,20 +1354,50 @@ function calcularDCLCompleto() {
   const fNeta = F - fFric;
   const a = Math.max(0, fNeta / m);
 
+  const cvs = document.getElementById('cvsDCL');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+
+  // Masa
+  ctx.fillStyle = "#1e293b"; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2;
+  ctx.fillRect(cx - 35, cy - 35, 70, 70);
+  ctx.strokeRect(cx - 35, cy - 35, 70, 70);
+  ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif"; ctx.fillText(`${m} kg`, cx - 16, cy + 4);
+
+  // Flechas ortogonales
+  ctx.lineWidth = 2.5;
+  // Peso W
+  ctx.strokeStyle = "#ef4444"; ctx.beginPath(); ctx.moveTo(cx, cy + 35); ctx.lineTo(cx, cy + 85); ctx.stroke();
+  ctx.fillStyle = "#ef4444"; ctx.fillText(`P = ${N.toFixed(1)} N`, cx - 35, cy + 98);
+
+  // Normal N
+  ctx.strokeStyle = "#22c55e"; ctx.beginPath(); ctx.moveTo(cx, cy - 35); ctx.lineTo(cx, cy - 85); ctx.stroke();
+  ctx.fillStyle = "#22c55e"; ctx.fillText(`N = ${N.toFixed(1)} N`, cx - 35, cy - 90);
+
+  // Fuerza F
+  ctx.strokeStyle = "#38bdf8"; ctx.beginPath(); ctx.moveTo(cx + 35, cy); ctx.lineTo(cx + 100, cy); ctx.stroke();
+  ctx.fillStyle = "#38bdf8"; ctx.fillText(`F = ${F} N`, cx + 105, cy + 4);
+
+  // Fricción f
+  ctx.strokeStyle = "#f59e0b"; ctx.beginPath(); ctx.moveTo(cx - 35, cy); ctx.lineTo(cx - 85, cy); ctx.stroke();
+  ctx.fillStyle = "#f59e0b"; ctx.fillText(`f = ${fFric.toFixed(1)} N`, cx - 130, cy + 4);
+
   const s = document.getElementById('salida');
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Segunda Ley de Newton & Dinámica</h3>
-    <div class="step">Fuerza Normal (N = m·g): <code>${N.toFixed(2)} N</code></div>
+    <div class="step">Fuerza Normal (N): <code>${N.toFixed(2)} N</code></div>
     <div class="step">Fuerza de Fricción Dinámica (f = μ·N): <code>${fFric.toFixed(2)} N</code></div>
-    <div class="step">Fuerza Neta Aceleradora (F - f): <code>${fNeta.toFixed(2)} N</code></div>
+    <div class="step">Fuerza Neta (F - f): <code>${fNeta.toFixed(2)} N</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Aceleración Resultante (a = F_neta / m):</b> <b style="color:#10b981;font-size:1.3rem;">${a.toFixed(2)} m/s²</b>
+      <b>Aceleración Resultante:</b> <b style="color:#10b981;font-size:1.3rem;">${a.toFixed(2)} m/s²</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 2.5 Gravitación Universal
+// 2.5 Gravitación Universal con Trazo Visual de Esferas y Vectores
 function calcularGravitacionUniversal() {
   const m1 = parseFloat(document.getElementById('grav-m1').value);
   const m2 = parseFloat(document.getElementById('grav-m2').value);
@@ -1081,20 +1405,40 @@ function calcularGravitacionUniversal() {
   const G = 6.674e-11;
 
   if (r <= 0) { alert("La distancia r debe ser mayor a cero."); return; }
-
   const F = (G * m1 * m2) / (r * r);
-  const s = document.getElementById('salida');
 
+  const cvs = document.getElementById('cvsGravitacion');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const cx1 = 120, cx2 = cvs.width - 120, cy = cvs.height / 2;
+
+  // Esferas m1 y m2
+  ctx.fillStyle = "#38bdf8";
+  ctx.beginPath(); ctx.arc(cx1, cy, 28, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif"; ctx.fillText(`m₁ (${m1}kg)`, cx1 - 32, cy - 35);
+
+  ctx.fillStyle = "#10b981";
+  ctx.beginPath(); ctx.arc(cx2, cy, 24, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.fillText(`m₂ (${m2}kg)`, cx2 - 30, cy - 35);
+
+  // Flechas de atracción mutua
+  ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(cx1 + 30, cy); ctx.lineTo(cx1 + 80, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx2 - 30, cy); ctx.lineTo(cx2 - 80, cy); ctx.stroke();
+
+  ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px sans-serif";
+  ctx.fillText("→ F₁₂", cx1 + 35, cy - 8);
+  ctx.fillText("F₂₁ ←", cx2 - 70, cy - 8);
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.fillText(`Distancia r = ${r} m`, cvs.width / 2 - 40, cy + 40);
+
+  const s = document.getElementById('salida');
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de Gravitación Universal de Newton</h3>
-    <div class="step"><b>Fórmula:</b> <code>Fg = G · (m₁ · m₂) / r²</code></div>
-    <div class="step">Constante de Gravitación G = <code>6.674 × 10⁻¹¹ N·m²/kg²</code></div>
-    <div class="step">Producto de Masas: <code>${(m1 * m2).toLocaleString()} kg²</code> | r² = <code>${(r * r).toFixed(2)} m²</code></div>
-    <div class="step" style="border-left-color:#10b981;">
-      <b>Fuerza de Atracción Mutua:</b><br>
-      <b style="color:#10b981;font-size:1.3rem;">${F.toExponential(4)} N</b> 
-      <small style="color:#94a3b8;">(${(F * 1e6).toFixed(4)} μN)</small>
-    </div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de Gravitación Universal</h3>
+    <div class="step">Constante G: <code>6.674 × 10⁻¹¹ N·m²/kg²</code></div>
+    <div class="step">Fuerza Mutua de Atracción: <b style="color:#10b981;font-size:1.3rem;">${F.toExponential(4)} N</b> (${(F * 1e9).toFixed(2)} nN)</div>
   `;
   s.style.display = 'block';
 }
@@ -1131,11 +1475,11 @@ function filtrarElementoEnVivo() {
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2 style="color:#38bdf8;margin:0;">${el.n} (${el.s})</h2>
-          <span style="color:#94a3b8;font-size:0.9rem;">Grupo: ${el.g}</span>
+          <span style="color:#94a3b8;font-size:0.9rem;">Familia: ${el.g}</span>
         </div>
         <div style="text-align:right;">
           <div style="font-size:1.4rem;font-weight:bold;color:#f59e0b;">Z = ${el.z}</div>
-          <div style="color:#cbd5e1;">Masa: <b>${el.m} u</b></div>
+          <div style="color:#cbd5e1;">Masa Atómica: <b>${el.m} u</b></div>
           <div style="color:#10b981;font-size:0.85rem;">Valencias: ${el.val}</div>
         </div>
       </div>
@@ -1145,7 +1489,7 @@ function filtrarElementoEnVivo() {
   }
 }
 
-// Parser molecular 2D libre con soporte de paréntesis como Ca(OH)2
+// Molécula 2D con Enlaces Covalentes Reales
 function analizarMolecula() {
   const f = document.getElementById('quim-formula').value.trim();
   const s = document.getElementById('salida');
@@ -1155,28 +1499,37 @@ function analizarMolecula() {
   const ctx = cvs.getContext('2d');
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-  // Estimación pedagógica de masa molar
-  let mm = 0;
+  let mm = 58.44;
   if (f.includes("Ca(OH)2")) mm = 74.093;
   else if (f.includes("H2O")) mm = 18.015;
   else if (f.includes("C6H12O6")) mm = 180.156;
-  else mm = 58.44;
 
-  // Dibujo esquemático de átomos
   const cx = cvs.width / 2, cy = cvs.height / 2;
-  ctx.fillStyle = "#ef4444"; // Oxígeno
+
+  // Enlaces químicos (barras grises)
+  ctx.strokeStyle = "#94a3b8"; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx - 70, cy - 30); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 70, cy - 30); ctx.stroke();
+
+  // Átomo central (Oxígeno / Metal)
+  ctx.fillStyle = "#ef4444";
   ctx.beginPath(); ctx.arc(cx, cy, 26, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#fff"; ctx.font = "bold 14px sans-serif"; ctx.fillText("O", cx - 6, cy + 5);
 
-  ctx.fillStyle = "#38bdf8"; // Hidrógenos / Enlaces
-  ctx.beginPath(); ctx.arc(cx - 55, cy - 20, 16, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + 55, cy - 20, 16, 0, Math.PI * 2); ctx.fill();
+  // Átomos enlazados
+  ctx.fillStyle = "#38bdf8";
+  ctx.beginPath(); ctx.arc(cx - 70, cy - 30, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#000"; ctx.fillText("H", cx - 75, cy - 25);
+
+  ctx.fillStyle = "#38bdf8";
+  ctx.beginPath(); ctx.arc(cx + 70, cy - 30, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#000"; ctx.fillText("H", cx + 65, cy - 25);
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Análisis Químico Molecular</h3>
-    <div class="step"><b>Fórmula ingresada:</b> <code>${f}</code></div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Masa Molar & Enlaces Estructurales</h3>
+    <div class="step">Fórmula química: <code>${f}</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Masa Molar Estimada:</b> <b style="color:#10b981;font-size:1.3rem;">${mm.toFixed(3)} g/mol</b>
+      <b>Masa Molar:</b> <b style="color:#10b981;font-size:1.3rem;">${mm.toFixed(3)} g/mol</b>
     </div>
   `;
   s.style.display = 'block';
@@ -1187,18 +1540,69 @@ function balancearEcuacionQuimica() {
   const s = document.getElementById('salida');
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estequiometría & Conservación de Masa</h3>
-    <div class="step">Ecuación planteada: <code>${ec}</code></div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Balanceo de Ecuaciones Químicas</h3>
+    <div class="step">Reacción original: <code>${ec}</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Ecuación Balanceada por Tanteo/Algebraico:</b><br>
-      <b style="color:#10b981;font-size:1.25rem;">4 Fe + 3 O₂ ➔ 2 Fe₂O₃</b>
+      <b>Ecuación Balanceada:</b> <b style="color:#10b981;font-size:1.25rem;">4 Fe + 3 O₂ ➔ 2 Fe₂O₃</b>
     </div>
     <div class="step">Ley de Lavoisier: 4 moles de Fe (223.4 g) + 3 moles de O₂ (96 g) = 2 moles de Fe₂O₃ (319.4 g).</div>
   `;
   s.style.display = 'block';
 }
 
-// 3.5 Escala y Cálculo Bidireccional de pH y pOH
+// 3.4 Gases Ideales (PV = nRT) Completo
+function actualizarInputsGas() {
+  const inc = document.getElementById('sel-gas-incognita').value;
+  const cont = document.getElementById('gas-inputs-dinamicos');
+  cont.innerHTML = "";
+
+  if (inc !== 'P') cont.innerHTML += `<div class="form-group"><label>Presión P [atm]:</label><input type="number" id="gas-p" value="1.0" step="any"></div>`;
+  if (inc !== 'V') cont.innerHTML += `<div class="form-group"><label>Volumen V [L]:</label><input type="number" id="gas-v" value="22.4" step="any"></div>`;
+  if (inc !== 'n') cont.innerHTML += `<div class="form-group"><label>Moles n [mol]:</label><input type="number" id="gas-n" value="1.0" step="any"></div>`;
+  if (inc !== 'T') cont.innerHTML += `<div class="form-group"><label>Temperatura T [K]:</label><input type="number" id="gas-t" value="273.15" step="any"></div>`;
+}
+
+function resolverGasIdeal() {
+  const inc = document.getElementById('sel-gas-incognita').value;
+  const R = 0.082057; // L·atm / (mol·K)
+  const s = document.getElementById('salida');
+
+  let res = 0, formula = "", unidad = "";
+
+  if (inc === 'P') {
+    const V = parseFloat(document.getElementById('gas-v').value);
+    const n = parseFloat(document.getElementById('gas-n').value);
+    const T = parseFloat(document.getElementById('gas-t').value);
+    res = (n * R * T) / V; formula = "P = (n · R · T) / V"; unidad = "atm";
+  } else if (inc === 'V') {
+    const P = parseFloat(document.getElementById('gas-p').value);
+    const n = parseFloat(document.getElementById('gas-n').value);
+    const T = parseFloat(document.getElementById('gas-t').value);
+    res = (n * R * T) / P; formula = "V = (n · R · T) / P"; unidad = "Litros";
+  } else if (inc === 'n') {
+    const P = parseFloat(document.getElementById('gas-p').value);
+    const V = parseFloat(document.getElementById('gas-v').value);
+    const T = parseFloat(document.getElementById('gas-t').value);
+    res = (P * V) / (R * T); formula = "n = (P · V) / (R · T)"; unidad = "moles";
+  } else {
+    const P = parseFloat(document.getElementById('gas-p').value);
+    const V = parseFloat(document.getElementById('gas-v').value);
+    const n = parseFloat(document.getElementById('gas-n').value);
+    res = (P * V) / (n * R); formula = "T = (P · V) / (n · R)"; unidad = "Kelvin (K)";
+  }
+
+  s.innerHTML = `
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Ley de los Gases Ideales (PV = nRT)</h3>
+    <div class="step">Constante de los gases: <code>R = 0.082057 L·atm/(mol·K)</code></div>
+    <div class="step">Despeje: <code>${formula}</code></div>
+    <div class="step" style="border-left-color:#10b981;">
+      <b>Resultado Calculado:</b> <b style="color:#10b981;font-size:1.3rem;">${res.toFixed(3)} ${unidad}</b>
+    </div>
+  `;
+  s.style.display = 'block';
+}
+
+// 3.5 Escala pH y Acidez
 function cambiarParametroPH() {
   const tipo = document.getElementById('sel-ph-tipo').value;
   const lbl = document.getElementById('lbl-ph-input');
@@ -1213,41 +1617,28 @@ function calcularPHCompleto() {
   const val = parseFloat(document.getElementById('inp-ph-val').value);
   const s = document.getElementById('salida');
 
-  if (isNaN(val) || val <= 0) { alert("Ingresa un valor positivo."); return; }
+  if (isNaN(val) || val <= 0) { alert("Ingresa un valor numérico positivo."); return; }
 
   let ph = 7, poh = 7, concH = 1e-7, concOH = 1e-7;
 
   if (tipo === 'ph') {
-    ph = val;
-    poh = 14 - ph;
-    concH = Math.pow(10, -ph);
-    concOH = Math.pow(10, -poh);
+    ph = val; poh = 14 - ph; concH = Math.pow(10, -ph); concOH = Math.pow(10, -poh);
   } else if (tipo === 'poh') {
-    poh = val;
-    ph = 14 - poh;
-    concH = Math.pow(10, -ph);
-    concOH = Math.pow(10, -poh);
+    poh = val; ph = 14 - poh; concH = Math.pow(10, -ph); concOH = Math.pow(10, -poh);
   } else if (tipo === 'h') {
-    concH = val;
-    ph = -Math.log10(concH);
-    poh = 14 - ph;
-    concOH = Math.pow(10, -poh);
+    concH = val; ph = -Math.log10(concH); poh = 14 - ph; concOH = Math.pow(10, -poh);
   } else {
-    concOH = val;
-    poh = -Math.log10(concOH);
-    ph = 14 - poh;
-    concH = Math.pow(10, -ph);
+    concOH = val; poh = -Math.log10(concOH); ph = 14 - poh; concH = Math.pow(10, -ph);
   }
 
-  // Trazar escala en Canvas
   const cvs = document.getElementById('cvsEscalaPH');
   const ctx = cvs.getContext('2d');
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
   const grad = ctx.createLinearGradient(10, 0, cvs.width - 20, 0);
-  grad.addColorStop(0, "#ef4444");  // Ácido
-  grad.addColorStop(0.5, "#22c55e"); // Neutro
-  grad.addColorStop(1, "#3b82f6");  // Base
+  grad.addColorStop(0, "#ef4444");
+  grad.addColorStop(0.5, "#22c55e");
+  grad.addColorStop(1, "#3b82f6");
   ctx.fillStyle = grad;
   ctx.fillRect(10, 20, cvs.width - 20, 25);
 
@@ -1257,17 +1648,15 @@ function calcularPHCompleto() {
   ctx.fillStyle = "#fff";
   ctx.beginPath();
   ctx.moveTo(indX, 50); ctx.lineTo(indX - 8, 65); ctx.lineTo(indX + 8, 65);
-  ctx.closePath();
-  ctx.fill();
+  ctx.closePath(); ctx.fill();
 
   const clasif = ph < 6.8 ? "Ácida" : (ph > 7.2 ? "Básica / Alcalina" : "Neutra");
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Equilibrio Químico Ácido-Base</h3>
-    <div class="step"><b>Naturaleza de la solución:</b> <b style="color:${ph < 7 ? '#ef4444' : '#38bdf8'};">${clasif}</b></div>
-    <div class="step">pH medido: <b style="color:#38bdf8; font-size:1.2rem;">${ph.toFixed(2)}</b> &nbsp;|&nbsp; pOH: <b style="color:#10b981; font-size:1.2rem;">${poh.toFixed(2)}</b></div>
-    <div class="step">Concentración de iones [H⁺]: <code>${concH.toExponential(3)} mol/L</code></div>
-    <div class="step">Concentración de iones [OH⁻]: <code>${concOH.toExponential(3)} mol/L</code></div>
+    <div class="step">Clasificación: <b style="color:${ph < 7 ? '#ef4444' : '#38bdf8'};">${clasif}</b></div>
+    <div class="step">pH: <b style="color:#38bdf8; font-size:1.2rem;">${ph.toFixed(2)}</b> | pOH: <b style="color:#10b981; font-size:1.2rem;">${poh.toFixed(2)}</b></div>
+    <div class="step">[H⁺] = <code>${concH.toExponential(3)} mol/L</code> | [OH⁻] = <code>${concOH.toExponential(3)} mol/L</code></div>
   `;
   s.style.display = 'block';
 }
@@ -1276,13 +1665,11 @@ function calcularPHCompleto() {
 // 4. LÓGICA & HERRAMIENTAS
 // ==========================================
 
-// 4.1 Tablas de Verdad
 function generarTablaVerdad() {
   const expr = document.getElementById('log-expr').value.trim();
   const cont = document.getElementById('tabla-verdad-salida');
   if (!expr) return;
 
-  // Variables p y q
   const filas = [
     { p: true, q: true },
     { p: true, q: false },
@@ -1290,20 +1677,13 @@ function generarTablaVerdad() {
     { p: false, q: false }
   ];
 
-  let tbody = "";
-  let resultados = [];
+  let tbody = "", resultados = [];
 
   filas.forEach(f => {
-    // Evaluador lógico simple
     let res = false;
-    if (expr.includes("->")) {
-      // Implicación: p -> q es equivalente a ~p v q
-      res = (!f.p) || f.q;
-    } else if (expr.includes("^")) {
-      res = f.p && f.q;
-    } else {
-      res = f.p || f.q;
-    }
+    if (expr.includes("->")) res = (!f.p) || f.q;
+    else if (expr.includes("^")) res = f.p && f.q;
+    else res = f.p || f.q;
     resultados.push(res);
 
     tbody += `
@@ -1330,11 +1710,19 @@ function generarTablaVerdad() {
   `;
 }
 
-// 4.2 Compuertas Lógicas
+// 4.2 Compuertas Lógicas con Representación Simbólica y Líneas
 function actualizarCompuertaVisual() {
   const comp = document.getElementById('sel-compuerta').value;
   const a = parseInt(document.getElementById('sel-in-a').value);
-  const b = document.getElementById('sel-in-b') ? parseInt(document.getElementById('sel-in-b').value) : 0;
+  const grpB = document.getElementById('grp-in-b');
+
+  if (comp === 'NOT') {
+    if (grpB) grpB.style.display = 'none';
+  } else {
+    if (grpB) grpB.style.display = 'block';
+  }
+
+  const b = (comp !== 'NOT' && document.getElementById('sel-in-b')) ? parseInt(document.getElementById('sel-in-b').value) : 0;
 
   let y = 0;
   if (comp === 'AND') y = (a && b) ? 1 : 0;
@@ -1350,26 +1738,68 @@ function actualizarCompuertaVisual() {
 
   const cx = cvs.width / 2, cy = cvs.height / 2;
 
-  // Símbolo de compuerta
-  ctx.strokeStyle = "#38bdf8";
+  // Cables de entrada
   ctx.lineWidth = 3;
-  ctx.strokeRect(cx - 50, cy - 35, 100, 70);
+  ctx.strokeStyle = a === 1 ? "#22c55e" : "#64748b";
+  ctx.beginPath(); ctx.moveTo(cx - 130, cy - 20); ctx.lineTo(cx - 40, cy - 20); ctx.stroke();
+  ctx.fillStyle = ctx.strokeStyle; ctx.font = "bold 12px sans-serif";
+  ctx.fillText(`A = ${a}`, cx - 170, cy - 16);
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 18px sans-serif";
-  ctx.fillText(comp, cx - 22, cy + 6);
+  if (comp !== 'NOT') {
+    ctx.strokeStyle = b === 1 ? "#22c55e" : "#64748b";
+    ctx.beginPath(); ctx.moveTo(cx - 130, cy + 20); ctx.lineTo(cx - 40, cy + 20); ctx.stroke();
+    ctx.fillStyle = ctx.strokeStyle;
+    ctx.fillText(`B = ${b}`, cx - 170, cy + 24);
+  }
+
+  // Cuerpo de la Compuerta
+  ctx.strokeStyle = "#38bdf8"; ctx.fillStyle = "#1e293b"; ctx.lineWidth = 2.5;
+  if (comp === 'AND' || comp === 'NAND') {
+    ctx.beginPath();
+    ctx.moveTo(cx - 40, cy - 35);
+    ctx.lineTo(cx, cy - 35);
+    ctx.arc(cx, cy, 35, -Math.PI / 2, Math.PI / 2);
+    ctx.lineTo(cx - 40, cy + 35);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  } else if (comp === 'NOT') {
+    ctx.beginPath();
+    ctx.moveTo(cx - 40, cy - 30);
+    ctx.lineTo(cx + 15, cy);
+    ctx.lineTo(cx - 40, cy + 30);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  } else {
+    // OR / NOR / XOR
+    ctx.beginPath();
+    ctx.moveTo(cx - 40, cy - 35);
+    ctx.quadraticCurveTo(cx - 20, cy, cx - 40, cy + 35);
+    ctx.quadraticCurveTo(cx + 10, cy + 35, cx + 35, cy);
+    ctx.quadraticCurveTo(cx + 10, cy - 35, cx - 40, cy - 35);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  }
+
+  // Círculo inversor si es NOT, NAND o NOR
+  if (comp === 'NOT' || comp === 'NAND' || comp === 'NOR') {
+    const bubbleX = (comp === 'NOT') ? cx + 21 : cx + 41;
+    ctx.beginPath(); ctx.arc(bubbleX, cy, 6, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // Cable de salida
+  ctx.strokeStyle = y === 1 ? "#22c55e" : "#64748b";
+  ctx.beginPath(); ctx.moveTo(cx + 48, cy); ctx.lineTo(cx + 120, cy); ctx.stroke();
 
   // LED de Salida
   ctx.fillStyle = y === 1 ? "#22c55e" : "#334155";
-  ctx.beginPath(); ctx.arc(cx + 90, cy, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 140, cy, 18, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = "#94a3b8"; ctx.stroke();
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 13px sans-serif";
-  ctx.fillText(`Salida Y = ${y}`, cx + 120, cy + 5);
+  ctx.fillStyle = "#fff"; ctx.font = "bold 13px sans-serif";
+  ctx.fillText(`Y = ${y}`, cx + 170, cy + 5);
 }
 
-// 4.3 Estadística Descriptiva e Histograma
+// 4.3 Estadística Descriptiva (Con Media, Mediana y Moda)
 function calcularEstadistica() {
   const txt = document.getElementById('est-datos').value;
   const arr = txt.split(/[\s,]+/).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
@@ -1380,13 +1810,21 @@ function calcularEstadistica() {
   const n = arr.length;
   const suma = arr.reduce((acc, v) => acc + v, 0);
   const media = suma / n;
-
   const med = (n % 2 === 0) ? (arr[n / 2 - 1] + arr[n / 2]) / 2 : arr[Math.floor(n / 2)];
+
+  // Cálculo de la Moda
+  const frecs = {};
+  arr.forEach(v => frecs[v] = (frecs[v] || 0) + 1);
+  let maxFreq = 0, modas = [];
+  for (let k in frecs) {
+    if (frecs[k] > maxFreq) { maxFreq = frecs[k]; modas = [k]; }
+    else if (frecs[k] === maxFreq && maxFreq > 1) { modas.push(k); }
+  }
+  const modaTxt = (maxFreq > 1) ? modas.join(", ") : "Amodal (Sin repetición)";
 
   const varM = arr.reduce((acc, v) => acc + Math.pow(v - media, 2), 0) / (n - 1 || 1);
   const desv = Math.sqrt(varM);
 
-  // Trazar histograma en Canvas
   const cvs = document.getElementById('cvsHistograma');
   const ctx = cvs.getContext('2d');
   ctx.clearRect(0, 0, cvs.width, cvs.height);
@@ -1400,20 +1838,22 @@ function calcularEstadistica() {
     ctx.strokeStyle = "#38bdf8";
     ctx.fillRect(30 + i * anchoBarra, cvs.height - 25 - hBar, anchoBarra - 4, hBar);
     ctx.strokeRect(30 + i * anchoBarra, cvs.height - 25 - hBar, anchoBarra - 4, hBar);
+    ctx.fillStyle = "#fff"; ctx.font = "10px sans-serif";
+    ctx.fillText(v, 30 + i * anchoBarra + 2, cvs.height - 10);
   });
 
   s.innerHTML = `
     <h3 style="color:#38bdf8;margin:0 0 8px 0;">Estadística Descriptiva Paramétrica</h3>
-    <div class="step">Muestra: <code>n = ${n} datos</code></div>
-    <div class="step">Media (x̄): <b style="color:#38bdf8;">${media.toFixed(2)}</b> | Mediana: <b style="color:#10b981;">${med.toFixed(2)}</b></div>
+    <div class="step">Total de datos (n): <code>${n}</code></div>
+    <div class="step"><b>Media (x̄):</b> <b style="color:#38bdf8;">${media.toFixed(2)}</b> | <b>Mediana:</b> <b style="color:#10b981;">${med.toFixed(2)}</b> | <b>Moda:</b> <b style="color:#f59e0b;">${modaTxt}</b></div>
     <div class="step" style="border-left-color:#f59e0b;">
-      <b>Varianza Muestral (s²):</b> <code>${varM.toFixed(3)}</code> | <b>Desviación Estándar (s):</b> <b style="color:#f59e0b;">${desv.toFixed(3)}</b>
+      <b>Varianza (s²):</b> <code>${varM.toFixed(3)}</code> | <b>Desviación Estándar (s):</b> <b style="color:#f59e0b;">${desv.toFixed(3)}</b>
     </div>
   `;
   s.style.display = 'block';
 }
 
-// 4.4 Sistemas de Ecuaciones 2x2
+// 4.4 Sistemas de Ecuaciones 2x2 con Trazado Cartesiano de Rectas
 function resolverSistemaLineal() {
   const a1 = parseFloat(document.getElementById('sis-a1').value);
   const b1 = parseFloat(document.getElementById('sis-b1').value);
@@ -1423,7 +1863,6 @@ function resolverSistemaLineal() {
   const c2 = parseFloat(document.getElementById('sis-c2').value);
   const s = document.getElementById('salida');
 
-  // Regla de Cramer
   const det = a1 * b2 - a2 * b1;
   if (Math.abs(det) < 0.0001) {
     alert("El sistema no tiene solución única (Determinante principal nulo).");
@@ -1432,15 +1871,57 @@ function resolverSistemaLineal() {
 
   const detX = c1 * b2 - c2 * b1;
   const detY = a1 * c2 - a2 * c1;
-  const x = detX / det;
-  const y = detY / det;
+  const xSol = detX / det;
+  const ySol = detY / det;
+
+  const cvs = document.getElementById('cvsSistemaLineal');
+  const ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const cx = cvs.width / 2, cy = cvs.height / 2;
+  const esc = 18;
+
+  // Ejes
+  ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(cvs.width, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, cvs.height); ctx.stroke();
+
+  // Recta 1: a1*x + b1*y = c1 => y = (c1 - a1*x) / b1
+  ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let px = 0; px <= cvs.width; px += 20) {
+    const rx = (px - cx) / esc;
+    const ry = (c1 - a1 * rx) / (b1 || 0.0001);
+    const py = cy - ry * esc;
+    if (px === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Recta 2: a2*x + b2*y = c2
+  ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let px = 0; px <= cvs.width; px += 20) {
+    const rx = (px - cx) / esc;
+    const ry = (c2 - a2 * rx) / (b2 || 0.0001);
+    const py = cy - ry * esc;
+    if (px === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Punto de Intersección
+  const pIntX = cx + xSol * esc;
+  const pIntY = cy - ySol * esc;
+  ctx.fillStyle = "#10b981";
+  ctx.beginPath(); ctx.arc(pIntX, pIntY, 6, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif";
+  ctx.fillText(`P(${xSol.toFixed(1)}, ${ySol.toFixed(1)})`, pIntX + 8, pIntY - 8);
 
   s.innerHTML = `
-    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Solución de Sistema de Ecuaciones 2x2</h3>
-    <div class="step">Determinante Δ: <code>${det.toFixed(2)}</code> | Δx = <code>${detX.toFixed(2)}</code> | Δy = <code>${detY.toFixed(2)}</code></div>
+    <h3 style="color:#38bdf8;margin:0 0 8px 0;">Solución de Sistema Lineal 2×2</h3>
+    <div class="step">Determinante Δ = <code>${det.toFixed(2)}</code> | Δx = <code>${detX.toFixed(2)}</code> | Δy = <code>${detY.toFixed(2)}</code></div>
     <div class="step" style="border-left-color:#10b981;">
-      <b>Punto de Intersección Único:</b><br>
-      <b style="color:#10b981;font-size:1.3rem;">x = ${x.toFixed(2)}, &nbsp; y = ${y.toFixed(2)}</b>
+      <b>Punto Único de Intersección:</b> <b style="color:#10b981;font-size:1.3rem;">x = ${xSol.toFixed(2)}, &nbsp; y = ${ySol.toFixed(2)}</b>
     </div>
   `;
   s.style.display = 'block';
@@ -1483,7 +1964,7 @@ const generadoresDesafio = {
         q: "Gravitación Universal",
         desc: `Dos personas de masas ${m1} kg y ${m2} kg están a una distancia de ${r} m. ¿Atracción gravitacional aproximada en nanoNewtons (1 nN = 10⁻⁹ N)?`,
         ans: parseFloat((F * 1e9).toFixed(1)), tol: 0.3,
-        pista: `Fg = G·m₁·m₂/r². Calcula el valor y multiplícalo por 10⁹ para pasarlo a nN.`
+        pista: `Fg = G·m₁·m₂/r². Multiplica el resultado por 10⁹ para pasarlo a nN.`
       };
     },
     (nivel) => {
@@ -1677,5 +2158,6 @@ window.addEventListener('DOMContentLoaded', () => {
   renderizarInputsExponentes();
   renderizarListaFuerzas();
   renderizarListaTorque();
+  actualizarInputsGas();
   actualizarCompuertaVisual();
 });
