@@ -1487,75 +1487,206 @@ function calcularPH() {
 }
 
 // ==========================================
-// 7. DESAFÍOS & MODO ESTUDIO (10 / 20 REACTIVOS)
+// 7. DESAFÍOS: GENERADOR PARAMÉTRICO ALEATORIO Y DIFICULTAD PROGRESIVA
 // ==========================================
-const bancoGeneralEstudio = {
+
+// Generador de números aleatorios enteros o decimales controlados
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randFloat(min, max, dec = 1) { return parseFloat((Math.random() * (max - min) + min).toFixed(dec)); }
+
+// Fábrica de problemas matemáticos y científicos según nivel (1: Fácil, 2: Medio, 3: Difícil/Avanzado)
+const generadoresDesafio = {
   calculo: [
-    { q: "Identidad Pitagórica Fundamental", desc: "Si sen(θ) = 0.6 y cos(θ) = 0.8, ¿cuánto resulta exactamente sen²(θ) + cos²(θ)?", ans: 1, tol: 0.01, pista: "sen²(θ) + cos²(θ) siempre es igual a 1." },
-    { q: "Exponente Cero", desc: "¿Cuánto es 999⁰?", ans: 1, tol: 0.01, pista: "Cualquier base no nula elevada a la 0 es 1." },
-    { q: "Derivada Directa", desc: "Si f(x) = 5·x^4, su derivada es k·x^3. ¿Cuánto vale k?", ans: 20, tol: 0.1, pista: "Multiplica exponente por coeficiente: 5 · 4." },
-    { q: "Área de un Rombo", desc: "Diagonal mayor D = 8 m, diagonal menor d = 5 m. ¿Área en m²?", ans: 20, tol: 0.2, pista: "A = (D · d) / 2." },
-    { q: "Integral Definida de Constante", desc: "¿Cuánto vale la integral ∫[0 a 4] 3 dx?", ans: 12, tol: 0.1, pista: "3 · (4 - 0) = 12." }
+    (nivel) => {
+      if (nivel === 1) {
+        const c = randInt(2, 6), exp = randInt(2, 4);
+        return {
+          q: "Derivada por Regla de la Potencia",
+          desc: `Si f(x) = ${c} · x^${exp}, su derivada es k · x^${exp - 1}. ¿Cuánto vale el coeficiente k?`,
+          ans: c * exp, tol: 0.1,
+          pista: `Multiplica el coeficiente por el exponente: ${c} · ${exp}.`
+        };
+      } else if (nivel === 2) {
+        const c1 = randInt(2, 5), exp1 = randInt(2, 3), c2 = randInt(3, 9);
+        return {
+          q: "Derivada Evaluada en un Punto",
+          desc: `Sea f(x) = ${c1} · x^${exp1} + ${c2}x. ¿Cuánto vale f'(1)?`,
+          ans: (c1 * exp1) + c2, tol: 0.2,
+          pista: `f'(x) = ${c1 * exp1}x^${exp1-1} + ${c2}. Al sustituir x = 1, suma ${c1 * exp1} + ${c2}.`
+        };
+      } else {
+        const k = randInt(2, 5), x = randInt(1, 3);
+        return {
+          q: "Integral Definida",
+          desc: `Calcula el valor numérico de la integral definida: ∫[0 a ${x}] (${k} · x) dx.`,
+          ans: 0.5 * k * Math.pow(x, 2), tol: 0.3,
+          pista: `La antiderivada es (${k}/2) · x². Evalúa en x = ${x} y resta 0.`
+        };
+      }
+    },
+    (nivel) => {
+      const b = nivel === 1 ? randInt(4, 10) : randFloat(5, 15, 1);
+      const h = nivel === 1 ? randInt(3, 8) : randFloat(3, 10, 1);
+      const area = (b * h) / 2;
+      return {
+        q: "Geometría: Área de Triángulo",
+        desc: `Un triángulo tiene base b = ${b} m y altura h = ${h} m. ¿Cuál es su área en m²?`,
+        ans: area, tol: 0.2,
+        pista: `A = (base · altura) / 2 = (${b} · ${h}) / 2.`
+      };
+    },
+    (nivel) => {
+      const base = randInt(2, 4), n = randInt(2, 4), m = randInt(1, 3);
+      return {
+        q: "Leyes de Exponentes",
+        desc: `Aplica leyes de exponentes: Si (${base}^${n}) · (${base}^${m}) = ${base}^k, ¿cuánto vale el exponente k?`,
+        ans: n + m, tol: 0.01,
+        pista: `En el producto de bases iguales, los exponentes se suman: ${n} + ${m}.`
+      };
+    }
   ],
   fisica: [
-    { q: "Fuerzas Concurrentes Opuestas", desc: "F1 = 12 N (derecha), F2 = 5 N (izquierda). ¿Magnitud resultante neta?", ans: 7, tol: 0.1, pista: "Resta 12 menos 5." },
-    { q: "Equilibrio Rotacional (Torque)", desc: "Carga de 30 N a 2 m del eje (+60 N·m). ¿A qué distancia equilibra una fuerza de 40 N?", ans: 1.5, tol: 0.05, pista: "Divide 60 entre 40." },
-    { q: "MRU - Distancia", desc: "Un móvil va a 15 m/s constante durante 4 segundos. ¿Cuántos metros recorre?", ans: 60, tol: 0.5, pista: "d = v · t = 15 · 4." },
-    { q: "Fuerza Peso", desc: "Un objeto tiene una masa de 5 kg en la Tierra (g = 9.81 m/s²). ¿Cuál es su peso redondeado en N?", ans: 49.05, tol: 0.5, pista: "Peso = m · g = 5 · 9.81." },
-    { q: "Aceleración", desc: "Un auto pasa de 0 a 20 m/s en 5 segundos. ¿Aceleración en m/s²?", ans: 4, tol: 0.1, pista: "a = (vf - v0) / t = 20 / 5." }
+    (nivel) => {
+      const v = nivel === 1 ? randInt(5, 20) : randFloat(8, 25, 1);
+      const t = nivel === 1 ? randInt(3, 12) : randFloat(2, 8, 1);
+      return {
+        q: "Cinemática MRU: Distancia",
+        desc: `Un robot móvil se desplaza a una velocidad constante de ${v} m/s durante ${t} segundos. ¿Cuántos metros recorre?`,
+        ans: parseFloat((v * t).toFixed(2)), tol: 0.5,
+        pista: `d = v · t = ${v} · ${t}.`
+      };
+    },
+    (nivel) => {
+      const f1 = randInt(10, 30), f2 = randInt(5, f1 - 2);
+      return {
+        q: "Vectores: Fuerza Resultante Colineal",
+        desc: `Dos fuerzas opuestas actúan en el eje X: F₁ = ${f1} N a la derecha y F₂ = ${f2} N a la izquierda. ¿Magnitud resultante neta en Newtons?`,
+        ans: f1 - f2, tol: 0.1,
+        pista: `Resta la fuerza izquierda de la derecha: ${f1} - ${f2}.`
+      };
+    },
+    (nivel) => {
+      const f = randInt(15, 50);
+      const d = nivel === 1 ? randFloat(0.2, 0.8, 1) : randFloat(0.3, 1.5, 2);
+      return {
+        q: "Momento de Torsión (Torque)",
+        desc: `Se aplica una fuerza perpendicular de ${f} N sobre una palanca a una distancia de ${d} m de su punto de apoyo. ¿Torque generado en N·m?`,
+        ans: parseFloat((f * d).toFixed(2)), tol: 0.2,
+        pista: `τ = F · d = ${f} · ${d}.`
+      };
+    },
+    (nivel) => {
+      const m = randInt(2, 10);
+      const f = randInt(m * 4, m * 8);
+      const a = f / m;
+      return {
+        q: "Segunda Ley de Newton",
+        desc: `Una masa de ${m} kg experimenta una fuerza neta sin fricción de ${f} N. ¿Aceleración resultante en m/s²?`,
+        ans: parseFloat(a.toFixed(2)), tol: 0.2,
+        pista: `a = F / m = ${f} / ${m}.`
+      };
+    }
   ],
   robotica: [
-    { q: "Ley de Ohm - Corriente", desc: "Circuito con fuente de 12V y resistencia de 4 Ω. ¿Corriente en Amperes?", ans: 3, tol: 0.05, pista: "I = V / R = 12 / 4." },
-    { q: "Resistencias en Serie", desc: "R1 = 100 Ω, R2 = 220 Ω, R3 = 330 Ω conectadas en serie. ¿Req total en Ohms?", ans: 650, tol: 1, pista: "Suma directa: 100 + 220 + 330." },
-    { q: "Potencia Eléctrica", desc: "Un motor consume 12V a 2A. ¿Potencia en Watts?", ans: 24, tol: 0.1, pista: "P = V · I = 12 · 2." },
-    { q: "Resistencias en Paralelo", desc: "Dos resistencias idénticas de 100 Ω en paralelo. ¿Req en Ohms?", ans: 50, tol: 0.5, pista: "Dos iguales en paralelo equivalen a la mitad: 100 / 2." },
-    { q: "Caída de Diodo", desc: "Voltaje en circuito con Vcc = 5V y diodo de silicio (0.7V). ¿Voltaje restante en la resistencia?", ans: 4.3, tol: 0.1, pista: "VR = 5 - 0.7." }
+    (nivel) => {
+      const v = randInt(5, 24);
+      const r = randInt(2, 8);
+      return {
+        q: "Ley de Ohm: Corriente",
+        desc: `Un actuador está conectado a una fuente de ${v} V y presenta una resistencia interna de ${r} Ω. ¿Corriente consumida en Amperes?`,
+        ans: parseFloat((v / r).toFixed(2)), tol: 0.1,
+        pista: `I = V / R = ${v} / ${r}.`
+      };
+    },
+    (nivel) => {
+      const r1 = randInt(10, 100) * 10;
+      const r2 = randInt(10, 100) * 10;
+      return {
+        q: "Resistencias en Serie",
+        desc: `Dos resistores de R₁ = ${r1} Ω y R₂ = ${r2} Ω se conectan en serie. ¿Resistencia total equivalente en Ohms?`,
+        ans: r1 + r2, tol: 1,
+        pista: `En serie las resistencias se suman directamente: ${r1} + ${r2}.`
+      };
+    },
+    (nivel) => {
+      const v = randInt(6, 24);
+      const i = nivel === 1 ? randInt(1, 4) : randFloat(0.5, 3.5, 1);
+      return {
+        q: "Potencia Eléctrica en Circuitos",
+        desc: `Un servocontrolador opera a ${v} V y consume una corriente de ${i} A. ¿Potencia disipada en Watts?`,
+        ans: parseFloat((v * i).toFixed(2)), tol: 0.2,
+        pista: `P = V · I = ${v} · ${i}.`
+      };
+    },
+    (nivel) => {
+      const cap = randInt(10, 30) * 100; // 1000 - 3000 mAh
+      const consumo = randInt(2, 5) * 100; // 200 - 500 mA
+      const h = (cap * 0.7) / consumo;
+      return {
+        q: "Autonomía de Batería",
+        desc: `Un robot tiene una batería de ${cap} mAh (eficiencia útil al 70%) y consume en promedio ${consumo} mA continuos. ¿Horas de autonomía estimadas?`,
+        ans: parseFloat(h.toFixed(1)), tol: 0.3,
+        pista: `Horas = (${cap} · 0.70) / ${consumo}.`
+      };
+    }
   ],
   quimica: [
-    { q: "Número Atómico del Carbono", desc: "¿Cuál es el número atómico (Z) del Carbono en la tabla periódica?", ans: 6, tol: 0.1, pista: "El Carbono tiene 6 protones: Z = 6." },
-    { q: "Masa Molar del Agua", desc: "¿Cuál es la masa molar aproximada del H₂O en g/mol?", ans: 18.01, tol: 0.2, pista: "2 H (2.016) + 1 O (15.999)." },
-    { q: "pH Neutro", desc: "¿Cuál es el valor de pH de una disolución completamente neutra a 25°C?", ans: 7, tol: 0.1, pista: "El agua pura tiene pH = 7." },
-    { q: "Número Atómico del Oxígeno", desc: "¿Cuál es el número atómico (Z) del Oxígeno?", ans: 8, tol: 0.1, pista: "Z = 8." },
-    { q: "Molaridad", desc: "Se disuelven 2 moles de NaCl en 4 Litros de solución. ¿Concentración molar (M)?", ans: 0.5, tol: 0.05, pista: "M = n / V = 2 / 4." }
+    (nivel) => {
+      const elementos = [
+        { s: "H", z: 1 }, { s: "C", z: 6 }, { s: "N", z: 7 }, { s: "O", z: 8 },
+        { s: "Na", z: 11 }, { s: "Mg", z: 12 }, { s: "Al", z: 13 }, { s: "S", z: 16 },
+        { s: "Cl", z: 17 }, { s: "Ca", z: 20 }, { s: "Fe", z: 26 }, { s: "Cu", z: 29 }
+      ];
+      const el = elementos[randInt(0, elementos.length - 1)];
+      return {
+        q: "Estructura Atómica: Número Atómico Z",
+        desc: `¿Cuál es el número atómico (Z) del elemento ${el.s} en la tabla periódica?`,
+        ans: el.z, tol: 0.01,
+        pista: `Revisa la tabla periódica de la suite: ${el.s} tiene Z = ${el.z}.`
+      };
+    },
+    (nivel) => {
+      const moles = randInt(1, 4);
+      const vol = randInt(2, 8);
+      return {
+        q: "Disoluciones: Molaridad (M)",
+        desc: `Se preparan ${vol} Litros de solución disolviendo ${moles} moles de soluto. ¿Molaridad de la mezcla (mol/L)?`,
+        ans: parseFloat((moles / vol).toFixed(2)), tol: 0.05,
+        pista: `M = moles / Volumen(L) = ${moles} / ${vol}.`
+      };
+    },
+    (nivel) => {
+      const ph = randInt(2, 12);
+      return {
+        q: "Equilibrio Químico: Relación pH y pOH",
+        desc: `Una solución acuosa a 25°C presenta un pH medido de ${ph}. ¿Cuál es su pOH?`,
+        ans: 14 - ph, tol: 0.01,
+        pista: `Recuerda la identidad: pH + pOH = 14. Por lo tanto pOH = 14 - ${ph}.`
+      };
+    }
   ]
 };
 
+// Control de Sesión
 let sesionEstudio = {
-  preguntas: [],
-  indice: 0,
+  materia: 'todas',
   total: 10,
+  reactivoActual: 0,
+  nivelActual: 1, // 1: Fácil, 2: Medio, 3: Difícil
   aciertos: 0,
   vidas: 3,
-  xp: 0
+  xp: 0,
+  preguntaActiva: null
 };
 
 function iniciarSesionEstudio() {
-  const mat = document.getElementById('trivia-materia') ? document.getElementById('trivia-materia').value : 'todas';
-  const cant = parseInt(document.getElementById('trivia-total-preguntas') ? document.getElementById('trivia-total-preguntas').value : '10');
+  sesionEstudio.materia = document.getElementById('trivia-materia') ? document.getElementById('trivia-materia').value : 'todas';
+  sesionEstudio.total = parseInt(document.getElementById('trivia-total-preguntas') ? document.getElementById('trivia-total-preguntas').value : '10');
+  
+  const difBase = document.getElementById('trivia-dificultad') ? document.getElementById('trivia-dificultad').value : 'medio';
+  sesionEstudio.nivelActual = difBase === 'facil' ? 1 : difBase === 'medio' ? 2 : 3;
 
-  let bancoBase = [];
-  if (mat === 'todas') {
-    bancoBase = [
-      ...bancoGeneralEstudio.calculo,
-      ...bancoGeneralEstudio.fisica,
-      ...bancoGeneralEstudio.robotica,
-      ...bancoGeneralEstudio.quimica
-    ];
-  } else {
-    bancoBase = bancoGeneralEstudio[mat] ? [...bancoGeneralEstudio[mat]] : [...bancoGeneralEstudio.calculo];
-  }
-
-  // Barajar aleatoriamente
-  bancoBase.sort(() => Math.random() - 0.5);
-
-  // Duplicar si solicitan 20 y el banco base tiene menos
-  while (bancoBase.length < cant) {
-    bancoBase = bancoBase.concat(bancoBase);
-  }
-
-  sesionEstudio.preguntas = bancoBase.slice(0, cant);
-  sesionEstudio.indice = 0;
-  sesionEstudio.total = cant;
+  sesionEstudio.reactivoActual = 1;
   sesionEstudio.aciertos = 0;
   sesionEstudio.vidas = 3;
   sesionEstudio.xp = 0;
@@ -1563,37 +1694,59 @@ function iniciarSesionEstudio() {
   document.getElementById('j-panel-pregunta').style.display = 'block';
   document.getElementById('j-panel-final').style.display = 'none';
 
+  generarSiguienteReactivo();
+}
+
+function generarSiguienteReactivo() {
+  if (sesionEstudio.reactivoActual > sesionEstudio.total) {
+    finalizarSesionEstudio();
+    return;
+  }
+
+  // Dificultad adaptativa progresiva conforme avanza el progreso del examen
+  const progresoPct = (sesionEstudio.reactivoActual / sesionEstudio.total);
+  if (progresoPct > 0.65) {
+    sesionEstudio.nivelActual = Math.min(3, sesionEstudio.nivelActual + 1);
+  } else if (progresoPct > 0.35 && sesionEstudio.nivelActual === 1) {
+    sesionEstudio.nivelActual = 2;
+  }
+
+  // Selección de materia
+  let matElegida = sesionEstudio.materia;
+  if (matElegida === 'todas') {
+    const mats = ['calculo', 'fisica', 'robotica', 'quimica'];
+    matElegida = mats[randInt(0, mats.length - 1)];
+  }
+
+  // Escoger un generador aleatorio dentro de esa materia
+  const listaGeneradores = generadoresDesafio[matElegida];
+  const creador = listaGeneradores[randInt(0, listaGeneradores.length - 1)];
+
+  // Crear la pregunta con datos matemáticos vivos
+  sesionEstudio.preguntaActiva = creador(sesionEstudio.nivelActual);
+
+  // Renderizar en UI
+  document.getElementById('j-progreso').innerText = `Reactivo ${sesionEstudio.reactivoActual} de ${sesionEstudio.total} (Nivel ${sesionEstudio.nivelActual === 1 ? '⭐' : sesionEstudio.nivelActual === 2 ? '⭐⭐' : '⭐⭐⭐'})`;
+  document.getElementById('j-titulo').innerText = sesionEstudio.preguntaActiva.q;
+  document.getElementById('j-desc').innerText = sesionEstudio.preguntaActiva.desc;
+  document.getElementById('j-input').value = "";
+  document.getElementById('j-msg').innerText = "";
+  document.getElementById('j-pista').style.display = "none";
+
   actualizarMarcadorEstudio();
-  cargarReactivoActual();
 }
 
 function actualizarMarcadorEstudio() {
-  document.getElementById('j-progreso').innerText = `Reactivo ${sesionEstudio.indice + 1} de ${sesionEstudio.total}`;
   let vStr = ""; for (let i = 0; i < sesionEstudio.vidas; i++) vStr += "❤️";
   document.getElementById('j-vidas').innerText = vStr || "💀";
   document.getElementById('j-xp').innerText = `${sesionEstudio.xp} XP`;
   document.getElementById('j-aciertos').innerText = `Aciertos: ${sesionEstudio.aciertos}`;
 }
 
-function cargarReactivoActual() {
-  if (sesionEstudio.indice >= sesionEstudio.total) {
-    finalizarSesionEstudio();
-    return;
-  }
-  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
-  document.getElementById('j-titulo').innerText = reactivo.q;
-  document.getElementById('j-desc').innerText = reactivo.desc;
-  document.getElementById('j-input').value = "";
-  document.getElementById('j-msg').innerText = "";
-  document.getElementById('j-pista').style.display = "none";
-  actualizarMarcadorEstudio();
-}
-
 function mostrarPistaTrivia() {
-  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
-  if (reactivo) {
+  if (sesionEstudio.preguntaActiva) {
     const pBox = document.getElementById('j-pista');
-    pBox.innerHTML = `💡 <b>Pista para reflexionar:</b> ${reactivo.pista}`;
+    pBox.innerHTML = `💡 <b>Pista para reflexionar:</b> ${sesionEstudio.preguntaActiva.pista}`;
     pBox.style.display = "block";
   }
 }
@@ -1602,27 +1755,27 @@ function verificarJuego() {
   const val = parseFloat(document.getElementById('j-input').value);
   if (isNaN(val)) { alert("Escribe un número antes de comprobar."); return; }
 
-  const reactivo = sesionEstudio.preguntas[sesionEstudio.indice];
+  const reactivo = sesionEstudio.preguntaActiva;
 
   if (Math.abs(val - reactivo.ans) <= reactivo.tol) {
     sesionEstudio.aciertos++;
-    sesionEstudio.xp += 50;
-    document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta (+50 XP).</span>";
+    sesionEstudio.xp += 50 * sesionEstudio.nivelActual;
+    document.getElementById('j-msg').innerHTML = "<span style='color:#10b981;'>🎉 ¡EXCELENTE! Respuesta correcta. Avanzando...</span>";
     setTimeout(() => {
-      sesionEstudio.indice++;
-      cargarReactivoActual();
-    }, 1500);
+      sesionEstudio.reactivoActual++;
+      generarSiguienteReactivo();
+    }, 1300);
   } else {
     sesionEstudio.vidas--;
-    document.getElementById('j-msg').innerHTML = "<span style='color:#ef4444;'>❌ Incorrecto. Revisa la pista arriba.</span>";
+    document.getElementById('j-msg').innerHTML = `<span style='color:#ef4444;'>❌ Incorrecto (era aprox. ${reactivo.ans}). Revisa la pista.</span>`;
     actualizarMarcadorEstudio();
 
     if (sesionEstudio.vidas <= 0) {
-      alert("¡Se agotaron las vidas! Reiniciando contador de vidas para continuar el repaso.");
+      alert("¡Se agotaron las vidas! Recargando para continuar el entrenamiento.");
       sesionEstudio.vidas = 3;
       setTimeout(() => {
-        sesionEstudio.indice++;
-        cargarReactivoActual();
+        sesionEstudio.reactivoActual++;
+        generarSiguienteReactivo();
       }, 1500);
     }
   }
@@ -1635,9 +1788,9 @@ function finalizarSesionEstudio() {
 
   const calif = ((sesionEstudio.aciertos / sesionEstudio.total) * 10).toFixed(1);
   document.getElementById('j-resumen-final').innerHTML = `
-    Has completado los <b>${sesionEstudio.total} reactivos</b> del repaso.<br>
-    • Aciertos logrados: <b style="color:#10b981;">${sesionEstudio.aciertos} / ${sesionEstudio.total}</b><br>
-    • Calificación obtenida: <b style="color:#38bdf8; font-size:1.3rem;">${calif} / 10</b><br>
+    Has completado la prueba de <b>${sesionEstudio.total} reactivos adaptativos</b>.<br>
+    • Aciertos logrados: <b style="color:#10b981;">${sesionEstudio.aciertos} de ${sesionEstudio.total}</b><br>
+    • Calificación obtenida: <b style="color:#38bdf8; font-size:1.35rem;">${calif} / 10</b><br>
     • Experiencia acumulada: <b style="color:#f59e0b;">${sesionEstudio.xp} XP</b>
   `;
 }
