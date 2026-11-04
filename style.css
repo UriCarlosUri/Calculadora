@@ -14,7 +14,7 @@ body {
 }
 
 .main-card {
-  max-width: 960px;
+  max-width: 980px;
   width: 100%;
   background: #1e293b;
   padding: 24px;
@@ -48,7 +48,7 @@ p.sub {
 
 .btn-tab {
   flex: 1;
-  min-width: 110px;
+  min-width: 120px;
   padding: 10px 8px;
   background: #0f172a;
   border: 1px solid #334155;
@@ -94,8 +94,8 @@ p.sub {
 
 .calc-subseccion,
 .fis-subseccion,
-.rob-subseccion,
-.quim-subseccion {
+.quim-subseccion,
+.log-subseccion {
   display: none;
 }
 
@@ -112,7 +112,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
@@ -124,7 +125,8 @@ select {
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: none;
   border-color: #38bdf8;
 }
@@ -138,8 +140,8 @@ select:focus {
 
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
 }
 
 .grid-4 {
@@ -154,8 +156,9 @@ select:focus {
   gap: 6px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .grid-2,
+  .grid-3,
   .grid-4 {
     grid-template-columns: 1fr;
   }
@@ -199,6 +202,21 @@ select:focus {
 
 .btn-hint:hover {
   background: #fbbf24;
+}
+
+.btn-del {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-del:hover {
+  background: #dc2626;
 }
 
 /* Gráficos Canvas */
@@ -267,7 +285,7 @@ table.didact-table th {
   color: #38bdf8;
 }
 
-/* Componentes de Física y Redes de Robótica */
+/* Elementos Dinámicos de Física */
 .torque-item,
 .fuerza-item {
   display: flex;
@@ -275,53 +293,14 @@ table.didact-table th {
   align-items: center;
   margin-bottom: 8px;
   background: #0f172a;
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #334155;
   flex-wrap: wrap;
 }
 
-.color-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.btn-del {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.2s;
-}
-
-.btn-del:hover {
-  background: #dc2626;
-}
-
-/* Scrollbar personalizado */
-#tabla-resultados-contenedor::-webkit-scrollbar,
-#pantalla-mensaje-alumnos::-webkit-scrollbar {
-  width: 6px;
-}
-
-#tabla-resultados-contenedor::-webkit-scrollbar-track,
-#pantalla-mensaje-alumnos::-webkit-scrollbar-track {
-  background: #070d19;
-}
-
-#tabla-resultados-contenedor::-webkit-scrollbar-thumb,
-#pantalla-mensaje-alumnos::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-
-/* Modal Secreto / Easter Egg */
+/* Modales y Animaciones */
+#modal-bienvenida,
 #modal-secreto-backdrop {
   animation: fadeInModal 0.25s ease-out;
 }
@@ -329,7 +308,7 @@ table.didact-table th {
 @keyframes fadeInModal {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: scale(0.97);
   }
   to {
     opacity: 1;
@@ -337,7 +316,23 @@ table.didact-table th {
   }
 }
 
-#pantalla-mensaje-alumnos {
-  max-height: 80vh;
-  overflow-y: auto;
+/* Barras de Desplazamiento Personalizadas */
+#muro-contenedor-mensajes::-webkit-scrollbar,
+#pantalla-mensaje-alumnos::-webkit-scrollbar,
+#tabla-verdad-salida::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+#muro-contenedor-mensajes::-webkit-scrollbar-track,
+#pantalla-mensaje-alumnos::-webkit-scrollbar-track,
+#tabla-verdad-salida::-webkit-scrollbar-track {
+  background: #070d19;
+}
+
+#muro-contenedor-mensajes::-webkit-scrollbar-thumb,
+#pantalla-mensaje-alumnos::-webkit-scrollbar-thumb,
+#tabla-verdad-salida::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
 }
